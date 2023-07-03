@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/add_in_dictionaries"
+        android:icon="@drawable/ic_baseline_add_box_24"
+        android:title="Добавить" />
+
+    <item
+        android:id="@+id/randomizing"
+        android:icon="@drawable/baseline_casino_24"
+        android:title="Рандомайзер" />
+
+    <item
+        android:id="@+id/dictionaries"
+        android:icon="@drawable/baseline_book_24"
+        android:title="Словари" />
+    <item
+        android:id="@+id/profile"
+        android:icon="@drawable/baseline_account_circle_24"
+        android:title="Профиль" />
+</menu>

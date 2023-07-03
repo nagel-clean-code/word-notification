@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/first_word"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_item_word_first_rad_25"
+        android:fontFamily="@font/montserrat_bold"
+        android:gravity="center_vertical"
+        android:layout_marginEnd="4dp"
+        android:paddingStart="20dp"
+        android:text="Hard"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/last_word"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="right"
+        android:background="@drawable/background_item_word_last_rad_25"
+        android:fontFamily="@font/montserrat_bold"
+        android:gravity="center"
+        android:paddingHorizontal="20dp"
+        android:text="Трудный"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+</FrameLayout>

@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Word Notification</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="network_error">Ошибка сети</string>
+    <string name="repeat">Повторить</string>
+    <string name="add">Добавить</string>
+    <string name="default_name_dictionary">Первый словать</string>
+
+
+</resources>

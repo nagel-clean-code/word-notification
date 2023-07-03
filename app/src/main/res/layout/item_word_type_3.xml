@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/first_word"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/background_item_word_first_rad_25_type_3"
+        android:fontFamily="@font/montserrat_bold"
+        android:paddingStart="26dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="25dp"
+        android:paddingBottom="8dp"
+        android:text="Lorem ipsum dolor sit amet consectetur. Eget elit augue vitae risus diam tempor. Ac"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/last_word"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="-1dp"
+        android:background="@drawable/background_item_word_last_rad_25_type_3"
+        android:fontFamily="@font/montserrat_bold"
+        android:paddingStart="27dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="17dp"
+        android:paddingBottom="10dp"
+        android:text="Трудный, жесткий, влвлл аово лвлавла оооа рврыо вр
+хороший приятный влвоо"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
+</LinearLayout>
