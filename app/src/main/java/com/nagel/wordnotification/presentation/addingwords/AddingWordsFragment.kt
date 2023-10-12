@@ -8,16 +8,16 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.nagel.wordnotification.Constants.DICTIONARY_ID_KEY
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.databinding.FragmentAddingWordsBinding
 import com.nagel.wordnotification.presentation.MainActivityVM
-import com.nagel.wordnotification.presentation.addingwords.choosingdictionary.ChoosingDictionaryFragment
 import com.nagel.wordnotification.presentation.base.BaseFragment
 import com.nagel.wordnotification.presentation.navigator
+import com.nagel.wordnotification.utils.SharedPrefsUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -45,28 +45,16 @@ class AddingWordsFragment : BaseFragment() {
 
     private fun initListeners() {
 //        initScroll()
-        setFragmentResultListener(ChoosingDictionaryFragment.TAG) { _, bundle ->
-            val selectedDictionaryId = bundle.getLong(ChoosingDictionaryFragment.DICTIONARY_ID_KEY)
-            viewModel.loadDictionaryById(selectedDictionaryId)
-        }
+
         binding.selectDictionary.setOnClickListener {
             viewModel.loadedDictionaryFlow.value = false
             navigator().showChoosingDictionaryFragment(
                 idAccount = viewModelActivity.myAccountDbEntity.value?.id ?: -1
             )
         }
-        viewModelActivity.myAccountDbEntity.value?.let {
-            viewModel.loadDictionaryByName(idAccount = it.id)
-        } ?: kotlin.run {
-            lifecycleScope.launch {
-                viewModelActivity.myAccountDbEntity.collect {
-                    it?.let {
-                        viewModel.loadDictionaryByName(idAccount = it.id)
 
-                    }
-                }
-            }
-        }
+        loadCurrentDictionary()
+
         lifecycleScope.launch {
             viewModel.loadedDictionaryFlow.collect() {
                 binding.progressBar.isVisible = !it
@@ -79,6 +67,30 @@ class AddingWordsFragment : BaseFragment() {
             viewModel.showMessage.collect() { msg ->
                 msg?.let { showMessage(it) }
                 viewModel.showMessage.value = null
+            }
+        }
+    }
+
+    private fun loadCurrentDictionary() {
+        val sessionIdDictionary =
+            SharedPrefsUtils.getLongPreference(requireContext(), DICTIONARY_ID_KEY, -1)
+        if (sessionIdDictionary != -1L) {
+            viewModel.loadDictionaryById(sessionIdDictionary)
+        } else {
+            loadMyDictionary()
+        }
+    }
+
+    private fun loadMyDictionary() {
+        viewModelActivity.myAccountDbEntity.value?.let {
+            viewModel.loadDictionaryByName(idAccount = it.id)
+        } ?: kotlin.run {
+            lifecycleScope.launch {
+                viewModelActivity.myAccountDbEntity.collect {
+                    it?.let {
+                        viewModel.loadDictionaryByName(idAccount = it.id)
+                    }
+                }
             }
         }
     }
@@ -112,8 +124,11 @@ class AddingWordsFragment : BaseFragment() {
     private fun showMenuActionOnWord(word: Word, position: Int) {
         MenuSelectingActionsOnWord {
             viewModel.deleteWord(word.idWord) {
-                Log.d("Удаление: ", "itemCount: ${listWordsAdapter!!.itemCount}, position: $position" )
-                listWordsAdapter?.notifyItemRemoved( position)
+                Log.d(
+                    "Удаление: ",
+                    "itemCount: ${listWordsAdapter!!.itemCount}, position: $position"
+                )
+                listWordsAdapter?.notifyItemRemoved(position)
             }
         }.show(parentFragmentManager, null)
     }

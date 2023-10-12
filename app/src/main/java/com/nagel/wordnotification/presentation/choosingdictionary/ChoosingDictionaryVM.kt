@@ -1,11 +1,9 @@
-package com.nagel.wordnotification.presentation.addingwords.choosingdictionary
+package com.nagel.wordnotification.presentation.choosingdictionary
 
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import java.lang.Exception
 import javax.inject.Inject
 
 @HiltViewModel

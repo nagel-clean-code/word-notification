@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/beige"
-    tools:context=".presentation.addingwords.choosingdictionary.ChoosingDictionaryFragment">
+    tools:context=".presentation.choosingdictionary.ChoosingDictionaryFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/dictionaries_list"

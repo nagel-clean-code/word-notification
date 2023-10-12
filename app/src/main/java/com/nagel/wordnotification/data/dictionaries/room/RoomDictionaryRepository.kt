@@ -62,7 +62,7 @@ class RoomDictionaryRepository @Inject constructor(
     }
 
     override fun getSize(): Int {
-        return currentDictionary!!.wordList.size
+        return currentDictionary?.wordList?.size ?: 0
     }
 
     override fun getItem(position: Int): Word {

@@ -1,15 +1,15 @@
 package com.nagel.wordnotification.presentation
 
 import android.graphics.Rect
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.databinding.ActivityMainBinding
 import com.nagel.wordnotification.presentation.addingwords.AddingWordsFragment
-import com.nagel.wordnotification.presentation.addingwords.choosingdictionary.ChoosingDictionaryFragment
+import com.nagel.wordnotification.presentation.choosingdictionary.ChoosingDictionaryFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -29,7 +29,9 @@ class MainActivity : AppCompatActivity(), Navigator {
         binding.bottomNavigationView.setOnItemSelectedListener {
             val bufFragment = when (it.itemId) {
                 R.id.add_in_dictionaries -> AddingWordsFragment()
-//                R.id.dictionaries -> SettingsFragment()
+                R.id.dictionaries -> ChoosingDictionaryFragment.newInstance(
+                    viewModel.myAccountDbEntity.value?.id ?: -1
+                )
 //                R.id.randomizing -> AddRecipeFragment()
 //                R.id.profile -> FindRecipeFragment()
                 else -> AddingWordsFragment()
@@ -57,7 +59,7 @@ class MainActivity : AppCompatActivity(), Navigator {
     }
 
     override fun showAddingWordsFragment() {
-        launchFragment(AddingWordsFragment.newInstance())
+        binding.bottomNavigationView.selectedItemId = R.id.add_in_dictionaries
     }
 
     override fun showChoosingDictionaryFragment(idAccount: Long) {

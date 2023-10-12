@@ -1,4 +1,4 @@
-package com.nagel.wordnotification.presentation.addingwords.choosingdictionary
+package com.nagel.wordnotification.presentation.choosingdictionary
 
 import android.app.AlertDialog
 import android.content.DialogInterface
@@ -10,14 +10,16 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.nagel.wordnotification.Constants
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.databinding.FragmentChoosingDictionaryBinding
 import com.nagel.wordnotification.presentation.MainActivityVM
 import com.nagel.wordnotification.presentation.base.BaseFragment
+import com.nagel.wordnotification.presentation.navigator
+import com.nagel.wordnotification.utils.SharedPrefsUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -63,8 +65,12 @@ class ChoosingDictionaryFragment : BaseFragment() {
     }
 
     private fun openDictionary(idDictionary: Long) {
-        setFragmentResult(TAG, bundleOf(DICTIONARY_ID_KEY to idDictionary))
-        requireActivity().supportFragmentManager.popBackStack()
+        SharedPrefsUtils.setLongPreference(
+            requireContext(),
+            Constants.DICTIONARY_ID_KEY,
+            idDictionary
+        )
+        navigator().showAddingWordsFragment()
     }
 
     private fun initListeners() {
@@ -106,7 +112,6 @@ class ChoosingDictionaryFragment : BaseFragment() {
     companion object {
         private const val ID_ACCOUNT = "ID_ACCOUNT"
         const val TAG = "CHOOSING_DICTIONARY_FRAGMENT"
-        const val DICTIONARY_ID_KEY = "DICTIONARY_ID_KEY"
 
         @JvmStatic
         fun newInstance(idAccount: Long) = ChoosingDictionaryFragment().apply {

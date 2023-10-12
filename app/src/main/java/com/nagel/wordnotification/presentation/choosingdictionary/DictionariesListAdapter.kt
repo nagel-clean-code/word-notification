@@ -1,4 +1,4 @@
-package com.nagel.wordnotification.presentation.addingwords.choosingdictionary
+package com.nagel.wordnotification.presentation.choosingdictionary
 
 import android.content.Context
 import android.graphics.Rect
