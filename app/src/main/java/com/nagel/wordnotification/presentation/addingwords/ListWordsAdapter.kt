@@ -10,9 +10,12 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
+import com.nagel.wordnotification.data.dictionaries.entities.Word
+
 
 class ListWordsAdapter(
-    private val dictionaryRepository: DictionaryRepository
+    private val dictionaryRepository: DictionaryRepository,
+    private val showActionMenuWithView: (Word, position: Int) -> Unit
 ) : RecyclerView.Adapter<ListWordsAdapter.Holder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
@@ -36,6 +39,12 @@ class ListWordsAdapter(
         val currentWord = dictionaryRepository.getItem(position)
         holder.setWordFirst(currentWord.textFirst)
         holder.setWordSecond(currentWord.textLast)
+        holder.view.tag = currentWord
+        holder.view.setOnLongClickListener {
+            val actualWord = dictionaryRepository.updateWord(currentWord)
+            actualWord?.let { showActionMenuWithView(it, holder.adapterPosition) }
+            true
+        }
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -53,7 +62,7 @@ class ListWordsAdapter(
     }
 
     class Holder(
-        private val view: View
+        val view: View
     ) : RecyclerView.ViewHolder(view) {
 
         private val firstText = view.findViewById<TextView>(R.id.first_word)

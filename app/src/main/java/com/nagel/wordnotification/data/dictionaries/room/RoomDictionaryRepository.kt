@@ -6,8 +6,11 @@ import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.dictionaries.room.entities.DictionaryDbEntity
 import com.nagel.wordnotification.data.dictionaries.room.entities.WordDbEntity
 import com.nagel.wordnotification.data.wrapSQLiteException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -19,13 +22,38 @@ class RoomDictionaryRepository @Inject constructor(
 ) : DictionaryRepository {
 
     private var currentDictionary: Dictionary? = null
+    override fun loadDictionaries(accountId: Long): Flow<List<Dictionary>> {
+        return dictionaryDao.getMyDictionaries(accountId).map { itFlow ->
+            itFlow?.map { it.toDictionary() } ?: listOf()
+        }
+    }
 
-    override fun loadDictionary(name: String, idAuthor: Long, success: (Boolean) -> Unit) {
-        GlobalScope.launch(Dispatchers.IO) {
-            val dictionaryDbEntity = dictionaryDao.getDictionary(name, idAuthor)
+    override fun loadDictionaryByName(name: String, idAuthor: Long, success: (Boolean) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch() {
+            val dictionaryDbEntity = dictionaryDao.getDictionaryByName(name, idAuthor)
             currentDictionary = dictionaryDbEntity?.toDictionary()
             currentDictionary?.wordList = getWords().map { it.toWord() }.toMutableList()
             success.invoke(currentDictionary != null)
+        }
+    }
+
+    override fun loadDictionaryById(idDictionary: Long, success: (Boolean) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch() {
+            currentDictionary = dictionaryDao.getDictionaryById(idDictionary)?.toDictionary()
+            currentDictionary?.wordList = getWords().map { it.toWord() }.toMutableList()
+            success.invoke(currentDictionary != null)
+        }
+    }
+
+    override fun deleteWordById(idWord: Long, success: (Boolean) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch() {
+            val count = dictionaryDao.deleteWord(idWord)
+            withContext(Dispatchers.Main) {
+                if (count > 0) {
+                    currentDictionary!!.wordList.removeIf { it.idWord == idWord }
+                }
+                success.invoke(count > 0)
+            }
         }
     }
 
@@ -38,7 +66,11 @@ class RoomDictionaryRepository @Inject constructor(
     }
 
     override fun getItem(position: Int): Word {
-        return currentDictionary!!.wordList[currentDictionary!!.wordList.size - position-1]
+        return currentDictionary!!.wordList[currentDictionary!!.wordList.size - position - 1]
+    }
+
+    override fun updateWord(word: Word): Word? {
+        return currentDictionary!!.wordList.find { word.hashCode() == it.hashCode() }
     }
 
     override fun addWord(textFirst: String, textLast: String) {
@@ -47,7 +79,8 @@ class RoomDictionaryRepository @Inject constructor(
         currentDictionary!!.wordList.add(word.toWord())
         GlobalScope.launch {
             wrapSQLiteException(Dispatchers.IO) {
-                dictionaryDao.addWord(word)
+                val id = dictionaryDao.addWord(word)
+                currentDictionary!!.wordList.last().idWord = id
             }
         }
     }

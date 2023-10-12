@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.databinding.ActivityMainBinding
 import com.nagel.wordnotification.presentation.addingwords.AddingWordsFragment
+import com.nagel.wordnotification.presentation.addingwords.choosingdictionary.ChoosingDictionaryFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -57,6 +58,10 @@ class MainActivity : AppCompatActivity(), Navigator {
 
     override fun showAddingWordsFragment() {
         launchFragment(AddingWordsFragment.newInstance())
+    }
+
+    override fun showChoosingDictionaryFragment(idAccount: Long) {
+        launchFragment(ChoosingDictionaryFragment.newInstance(idAccount))
     }
 
     private fun getTurnTrue(): Boolean {

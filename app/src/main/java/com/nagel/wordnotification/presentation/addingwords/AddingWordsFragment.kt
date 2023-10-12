@@ -1,68 +1,84 @@
 package com.nagel.wordnotification.presentation.addingwords
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
+import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.databinding.FragmentAddingWordsBinding
 import com.nagel.wordnotification.presentation.MainActivityVM
+import com.nagel.wordnotification.presentation.addingwords.choosingdictionary.ChoosingDictionaryFragment
 import com.nagel.wordnotification.presentation.base.BaseFragment
+import com.nagel.wordnotification.presentation.navigator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class AddingWordsFragment : BaseFragment() {
 
-    @Inject
-    lateinit var dictionaryRepository: DictionaryRepository
-
     private lateinit var binding: FragmentAddingWordsBinding
-    private lateinit var listWordsAdapter: ListWordsAdapter
-    override val viewModel: AddingWordsViewModel by viewModels()
+    private var listWordsAdapter: ListWordsAdapter? = null
+    override val viewModel: AddingWordsVM by viewModels()
     private val viewModelActivity: MainActivityVM by activityViewModels()
-    private val recyclerView by lazy { binding.listWordsRecyclerView }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = FragmentAddingWordsBinding.inflate(layoutInflater)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        binding = FragmentAddingWordsBinding.inflate(inflater, container, false)
+//        if(listWordsAdapter == null) {
+        initAdapter()
+        initButtons()
         initListeners()
+//        }
+        return binding.root
     }
 
     private fun initListeners() {
 //        initScroll()
-        lifecycleScope.launch {
-            viewModelActivity.myAccountDbEntity.collect {
-                it?.let {
-                    viewModel.loadDictionary(idAccount = it.id)
+        setFragmentResultListener(ChoosingDictionaryFragment.TAG) { _, bundle ->
+            val selectedDictionaryId = bundle.getLong(ChoosingDictionaryFragment.DICTIONARY_ID_KEY)
+            viewModel.loadDictionaryById(selectedDictionaryId)
+        }
+        binding.selectDictionary.setOnClickListener {
+            viewModel.loadedDictionaryFlow.value = false
+            navigator().showChoosingDictionaryFragment(
+                idAccount = viewModelActivity.myAccountDbEntity.value?.id ?: -1
+            )
+        }
+        viewModelActivity.myAccountDbEntity.value?.let {
+            viewModel.loadDictionaryByName(idAccount = it.id)
+        } ?: kotlin.run {
+            lifecycleScope.launch {
+                viewModelActivity.myAccountDbEntity.collect {
+                    it?.let {
+                        viewModel.loadDictionaryByName(idAccount = it.id)
+
+                    }
                 }
             }
         }
         lifecycleScope.launch {
             viewModel.loadedDictionaryFlow.collect() {
+                binding.progressBar.isVisible = !it
                 if (it) {
-                    binding.progressBar.isVisible = false
-                    initAdapter()
-                    initButtons()
+                    listWordsAdapter?.notifyDataSetChanged()
                 }
+            }
+        }
+        lifecycleScope.launch {
+            viewModel.showMessage.collect() { msg ->
+                msg?.let { showMessage(it) }
+                viewModel.showMessage.value = null
             }
         }
     }
@@ -75,22 +91,35 @@ class AddingWordsFragment : BaseFragment() {
             val view = binding.scrollView.getChildAt(binding.scrollView.childCount - 1) as View
             val diff: Int = view.bottom - (binding.scrollView.height + binding.scrollView.scrollY)
             if (diff == 0) {
-                recyclerView.isNestedScrollingEnabled = true
+                binding.listWordsRecyclerView.isNestedScrollingEnabled = true
             }
-            if(scrollY == 0){
-                recyclerView.isNestedScrollingEnabled = false
+            if (scrollY == 0) {
+                binding.listWordsRecyclerView.isNestedScrollingEnabled = false
             }
         }
     }
 
     private fun initAdapter() {
-        listWordsAdapter = ListWordsAdapter(dictionaryRepository)
-        recyclerView.adapter = listWordsAdapter
+        listWordsAdapter = ListWordsAdapter(viewModel.dictionaryRepository, ::showMenuActionOnWord)
+        binding.listWordsRecyclerView.adapter = listWordsAdapter
         val layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.layoutManager = layoutManager
-        recyclerView.addItemDecoration(
+        binding.listWordsRecyclerView.layoutManager = layoutManager
+        binding.listWordsRecyclerView.addItemDecoration(
             ListWordsAdapter.VerticalSpaceItemDecoration(50)
         )
+    }
+
+    private fun showMenuActionOnWord(word: Word, position: Int) {
+        MenuSelectingActionsOnWord {
+            viewModel.deleteWord(word.idWord) {
+                Log.d("Удаление: ", "itemCount: ${listWordsAdapter!!.itemCount}, position: $position" )
+                listWordsAdapter?.notifyItemRemoved( position)
+            }
+        }.show(parentFragmentManager, null)
+    }
+
+    private fun showMessage(msg: String) {
+        Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
     }
 
     private fun initButtons() {
@@ -98,8 +127,8 @@ class AddingWordsFragment : BaseFragment() {
             val textFirst = binding.editTextWord.text.toString().replace("\n", ", ")
             val textLast = binding.editTextTranslation.text.toString().replace("\n", ", ")
             if (textFirst.isEmpty() || textLast.isEmpty()) return@setOnClickListener
-            listWordsAdapter.addWord(textFirst, textLast)
-            recyclerView.scrollToPosition(0)
+            listWordsAdapter?.addWord(textFirst, textLast)
+            binding.listWordsRecyclerView.scrollToPosition(0)
         }
     }
 

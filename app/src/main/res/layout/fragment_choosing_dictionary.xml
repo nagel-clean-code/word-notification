@@ -1,42 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/beige"
     tools:context=".presentation.addingwords.choosingdictionary.ChoosingDictionaryFragment">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/list_words_recycler_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/dictionaries_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_marginHorizontal="15dp"
         android:layout_marginTop="13dp"
         android:nestedScrollingEnabled="false"
         android:paddingHorizontal="20dp"
         android:paddingVertical="20dp"
-
         tools:itemCount="20"
         tools:listitem="@layout/item_card_dictionary" />
 
-    <LinearLayout
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:orientation="vertical">
+        android:layout_gravity="bottom|end"
+        android:layout_margin="30dp"
+        android:clickable="true"
+        android:gravity="center"
+        android:src="@drawable/baseline_add_24"
 
-        <TextView
-            android:layout_gravity="center_horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/red"
-            android:text="@string/network_error" />
-
-        <com.google.android.material.button.MaterialButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/repeat" />
-
-    </LinearLayout>
-
+        />
 </FrameLayout>

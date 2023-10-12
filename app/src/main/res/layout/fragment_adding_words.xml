@@ -40,7 +40,7 @@
             android:layout_weight="1">
 
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/countDictionaries"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left|center_vertical"
@@ -48,7 +48,7 @@
                 android:background="@drawable/ellipse_count_book"
                 android:fontFamily="@font/montserrat_bold"
                 android:paddingHorizontal="11dp"
-                android:text="4"
+                android:text="1"
                 android:textColor="@color/green"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView2"
@@ -117,11 +117,11 @@
                 android:layout_marginTop="43dp"
                 android:background="@drawable/background_input_text_rad_30"
                 android:fontFamily="@font/montserrat_bold"
+                android:hint="Введите слово"
                 android:maxLines="3"
                 android:paddingHorizontal="25dp"
-                android:hint="Введите слово"
-                android:textColorHint="@color/purple"
                 android:textColor="@color/purple"
+                android:textColorHint="@color/purple"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="@+id/imageView2"
                 app:layout_constraintStart_toStartOf="@+id/imageView2"
@@ -145,9 +145,9 @@
                 android:layout_marginTop="43dp"
                 android:background="@drawable/background_input_text_rad_30"
                 android:fontFamily="@font/montserrat_bold"
+                android:hint="Перевод"
                 android:maxLines="3"
                 android:paddingHorizontal="25dp"
-                android:hint="Перевод"
                 android:textColor="@color/purple"
                 android:textColorHint="@color/purple"
                 android:textSize="18sp"
@@ -179,7 +179,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/addWordButton">
 
                 <ImageView
-                    android:id="@+id/imageView5"
+                    android:id="@+id/selectDictionary"
                     android:layout_width="130dp"
                     android:layout_height="130dp"
                     android:layout_marginEnd="3dp"
