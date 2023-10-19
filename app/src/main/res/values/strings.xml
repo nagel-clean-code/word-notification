@@ -11,5 +11,25 @@
     <string name="move">Переместить</string>
     <string name="edit">Редактировать</string>
     <string name="delete">Удалить</string>
+    <string name="Pn">Пн</string>
+    <string name="Vt">Вт</string>
+    <string name="Sr">Ср</string>
+    <string name="He">Чт</string>
+    <string name="Pt">Пт</string>
+    <string name="Sb">Сб</string>
+    <string name="Vs">Вс</string>
+    <string name="time_intervals">Временные интервалы</string>
+    <string name="you_choose_time">Вы выбираете сами удобное для вас время суток</string>
+    <string name="the_user_sets_up_schedule">Пользователь сам настраивает\nграфик уведомлений</string>
+    <string name="sample_days">Выборочные дни</string>
+    <string name="repeat_count">Количество повторений</string>
+    <string name="you_can_specify_number_repetitions">Вы можете указать количество\nповторений слов всего словоря</string>
+    <string name="repeat_every">Повторять каждые:</string>
+    <string name="brief_description_curve">Уведомления отображаются в определённые моменты времени. Эти моменты времени были получены в результате исследований учёными</string>
+    <string name="forgetfulness_curve">Кривая забывчивости</string>
+    <string name="frequency_reminders">Периодичность\nнапоминания</string>
+    <string name="h">ч</string>
+    <string name="m">м</string>
+    <string name="mode_settings">Настройки режима</string>
 
 </resources>

@@ -53,6 +53,11 @@ class AddingWordsFragment : BaseFragment() {
             )
         }
 
+        binding.modeSettings.setOnClickListener {
+            viewModel.loadedDictionaryFlow.value = false
+            navigator().showModeSettingsFragment()
+        }
+
         loadCurrentDictionary()
 
         lifecycleScope.launch {

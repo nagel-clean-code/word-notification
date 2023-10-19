@@ -188,6 +188,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/addWordButton" />
 
                 <ImageView
+                    android:id="@+id/modeSettings"
                     android:layout_width="130dp"
                     android:layout_height="130dp"
                     android:layout_marginStart="3dp"

@@ -8,6 +8,7 @@ fun Fragment.navigator(): Navigator {
 
 interface Navigator {
     fun showAddingWordsFragment()
+    fun showModeSettingsFragment()
     fun showChoosingDictionaryFragment(idAccount: Long)
     fun goBack()
 }

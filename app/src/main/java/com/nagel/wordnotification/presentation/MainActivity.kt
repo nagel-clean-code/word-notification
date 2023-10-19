@@ -10,6 +10,7 @@ import com.nagel.wordnotification.R
 import com.nagel.wordnotification.databinding.ActivityMainBinding
 import com.nagel.wordnotification.presentation.addingwords.AddingWordsFragment
 import com.nagel.wordnotification.presentation.choosingdictionary.ChoosingDictionaryFragment
+import com.nagel.wordnotification.presentation.choosingdictionary.settings.ModeSettingsFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -60,6 +61,10 @@ class MainActivity : AppCompatActivity(), Navigator {
 
     override fun showAddingWordsFragment() {
         binding.bottomNavigationView.selectedItemId = R.id.add_in_dictionaries
+    }
+
+    override fun showModeSettingsFragment() {
+        launchFragment(ModeSettingsFragment.newInstance())
     }
 
     override fun showChoosingDictionaryFragment(idAccount: Long) {
