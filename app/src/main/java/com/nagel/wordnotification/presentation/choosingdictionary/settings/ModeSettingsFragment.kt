@@ -84,8 +84,10 @@ class ModeSettingsFragment : Fragment() {
         textView.setOnClickListener {
             if (textView.tag != true) {
                 textView.setBackgroundResource(R.drawable.unselected_day_week)
+                textView.setTextColor(resources.getColor(R.color.black))
                 textView.tag = true
             } else {
+                textView.setTextColor(resources.getColor(R.color.light_beige))
                 textView.setBackgroundResource(R.drawable.selected_day_week)
                 textView.tag = false
             }

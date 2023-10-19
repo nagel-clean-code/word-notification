@@ -26,7 +26,6 @@
             android:textColor="@color/white"
             android:textSize="22sp" />
 
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -139,6 +138,7 @@
                             android:paddingHorizontal="5dp"
                             android:paddingVertical="2dp"
                             android:text="@string/Pn"
+                            android:textColor="@color/light_beige"
                             android:textStyle="bold"
                             tools:ignore="MissingConstraints" />
 
@@ -153,6 +153,7 @@
                             android:paddingHorizontal="5dp"
                             android:paddingVertical="2dp"
                             android:text="@string/Vt"
+                            android:textColor="@color/light_beige"
                             android:textStyle="bold"
                             tools:ignore="MissingConstraints" />
 
@@ -167,6 +168,7 @@
                             android:paddingHorizontal="5dp"
                             android:paddingVertical="2dp"
                             android:text="@string/Sr"
+                            android:textColor="@color/light_beige"
                             android:textStyle="bold"
                             tools:ignore="MissingConstraints" />
 
@@ -181,6 +183,7 @@
                             android:paddingHorizontal="5dp"
                             android:paddingVertical="2dp"
                             android:text="@string/He"
+                            android:textColor="@color/light_beige"
                             android:textStyle="bold"
                             tools:ignore="MissingConstraints" />
 
@@ -195,6 +198,7 @@
                             android:paddingHorizontal="5dp"
                             android:paddingVertical="2dp"
                             android:text="@string/Pt"
+                            android:textColor="@color/light_beige"
                             android:textStyle="bold"
                             tools:ignore="MissingConstraints" />
 
@@ -306,6 +310,7 @@
                             android:layout_marginStart="5dp"
                             android:background="@drawable/clock_background"
                             android:paddingHorizontal="7dp"
+                            android:textColor="@color/light_beige"
                             android:paddingVertical="2dp"
                             android:text="10:00" />
 
@@ -319,6 +324,7 @@
                             android:id="@+id/time2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:textColor="@color/light_beige"
                             android:background="@drawable/clock_background"
                             android:paddingHorizontal="7dp"
                             android:paddingVertical="2dp"
@@ -348,10 +354,10 @@
                             android:layout_width="45dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="5dp"
+                            android:textColor="@color/light_beige"
                             android:background="@drawable/clock_background"
                             android:gravity="center"
-                            android:paddingHorizontal="7dp"
-                            android:paddingVertical="2dp"
+                            android:paddingHorizontal="5dp"
                             android:text="1" />
 
                         <TextView
@@ -366,10 +372,10 @@
                             android:layout_width="45dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
+                            android:textColor="@color/light_beige"
                             android:background="@drawable/clock_background"
                             android:gravity="center"
-                            android:paddingHorizontal="7dp"
-                            android:paddingVertical="2dp"
+                            android:paddingHorizontal="5dp"
                             android:text="40" />
 
                         <TextView

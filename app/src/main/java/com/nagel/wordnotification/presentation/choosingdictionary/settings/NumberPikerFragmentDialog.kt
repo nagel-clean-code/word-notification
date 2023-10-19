@@ -44,8 +44,8 @@ class NumberPikerFragmentDialog(
 
     private fun initListeners() {
         binding.saveTime.setOnClickListener {
-            val hours = binding.piker.value
-            val stringHours = if (hours < 10) "0$hours" else hours.toString()
+            val time = binding.piker.value
+            val stringHours = if (time < 10 && !isHours) "0$time" else time.toString()
 
             callbackTime.invoke(stringHours)
             dismiss()

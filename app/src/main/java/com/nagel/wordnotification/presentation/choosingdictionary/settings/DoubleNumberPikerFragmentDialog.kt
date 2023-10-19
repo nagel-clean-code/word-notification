@@ -49,11 +49,10 @@ class DoubleNumberPikerFragmentDialog(
     private fun initListeners() {
         binding.saveTime.setOnClickListener {
             val hours = binding.pikerHours.value
-            val stringHours = if (hours < 10) "0$hours" else hours.toString()
             val minutes = binding.pikerMinutes.value
             val stringMinutes = if (minutes < 10) "0$minutes" else minutes.toString()
 
-            callbackTime.invoke("${stringHours}:${stringMinutes}")
+            callbackTime.invoke("$hours:${stringMinutes}")
             dismiss()
         }
     }
