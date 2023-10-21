@@ -9,20 +9,26 @@ import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
 import androidx.constraintlayout.helper.widget.Flow
 import androidx.core.view.children
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.nagel.wordnotification.R
+import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import com.nagel.wordnotification.databinding.FragmentModeSettingsBinding
+import com.nagel.wordnotification.presentation.base.BaseFragment
+import dagger.hilt.android.AndroidEntryPoint
 
 
-class ModeSettingsFragment : Fragment() {
+@AndroidEntryPoint
+class ModeSettingsFragment : BaseFragment() {
 
     private lateinit var binding: FragmentModeSettingsBinding
+    override val viewModel: ModeSettingsVM by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentModeSettingsBinding.inflate(inflater, container, false)
+        viewModel.idDictionary = requireArguments().getLong(ID_DICTIONARY)
         return binding.root
     }
 
@@ -94,23 +100,47 @@ class ModeSettingsFragment : Fragment() {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        viewModel.saveSettings(
+            ModeSettingsDto(
+                idDictionary = viewModel.idDictionary,
+                forgetfulnessCurve = binding.forgetfulnessCurve.isChecked,
+                sampleDays = binding.sampleDays.isChecked,
+                days = selectedDays(),
+                timeIntervals = binding.timeIntervals.isChecked,
+                workingTimeInterval = Pair(
+                    binding.time1.text.toString(),
+                    binding.time2.text.toString()
+                ),
+                repeat = Pair(
+                    binding.time3.text.toString(),
+                    binding.time4.text.toString()
+                ),
+                repeatWords = binding.repeatWords.isChecked,
+                repeatCount = binding.repeaterCounter.text.toString().toInt()
+            )
+        )
+    }
+
+    private fun selectedDays(): List<String> {
+        val listDays = arrayListOf<String>()
+        binding.chainDaysWeek.children.forEach() { view: View ->
+            if (view !is Flow) {
+                listDays.add((view as TextView).text.toString())
+            }
+        }
+        return listDays
+    }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ModeSettingsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
+        private const val ID_DICTIONARY = "ID_DICTIONARY"
+
         @JvmStatic
-        fun newInstance() =
+        fun newInstance(idDictionary: Long) =
             ModeSettingsFragment().apply {
                 arguments = Bundle().apply {
-//                    putString(ARG_PARAM1, param1)
-//                    putString(ARG_PARAM2, param2)
+                    putLong(ID_DICTIONARY, idDictionary)
                 }
             }
     }

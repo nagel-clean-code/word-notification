@@ -55,7 +55,7 @@ class AddingWordsFragment : BaseFragment() {
 
         binding.modeSettings.setOnClickListener {
             viewModel.loadedDictionaryFlow.value = false
-            navigator().showModeSettingsFragment()
+            navigator().showModeSettingsFragment(viewModel.loadedDictionary)
         }
 
         loadCurrentDictionary()
@@ -79,6 +79,7 @@ class AddingWordsFragment : BaseFragment() {
     private fun loadCurrentDictionary() {
         val sessionIdDictionary =
             SharedPrefsUtils.getLongPreference(requireContext(), DICTIONARY_ID_KEY, -1)
+        viewModel.loadedDictionary = sessionIdDictionary
         if (sessionIdDictionary != -1L) {
             viewModel.loadDictionaryById(sessionIdDictionary)
         } else {

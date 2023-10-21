@@ -63,8 +63,8 @@ class MainActivity : AppCompatActivity(), Navigator {
         binding.bottomNavigationView.selectedItemId = R.id.add_in_dictionaries
     }
 
-    override fun showModeSettingsFragment() {
-        launchFragment(ModeSettingsFragment.newInstance())
+    override fun showModeSettingsFragment(idDictionary: Long) {
+        launchFragment(ModeSettingsFragment.newInstance(idDictionary))
     }
 
     override fun showChoosingDictionaryFragment(idAccount: Long) {

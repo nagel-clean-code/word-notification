@@ -29,6 +29,8 @@ class AddingWordsVM @Inject constructor(
         ex.printStackTrace()
     }
 
+    var loadedDictionary: Long = -1
+
     fun loadDictionaryByName(name: String = currentDictionary, idAccount: Long) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             dictionaryRepository.loadDictionaryByName(name, idAccount) {
