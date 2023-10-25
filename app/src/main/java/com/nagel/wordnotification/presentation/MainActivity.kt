@@ -6,12 +6,17 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.nagel.wordnotification.R
+import com.nagel.wordnotification.core.services.AlgorithmAdjustmentWork
 import com.nagel.wordnotification.databinding.ActivityMainBinding
 import com.nagel.wordnotification.presentation.addingwords.AddingWordsFragment
 import com.nagel.wordnotification.presentation.choosingdictionary.ChoosingDictionaryFragment
 import com.nagel.wordnotification.presentation.choosingdictionary.settings.ModeSettingsFragment
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), Navigator {
@@ -43,6 +48,11 @@ class MainActivity : AppCompatActivity(), Navigator {
         settingKeyboard()
         viewModel.startSession()
 //        startServices()
+//        AlgorithmAdjustmentWork
+        val work = PeriodicWorkRequestBuilder<AlgorithmAdjustmentWork>(20, TimeUnit.MINUTES).build()
+        WorkManager.getInstance(this)
+//            .enqueue(work)
+            .enqueueUniquePeriodicWork("AlgorithmWork", ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE, work)
     }
 
     private fun replaceFragment(fragment: Fragment) {

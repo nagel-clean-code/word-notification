@@ -24,7 +24,11 @@ class RoomDictionaryRepository @Inject constructor(
     private var currentDictionary: Dictionary? = null
     override fun loadDictionaries(accountId: Long): Flow<List<Dictionary>> {
         return dictionaryDao.getMyDictionaries(accountId).map { itFlow ->
-            itFlow?.map { it.toDictionary() } ?: listOf()
+            itFlow?.map {
+                val result = it.toDictionary()
+                result.wordList = getWordsByIdDictionary(result.idDictionaries).toMutableList()
+                result
+            } ?: listOf()
         }
     }
 
@@ -59,6 +63,10 @@ class RoomDictionaryRepository @Inject constructor(
 
     private suspend fun getWords(): List<WordDbEntity> {
         return dictionaryDao.getWords(currentDictionary!!.idDictionaries)
+    }
+
+    override suspend fun getWordsByIdDictionary(idDictionary: Long): List<Word> {
+        return dictionaryDao.getWords(idDictionary).map { it.toWord() }
     }
 
     override fun getSize(): Int {
