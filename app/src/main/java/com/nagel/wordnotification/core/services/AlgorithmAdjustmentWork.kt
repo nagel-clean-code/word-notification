@@ -55,7 +55,7 @@ class AlgorithmAdjustmentWork @AssistedInject constructor(
         intent.putExtra("TAKE_AWAY", word)
         val pendingIntent = PendingIntent.getBroadcast(
             appContext,
-            word.date.toInt(),  //FIXME нужно генерировать уникальный код
+            Math.random().toInt(),
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )

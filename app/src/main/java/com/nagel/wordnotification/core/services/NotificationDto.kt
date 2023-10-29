@@ -4,7 +4,7 @@ import android.os.Parcel
 import android.os.Parcelable
 
 data class NotificationDto(
-    val text: String?,
+    var text: String?,
     val date: Long
 ): Parcelable {
     constructor(parcel: Parcel) : this(

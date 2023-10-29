@@ -55,7 +55,9 @@ class NotificationAlgorithm @Inject constructor(
 //        val mode = settingsRepository.getModeSettings() //FIXME Вызывать для каждого словаря по ID
         dictionaryRepository.getWordsByIdDictionary(dictionary.idDictionaries)
         bufArray.addAll(dictionary.wordList.map {
-            NotificationDto(it.textFirst, Date().time + (i++ * 1000).toLong())
+            val d =NotificationDto(it.textFirst, Date().time + (i * 1000).toLong())
+            i *= 100
+            d
         })
     }
 

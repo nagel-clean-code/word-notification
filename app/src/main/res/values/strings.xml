@@ -31,5 +31,8 @@
     <string name="h">ч</string>
     <string name="m">м</string>
     <string name="mode_settings">Настройки режима</string>
+    <string name="remember">Запомнил</string>
+    <string name="show_answer">Показать ответ</string>
+    <string name="ok">Ок</string>
 
 </resources>
