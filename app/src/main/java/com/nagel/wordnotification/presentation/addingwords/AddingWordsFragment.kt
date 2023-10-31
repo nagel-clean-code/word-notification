@@ -1,7 +1,6 @@
 package com.nagel.wordnotification.presentation.addingwords
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,7 +35,6 @@ class AddingWordsFragment : BaseFragment() {
     ): View {
         binding = FragmentAddingWordsBinding.inflate(inflater, container, false)
 //        if(listWordsAdapter == null) {
-        initAdapter()
         initButtons()
         initListeners()
 //        }
@@ -55,7 +53,9 @@ class AddingWordsFragment : BaseFragment() {
 
         binding.modeSettings.setOnClickListener {
             viewModel.loadedDictionaryFlow.value = false
-            navigator().showModeSettingsFragment(viewModel.loadedDictionary)
+            viewModel.dictionary?.let {
+                navigator().showModeSettingsFragment(it.idDictionaries)
+            }
         }
 
         loadCurrentDictionary()
@@ -64,7 +64,7 @@ class AddingWordsFragment : BaseFragment() {
             viewModel.loadedDictionaryFlow.collect() {
                 binding.progressBar.isVisible = !it
                 if (it) {
-                    listWordsAdapter?.notifyDataSetChanged()
+                    initAdapter()
                 }
             }
         }
@@ -79,7 +79,6 @@ class AddingWordsFragment : BaseFragment() {
     private fun loadCurrentDictionary() {
         val sessionIdDictionary =
             SharedPrefsUtils.getLongPreference(requireContext(), DICTIONARY_ID_KEY, -1)
-        viewModel.loadedDictionary = sessionIdDictionary
         if (sessionIdDictionary != -1L) {
             viewModel.loadDictionaryById(sessionIdDictionary)
         } else {
@@ -118,7 +117,7 @@ class AddingWordsFragment : BaseFragment() {
     }
 
     private fun initAdapter() {
-        listWordsAdapter = ListWordsAdapter(viewModel.dictionaryRepository, ::showMenuActionOnWord)
+        listWordsAdapter = ListWordsAdapter(viewModel.dictionary!!, ::showMenuActionOnWord)
         binding.listWordsRecyclerView.adapter = listWordsAdapter
         val layoutManager = LinearLayoutManager(requireContext())
         binding.listWordsRecyclerView.layoutManager = layoutManager
@@ -130,10 +129,7 @@ class AddingWordsFragment : BaseFragment() {
     private fun showMenuActionOnWord(word: Word, position: Int) {
         MenuSelectingActionsOnWord {
             viewModel.deleteWord(word.idWord) {
-                Log.d(
-                    "Удаление: ",
-                    "itemCount: ${listWordsAdapter!!.itemCount}, position: $position"
-                )
+                viewModel.dictionary?.wordList?.removeIf { it.idWord == word.idWord }
                 listWordsAdapter?.notifyItemRemoved(position)
             }
         }.show(parentFragmentManager, null)
@@ -148,8 +144,18 @@ class AddingWordsFragment : BaseFragment() {
             val textFirst = binding.editTextWord.text.toString().replace("\n", ", ")
             val textLast = binding.editTextTranslation.text.toString().replace("\n", ", ")
             if (textFirst.isEmpty() || textLast.isEmpty()) return@setOnClickListener
-            listWordsAdapter?.addWord(textFirst, textLast)
-            binding.listWordsRecyclerView.scrollToPosition(0)
+            val word = Word(
+                viewModel.dictionary!!.idDictionaries,
+                textFirst,
+                textLast,
+                true
+            )
+            viewModel.dictionaryRepository.addWord(word) { idWord ->
+                word.idWord = idWord
+                viewModel.dictionary?.wordList?.add(word)
+                listWordsAdapter?.notifyItemInserted(0)
+                binding.listWordsRecyclerView.scrollToPosition(0)
+            }
         }
     }
 

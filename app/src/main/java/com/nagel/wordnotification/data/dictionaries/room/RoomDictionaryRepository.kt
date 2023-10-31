@@ -21,7 +21,6 @@ class RoomDictionaryRepository @Inject constructor(
     private val dictionaryDao: DictionaryDao,
 ) : DictionaryRepository {
 
-    private var currentDictionary: Dictionary? = null
     override fun loadDictionaries(accountId: Long): Flow<List<Dictionary>> {
         return dictionaryDao.getMyDictionaries(accountId).map { itFlow ->
             itFlow?.map {
@@ -32,20 +31,25 @@ class RoomDictionaryRepository @Inject constructor(
         }
     }
 
-    override fun loadDictionaryByName(name: String, idAuthor: Long, success: (Boolean) -> Unit) {
+    override fun loadDictionaryByName(
+        name: String,
+        idAuthor: Long,
+        success: (Dictionary?) -> Unit
+    ) {
         CoroutineScope(Dispatchers.IO).launch() {
             val dictionaryDbEntity = dictionaryDao.getDictionaryByName(name, idAuthor)
-            currentDictionary = dictionaryDbEntity?.toDictionary()
-            currentDictionary?.wordList = getWords().map { it.toWord() }.toMutableList()
-            success.invoke(currentDictionary != null)
+            val currentDictionary = dictionaryDbEntity?.toDictionary()
+            currentDictionary?.wordList =
+                getWords(currentDictionary!!.idDictionaries).map { it.toWord() }.toMutableList()
+            success.invoke(currentDictionary)
         }
     }
 
-    override fun loadDictionaryById(idDictionary: Long, success: (Boolean) -> Unit) {
+    override fun loadDictionaryById(idDictionary: Long, success: (Dictionary?) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch() {
-            currentDictionary = dictionaryDao.getDictionaryById(idDictionary)?.toDictionary()
-            currentDictionary?.wordList = getWords().map { it.toWord() }.toMutableList()
-            success.invoke(currentDictionary != null)
+            val currentDictionary = dictionaryDao.getDictionaryById(idDictionary)?.toDictionary()
+            currentDictionary?.wordList = getWords(idDictionary).map { it.toWord() }.toMutableList()
+            success.invoke(currentDictionary)
         }
     }
 
@@ -53,56 +57,48 @@ class RoomDictionaryRepository @Inject constructor(
         CoroutineScope(Dispatchers.IO).launch() {
             val count = dictionaryDao.deleteWord(idWord)
             withContext(Dispatchers.Main) {
-                if (count > 0) {
-                    currentDictionary!!.wordList.removeIf { it.idWord == idWord }
-                }
+//                if (count > 0) {
+//                    currentDictionary!!.wordList.removeIf { it.idWord == idWord }
+//                }
                 success.invoke(count > 0)
             }
         }
     }
 
-    private suspend fun getWords(): List<WordDbEntity> {
-        return dictionaryDao.getWords(currentDictionary!!.idDictionaries)
+    private suspend fun getWords(idDictionary: Long): List<WordDbEntity> {
+        return dictionaryDao.getWords(idDictionary)
     }
 
     override suspend fun getWordsByIdDictionary(idDictionary: Long): List<Word> {
         return dictionaryDao.getWords(idDictionary).map { it.toWord() }
     }
 
-    override fun getSize(): Int {
-        return currentDictionary?.wordList?.size ?: 0
-    }
-
-    override fun getItem(position: Int): Word {
-        return currentDictionary!!.wordList[currentDictionary!!.wordList.size - position - 1]
-    }
-
-    override fun updateWord(word: Word): Word? {
-        return currentDictionary!!.wordList.find { word.hashCode() == it.hashCode() }
-    }
-
-    override fun addWord(textFirst: String, textLast: String) {
-        val word =
-            WordDbEntity.createWordDbEntity(textFirst, textLast, currentDictionary!!.idDictionaries)
-        currentDictionary!!.wordList.add(word.toWord())
+    override fun addWord(wordDto: Word, success: (Long) -> Unit) {
+        val word = WordDbEntity.createWordDbEntity(wordDto)
         GlobalScope.launch {
             wrapSQLiteException(Dispatchers.IO) {
                 val id = dictionaryDao.addWord(word)
-                currentDictionary!!.wordList.last().idWord = id
+                withContext(Dispatchers.Main) {
+                    success.invoke(id)
+                }
             }
         }
     }
 
-    override fun createDictionary(name: String, idAccount: Long, success: () -> Unit) {
+    override fun createDictionary(
+        name: String,
+        idAccount: Long,
+        success: (dictionary: Dictionary) -> Unit
+    ) {
         GlobalScope.launch {
             val dictionaryDbEntity =
                 DictionaryDbEntity.createDictionary(name, idFolder = 0, idAuthor = idAccount)
             wrapSQLiteException(Dispatchers.IO) {
                 val id = dictionaryDao.saveDictionary(dictionaryDbEntity)
-                currentDictionary = dictionaryDbEntity.toDictionary()
-                currentDictionary!!.idDictionaries = id
+                val currentDictionary = dictionaryDbEntity.toDictionary()
+                currentDictionary.idDictionaries = id
                 withContext(Dispatchers.Main) {
-                    success.invoke()
+                    success.invoke(currentDictionary)
                 }
             }
         }

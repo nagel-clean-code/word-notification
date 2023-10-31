@@ -40,13 +40,13 @@ class WordDbEntity(
 
     companion object {
 
-        fun createWordDbEntity(textFirst: String, textLast: String, idDictionaries: Long) =
+        fun createWordDbEntity(word: Word) =
             WordDbEntity(
                 idWord = 0,
-                idDictionary = idDictionaries,
+                idDictionary = word.idDictionary,
                 learned = false,
-                textFirst = textFirst,
-                textLast = textLast
+                textFirst = word.textFirst,
+                textLast = word.textLast
             )
     }
 }

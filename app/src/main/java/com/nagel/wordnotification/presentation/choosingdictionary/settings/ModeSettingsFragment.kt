@@ -12,6 +12,7 @@ import androidx.core.view.children
 import androidx.fragment.app.viewModels
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
+import com.nagel.wordnotification.data.settings.entities.SelectedMode
 import com.nagel.wordnotification.databinding.FragmentModeSettingsBinding
 import com.nagel.wordnotification.presentation.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,14 +40,14 @@ class ModeSettingsFragment : BaseFragment() {
     }
 
     private fun initListeners() {
-        binding.seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                binding.repeaterCounter.text = progress.toString()
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar) {}
-            override fun onStopTrackingTouch(seekBar: SeekBar) {}
-        })
+//        binding.seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+//            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+//                binding.repeaterCounter.text = progress.toString()
+//            }
+//
+//            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+//            override fun onStopTrackingTouch(seekBar: SeekBar) {}
+//        })
         binding.time1.setOnClickListener {
             DoubleNumberPikerFragmentDialog(binding.time1.text.toString()) { resultPikers ->
                 binding.time1.text = resultPikers
@@ -57,22 +58,44 @@ class ModeSettingsFragment : BaseFragment() {
                 binding.time2.text = resultPikers
             }.show(childFragmentManager, "")
         }
-        binding.time3.setOnClickListener {
-            NumberPikerFragmentDialog(
-                isHours = true,
-                binding.time3.text.toString()
-            ) { resultPikers ->
-                binding.time3.text = resultPikers
-            }.show(childFragmentManager, "")
+//        binding.time3.setOnClickListener {
+//            NumberPikerFragmentDialog(
+//                isHours = true,
+//                binding.time3.text.toString()
+//            ) { resultPikers ->
+//                binding.time3.text = resultPikers
+//            }.show(childFragmentManager, "")
+//        }
+//        binding.time4.setOnClickListener {
+//            NumberPikerFragmentDialog(
+//                isHours = false,
+//                binding.time4.text.toString()
+//            ) { resultPikers ->
+//                binding.time4.text = resultPikers
+//            }.show(childFragmentManager, "")
+//        }
+        initRadioButtons()
+    }
+
+    private fun initRadioButtons(){
+        binding.apply {
+            plateauEffect.setOnClickListener {
+                viewModel.selectedMode = SelectedMode.PlateauEffect
+                forgetfulnessCurveLong.isChecked = false
+                forgetfulnessCurve.isChecked = false
+            }
+            forgetfulnessCurveLong.setOnClickListener {
+                viewModel.selectedMode = SelectedMode.ForgetfulnessCurveLong
+                plateauEffect.isChecked = false
+                forgetfulnessCurve.isChecked = false
+            }
+            forgetfulnessCurve.setOnClickListener {
+                viewModel.selectedMode = SelectedMode.ForgetfulnessCurve
+                forgetfulnessCurveLong.isChecked = false
+                plateauEffect.isChecked = false
+            }
         }
-        binding.time4.setOnClickListener {
-            NumberPikerFragmentDialog(
-                isHours = false,
-                binding.time4.text.toString()
-            ) { resultPikers ->
-                binding.time4.text = resultPikers
-            }.show(childFragmentManager, "")
-        }
+
     }
 
     private fun initWeekday() {
@@ -105,7 +128,7 @@ class ModeSettingsFragment : BaseFragment() {
         viewModel.saveSettings(
             ModeSettingsDto(
                 idDictionary = viewModel.idDictionary,
-                forgetfulnessCurve = binding.forgetfulnessCurve.isChecked,
+                selectedMode = viewModel.selectedMode,
                 sampleDays = binding.sampleDays.isChecked,
                 days = selectedDays(),
                 timeIntervals = binding.timeIntervals.isChecked,
@@ -113,12 +136,12 @@ class ModeSettingsFragment : BaseFragment() {
                     binding.time1.text.toString(),
                     binding.time2.text.toString()
                 ),
-                repeat = Pair(
-                    binding.time3.text.toString(),
-                    binding.time4.text.toString()
-                ),
-                repeatWords = binding.repeatWords.isChecked,
-                repeatCount = binding.repeaterCounter.text.toString().toInt()
+//                repeat = Pair(
+//                    binding.time3.text.toString(),
+//                    binding.time4.text.toString()
+//                ),
+//                repeatWords = binding.repeatWords.isChecked,
+//                repeatCount = binding.repeaterCounter.text.toString().toInt()
             )
         )
     }

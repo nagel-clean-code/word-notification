@@ -3,16 +3,14 @@ package com.nagel.wordnotification.di
 import android.content.Context
 import androidx.room.Room
 import com.nagel.wordnotification.data.accounts.room.AccountDao
-import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.room.DictionaryDao
-import com.nagel.wordnotification.data.dictionaries.room.RoomDictionaryRepository
 import com.nagel.wordnotification.data.room.AppDatabase
+import com.nagel.wordnotification.data.settings.room.ModeDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.Dispatchers
 import javax.inject.Singleton
 
 @Module
@@ -35,6 +33,12 @@ class ProvideDataModule {
     @Singleton
     fun provideDictionaryDao(database: AppDatabase): DictionaryDao {
         return database.getDictionaryDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideModeDao(database: AppDatabase): ModeDao {
+        return database.getModeDao()
     }
 
     @Provides

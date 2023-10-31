@@ -14,8 +14,8 @@ class ChoosingDictionaryVM @Inject constructor(
     val showMessage = MutableStateFlow<String?>(null)
 
     fun addDictionary(name: String, idAccount: Long) {
-        dictionaryRepository.loadDictionaryByName(name, idAccount) { found ->
-            if (found) {
+        dictionaryRepository.loadDictionaryByName(name, idAccount) { dicrionary ->
+            if (dicrionary != null) {
                 showMessage.value = "Такой словарь уже существует"
             } else {
                 dictionaryRepository.createDictionary(name, idAccount) {

@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
+import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -24,21 +25,22 @@ class AddingWordsVM @Inject constructor(
     val loadedDictionaryFlow = MutableStateFlow(false)
     val showMessage = MutableStateFlow<String?>(null)
 
-    var currentDictionary = defaultNameDictionary
+    var currentDictionaryName = defaultNameDictionary
     private val coroutineExceptionHandler = CoroutineExceptionHandler() { _, ex ->
         ex.printStackTrace()
     }
 
-    var loadedDictionary: Long = -1
+    var dictionary: Dictionary? = null
 
-    fun loadDictionaryByName(name: String = currentDictionary, idAccount: Long) {
+    fun loadDictionaryByName(name: String = currentDictionaryName, idAccount: Long) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             dictionaryRepository.loadDictionaryByName(name, idAccount) {
-                if (!it) {
+                if (it == null) {
                     Log.d(TAG, "Словаря нет")
                     createDictionary(idAccount)
                 } else {
                     Log.d(TAG, "Словарь загружен")
+                    dictionary = it
                     loadedDictionaryFlow.value = true
                 }
             }
@@ -48,6 +50,7 @@ class AddingWordsVM @Inject constructor(
     fun loadDictionaryById(idDictionary: Long) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             dictionaryRepository.loadDictionaryById(idDictionary) {
+                dictionary = it
                 loadedDictionaryFlow.value = true
             }
         }
@@ -55,9 +58,9 @@ class AddingWordsVM @Inject constructor(
 
     fun deleteWord(idWord: Long, success: () -> Unit) {
         dictionaryRepository.deleteWordById(idWord) { successfully ->
-            if(successfully) {
+            if (successfully) {
                 success.invoke()
-            }else{
+            } else {
                 showMessage.value = "Не удалось удалить слово"
             }
         }
@@ -66,6 +69,7 @@ class AddingWordsVM @Inject constructor(
     private fun createDictionary(idAccount: Long) {
         Log.d(TAG, "Создаю словарь")
         dictionaryRepository.createDictionary(defaultNameDictionary, idAccount) {
+            dictionary = it
             loadedDictionaryFlow.value = true
             Log.d(TAG, "Словарь создан")
         }

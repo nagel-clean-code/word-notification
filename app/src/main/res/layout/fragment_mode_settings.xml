@@ -61,8 +61,84 @@
                     android:text="@string/forgetfulness_curve"
                     android:textSize="18sp" />
 
-                <CheckBox
+                <RadioButton
                     android:id="@+id/forgetfulnessCurve"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginEnd="-15dp"
+                    android:checked="false" />
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-10dp"
+                android:layout_marginEnd="10dp"
+                android:fontFamily="@font/montserrat_bold"
+                android:text="@string/brief_description_curve"
+                android:textSize="14sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/gray" />
+
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat_bold"
+                    android:text="@string/forgetfulness_curve_long"
+                    android:textSize="18sp" />
+
+                <RadioButton
+                    android:id="@+id/forgetfulnessCurveLong"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginEnd="-15dp"
+                    android:checked="false" />
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-10dp"
+                android:layout_marginEnd="10dp"
+                android:fontFamily="@font/montserrat_bold"
+                android:text="@string/brief_description_curve_long"
+                android:textSize="14sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/gray" />
+
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat_bold"
+                    android:text="@string/plateau_effect"
+                    android:textSize="18sp" />
+
+                <RadioButton
+                    android:id="@+id/plateauEffect"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
@@ -76,7 +152,7 @@
                 android:layout_marginTop="-10dp"
                 android:layout_marginEnd="10dp"
                 android:fontFamily="@font/montserrat_bold"
-                android:text="@string/brief_description_curve"
+                android:text="@string/plateau_effect_description"
                 android:textSize="14sp" />
 
             <View
@@ -334,153 +410,135 @@
                             android:text="21:30" />
                     </LinearLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:text="@string/repeat_every"
-                        android:textSize="14sp" />
+<!--                    <TextView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginTop="5dp"-->
+<!--                        android:text="@string/repeat_every"-->
+<!--                        android:textSize="14sp" />-->
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content">-->
 
-                        <CheckBox
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:minWidth="0dp"
-                            android:minHeight="0dp" />
+<!--                        <CheckBox-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:minWidth="0dp"-->
+<!--                            android:minHeight="0dp" />-->
 
 
-                        <TextView
-                            android:id="@+id/time3"
-                            android:layout_width="45dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="5dp"
-                            android:textColor="@color/light_beige"
-                            android:background="@drawable/clock_background"
-                            android:gravity="center"
-                            android:paddingHorizontal="5dp"
-                            android:text="1" />
+<!--                        <TextView-->
+<!--                            android:id="@+id/time3"-->
+<!--                            android:layout_width="45dp"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginStart="5dp"-->
+<!--                            android:textColor="@color/light_beige"-->
+<!--                            android:background="@drawable/clock_background"-->
+<!--                            android:gravity="center"-->
+<!--                            android:paddingHorizontal="5dp"-->
+<!--                            android:text="1" />-->
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="5dp"
-                            android:text="@string/h"
-                            android:textSize="18sp" />
+<!--                        <TextView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginStart="5dp"-->
+<!--                            android:text="@string/h"-->
+<!--                            android:textSize="18sp" />-->
 
-                        <TextView
-                            android:id="@+id/time4"
-                            android:layout_width="45dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:textColor="@color/light_beige"
-                            android:background="@drawable/clock_background"
-                            android:gravity="center"
-                            android:paddingHorizontal="5dp"
-                            android:text="40" />
+<!--                        <TextView-->
+<!--                            android:id="@+id/time4"-->
+<!--                            android:layout_width="45dp"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginStart="10dp"-->
+<!--                            android:textColor="@color/light_beige"-->
+<!--                            android:background="@drawable/clock_background"-->
+<!--                            android:gravity="center"-->
+<!--                            android:paddingHorizontal="5dp"-->
+<!--                            android:text="40" />-->
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="5dp"
-                            android:text="@string/m"
-                            android:textSize="18sp" />
-                    </LinearLayout>
+<!--                        <TextView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginStart="5dp"-->
+<!--                            android:text="@string/m"-->
+<!--                            android:textSize="18sp" />-->
+<!--                    </LinearLayout>-->
                 </LinearLayout>
 
             </LinearLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="3dp"
-                android:layout_marginTop="10dp"
-                android:background="@color/gray" />
+<!--            <View-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="3dp"-->
+<!--                android:layout_marginTop="10dp"-->
+<!--                android:background="@color/gray" />-->
 
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp">
+<!--            <FrameLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="30dp">-->
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/montserrat_bold"
-                    android:text="@string/repeat_count"
-                    android:textSize="18sp" />
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:fontFamily="@font/montserrat_bold"-->
+<!--                    android:text="@string/repeat_count"-->
+<!--                    android:textSize="18sp" />-->
 
-                <CheckBox
-                    android:id="@+id/repeatWords"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:layout_marginEnd="-15dp" />
+<!--                <CheckBox-->
+<!--                    android:id="@+id/repeatWords"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_gravity="end"-->
+<!--                    android:layout_marginEnd="-15dp" />-->
 
-            </FrameLayout>
+<!--            </FrameLayout>-->
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="-10dp"
-                android:orientation="horizontal">
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="-10dp"-->
+<!--                android:orientation="horizontal">-->
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:orientation="vertical">-->
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="9dp"
-                        android:fontFamily="@font/montserrat_bold"
-                        android:text="@string/you_can_specify_number_repetitions"
-                        android:textSize="12sp" />
+<!--                    <TextView-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginTop="9dp"-->
+<!--                        android:fontFamily="@font/montserrat_bold"-->
+<!--                        android:text="@string/you_can_specify_number_repetitions"-->
+<!--                        android:textSize="12sp" />-->
 
-                    <TextView
-                        android:id="@+id/repeaterCounter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="10dp"
-                        android:text="10"
-                        android:textColor="@color/red"
-                        android:textSize="18sp" />
+<!--                    <TextView-->
+<!--                        android:id="@+id/repeaterCounter"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_gravity="center"-->
+<!--                        android:layout_marginTop="10dp"-->
+<!--                        android:text="10"-->
+<!--                        android:textColor="@color/red"-->
+<!--                        android:textSize="18sp" />-->
 
-                    <SeekBar
-                        android:id="@+id/seekBar"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:max="50"
-                        android:progress="10" />
-                </LinearLayout>
+<!--                    <SeekBar-->
+<!--                        android:id="@+id/seekBar"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:max="50"-->
+<!--                        android:progress="10" />-->
+<!--                </LinearLayout>-->
 
 
-            </LinearLayout>
+<!--            </LinearLayout>-->
 
 
         </LinearLayout>
 
-        <FrameLayout
-            android:id="@+id/textView4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center|top"
-            android:layout_marginTop="70dp"
-            android:background="@drawable/background_blue_rad_30">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginBottom="1dp"
-                android:fontFamily="@font/montserrat_bold"
-                android:text="Стандартный словарь"
-                android:textColor="@color/white"
-                android:textSize="15sp" />
-
-        </FrameLayout>
 
     </FrameLayout>
 

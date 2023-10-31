@@ -5,7 +5,7 @@ import com.nagel.wordnotification.data.dictionaries.room.RoomDictionaryRepositor
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.data.session.sharedprefs.SharedprefSessionRepository
 import com.nagel.wordnotification.data.settings.SettingsRepository
-import com.nagel.wordnotification.data.settings.sharedprefs.SharedprefSettingsRepository
+import com.nagel.wordnotification.data.settings.room.RoomModeRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -19,7 +19,7 @@ abstract class BindDataModule {
     abstract fun bindSessionRepository(sharedPreferences: SharedprefSessionRepository): SessionRepository
 
     @Binds
-    abstract fun bindSettingsRepository(sharedPreferences: SharedprefSettingsRepository): SettingsRepository
+    abstract fun bindSettingsRepository(sharedPreferences: RoomModeRepository): SettingsRepository
 
     @Binds
     abstract fun bindDictionaryRepository(sharedPreferences: RoomDictionaryRepository): DictionaryRepository

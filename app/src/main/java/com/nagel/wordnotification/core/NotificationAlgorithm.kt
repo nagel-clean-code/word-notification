@@ -9,6 +9,7 @@ import com.nagel.wordnotification.data.settings.SettingsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.util.Date
 import javax.inject.Inject
@@ -52,13 +53,16 @@ class NotificationAlgorithm @Inject constructor(
     }
 
     private suspend fun getNotificationFromDictionary(dictionary: Dictionary) {
-//        val mode = settingsRepository.getModeSettings() //FIXME Вызывать для каждого словаря по ID
-        dictionaryRepository.getWordsByIdDictionary(dictionary.idDictionaries)
-        bufArray.addAll(dictionary.wordList.map {
-            val d =NotificationDto(it.textFirst, Date().time + (i * 1000).toLong())
-            i *= 100
-            d
-        })
+        settingsRepository.getModeSettings(dictionary.idDictionaries).collect(){ it->
+            Log.d("CoroutineWorker:", it.toString())
+            dictionaryRepository.getWordsByIdDictionary(dictionary.idDictionaries)
+            bufArray.addAll(dictionary.wordList.map {
+                val d =NotificationDto(it.textFirst, Date().time + (i * 1000).toLong())
+                i *= 100
+                d
+            })
+        }
+
     }
 
 }

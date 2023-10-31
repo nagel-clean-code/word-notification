@@ -9,14 +9,16 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import com.nagel.wordnotification.R
-import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
+import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 
 
 class ListWordsAdapter(
-    private val dictionaryRepository: DictionaryRepository,
+    dictionary: Dictionary,
     private val showActionMenuWithView: (Word, position: Int) -> Unit
 ) : RecyclerView.Adapter<ListWordsAdapter.Holder>() {
+
+    private val wordList = dictionary.wordList
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val idLayout = when (viewType) {
@@ -31,34 +33,31 @@ class ListWordsAdapter(
     }
 
     override fun getItemCount(): Int {
-        return dictionaryRepository.getSize()
+        return wordList.size
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
         Log.d("ListWordsAdapter: bind", position.toString())
-        val currentWord = dictionaryRepository.getItem(position)
+        val currentWord = wordList[wordList.size - position - 1]
         holder.setWordFirst(currentWord.textFirst)
         holder.setWordSecond(currentWord.textLast)
         holder.view.tag = currentWord
         holder.view.setOnLongClickListener {
-            val actualWord = dictionaryRepository.updateWord(currentWord)
-            actualWord?.let { showActionMenuWithView(it, holder.adapterPosition) }
+            val actualWord = wordList.find { currentWord.hashCode() == it.hashCode() }
+            actualWord?.let { showActionMenuWithView.invoke(it, holder.adapterPosition) }
             true
         }
     }
 
+
+
     override fun getItemViewType(position: Int): Int {
-        val words = dictionaryRepository.getItem(position)
+        val words = wordList[position]
         return when {
             words.textFirst.length <= 11 && words.textLast.length <= 11 -> WORD_TYPE_1
             words.textFirst.length <= 20 && words.textLast.length <= 50 -> WORD_TYPE_2
             else -> WORD_TYPE_3
         }
-    }
-
-    fun addWord(textFirst: String, textLast: String) {
-        dictionaryRepository.addWord(textFirst, textLast)
-        notifyItemInserted(0)
     }
 
     class Holder(

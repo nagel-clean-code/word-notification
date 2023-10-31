@@ -25,8 +25,10 @@
     <string name="repeat_count">Количество повторений</string>
     <string name="you_can_specify_number_repetitions">Вы можете указать количество\nповторений слов всего словоря</string>
     <string name="repeat_every">Повторять каждые:</string>
-    <string name="brief_description_curve">Уведомления отображаются в определённые моменты времени. Эти моменты времени были получены в результате исследований учёными</string>
-    <string name="forgetfulness_curve">Кривая забывчивости</string>
+    <string name="brief_description_curve">Уведомления отображаются в определённые моменты времени. Эти моменты времени были получены в результате исследований учёными, метод применяется если у вас ест ьв запасе 2 дня</string>
+    <string name="brief_description_curve_long">Если вы не ограничены во времени, применяйте долгосрочный метод изучения</string>
+    <string name="plateau_effect_description">Ее разработали Хью Томпсон и Боб Салливан. Запоминание состоит из 11 этапов</string>
+    <string name="forgetfulness_curve">Кривая Эбингауза короткая</string>
     <string name="frequency_reminders">Периодичность\nнапоминания</string>
     <string name="h">ч</string>
     <string name="m">м</string>
@@ -34,5 +36,7 @@
     <string name="remember">Запомнил</string>
     <string name="show_answer">Показать ответ</string>
     <string name="ok">Ок</string>
+    <string name="forgetfulness_curve_long">Каривая Эббингауза долгая</string>
+    <string name="plateau_effect">«Эффект плато»</string>
 
 </resources>
