@@ -14,7 +14,7 @@ import com.nagel.wordnotification.core.services.AlgorithmAdjustmentWork
 import com.nagel.wordnotification.databinding.ActivityMainBinding
 import com.nagel.wordnotification.presentation.addingwords.AddingWordsFragment
 import com.nagel.wordnotification.presentation.choosingdictionary.ChoosingDictionaryFragment
-import com.nagel.wordnotification.presentation.choosingdictionary.settings.ModeSettingsFragment
+import com.nagel.wordnotification.presentation.settings.ModeSettingsFragment
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.concurrent.TimeUnit
 
@@ -47,12 +47,13 @@ class MainActivity : AppCompatActivity(), Navigator {
         }
         settingKeyboard()
         viewModel.startSession()
-//        startServices()
-//        AlgorithmAdjustmentWork
         val work = PeriodicWorkRequestBuilder<AlgorithmAdjustmentWork>(20, TimeUnit.MINUTES).build()
         WorkManager.getInstance(this)
-//            .enqueue(work)
-            .enqueueUniquePeriodicWork("AlgorithmWork", ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE, work)
+            .enqueueUniquePeriodicWork(
+                "AlgorithmWork",
+                ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+                work
+            )
     }
 
     private fun replaceFragment(fragment: Fragment) {
@@ -86,7 +87,7 @@ class MainActivity : AppCompatActivity(), Navigator {
     }
 
     override fun goBack() {
-        if (supportFragmentManager.backStackEntryCount != 1) {
+        if (supportFragmentManager.backStackEntryCount != 0) {
             onBackPressed()
         }
     }

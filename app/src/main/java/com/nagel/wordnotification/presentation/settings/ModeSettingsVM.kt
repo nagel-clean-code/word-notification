@@ -1,4 +1,4 @@
-package com.nagel.wordnotification.presentation.choosingdictionary.settings
+package com.nagel.wordnotification.presentation.settings
 
 import androidx.lifecycle.viewModelScope
 import com.nagel.wordnotification.data.settings.SettingsRepository

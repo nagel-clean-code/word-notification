@@ -1,4 +1,4 @@
-package com.nagel.wordnotification.presentation.choosingdictionary.settings
+package com.nagel.wordnotification.presentation.settings
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable

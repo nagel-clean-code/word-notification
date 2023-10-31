@@ -79,7 +79,7 @@ class DictionariesListAdapter(
     private fun generateStringData(listWord: List<Word>): String {
         var resultString = ""
         repeat(min(6, listWord.size)) {
-            resultString += listWord[it].textFirst + " " + listWord[it].textFirst + ", "
+            resultString += listWord[it].textFirst + ", "
         }
         resultString.removeSuffix(",")
         return resultString

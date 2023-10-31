@@ -1,11 +1,9 @@
-package com.nagel.wordnotification.presentation.choosingdictionary.settings
+package com.nagel.wordnotification.presentation.settings
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.SeekBar
-import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
 import androidx.constraintlayout.helper.widget.Flow
 import androidx.core.view.children
@@ -15,6 +13,7 @@ import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import com.nagel.wordnotification.data.settings.entities.SelectedMode
 import com.nagel.wordnotification.databinding.FragmentModeSettingsBinding
 import com.nagel.wordnotification.presentation.base.BaseFragment
+import com.nagel.wordnotification.presentation.navigator
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -75,6 +74,9 @@ class ModeSettingsFragment : BaseFragment() {
 //            }.show(childFragmentManager, "")
 //        }
         initRadioButtons()
+        binding.saveButton.setOnClickListener {
+            navigator().goBack()
+        }
     }
 
     private fun initRadioButtons(){

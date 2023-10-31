@@ -21,12 +21,10 @@ import javax.inject.Inject
 class MainActivityVM @Inject constructor(
     private val sessionRepository: SessionRepository,
     private val accountDao: AccountDao,
-    private val dictionaryDao: DictionaryDao
 ) : ViewModel() {
 
     private val _myAccountDbEntity = MutableStateFlow<Account?>(null)
     val myAccountDbEntity: StateFlow<Account?> = _myAccountDbEntity
-    lateinit var allWords: List<Word>
 
     fun startSession() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -38,7 +36,6 @@ class MainActivityVM @Inject constructor(
                 _myAccountDbEntity.value = account?.toAccount()
             }
 //            delay(100)  //TODO проверить
-            allWords = dictionaryDao.getAllWords().map { it.toWord() }
         }
     }
 

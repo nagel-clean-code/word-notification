@@ -38,5 +38,6 @@
     <string name="ok">Ок</string>
     <string name="forgetfulness_curve_long">Каривая Эббингауза долгая</string>
     <string name="plateau_effect">«Эффект плато»</string>
+    <string name="save">Сохранить</string>
 
 </resources>

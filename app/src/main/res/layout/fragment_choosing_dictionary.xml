@@ -30,4 +30,8 @@
         android:src="@drawable/baseline_add_24"
 
         />
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 </FrameLayout>

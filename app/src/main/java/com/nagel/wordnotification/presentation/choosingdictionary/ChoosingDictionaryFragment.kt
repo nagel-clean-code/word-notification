@@ -9,14 +9,14 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
 import androidx.core.os.bundleOf
-import androidx.fragment.app.activityViewModels
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nagel.wordnotification.Constants
 import com.nagel.wordnotification.R
+import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.databinding.FragmentChoosingDictionaryBinding
-import com.nagel.wordnotification.presentation.MainActivityVM
 import com.nagel.wordnotification.presentation.base.BaseFragment
 import com.nagel.wordnotification.presentation.navigator
 import com.nagel.wordnotification.utils.SharedPrefsUtils
@@ -29,29 +29,27 @@ class ChoosingDictionaryFragment : BaseFragment() {
 
     private lateinit var binding: FragmentChoosingDictionaryBinding
     override val viewModel: ChoosingDictionaryVM by viewModels()
-    private val viewModelActivity: MainActivityVM by activityViewModels()
     private lateinit var adapter: DictionariesListAdapter
     private var idAccount = -1L
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentChoosingDictionaryBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initAdapter()
         initListeners()
     }
 
-    private fun initAdapter() {
+    private fun initAdapter(words: List<Word>) {
         idAccount = arguments?.getLong(ID_ACCOUNT) ?: -1
         adapter = DictionariesListAdapter(
             dictionaryRepository = viewModel.dictionaryRepository,
-            allWord = viewModelActivity.allWords,
+            allWord = words,
             idAccount = idAccount,
             requireContext(),
             ::openDictionary
@@ -81,6 +79,14 @@ class ChoosingDictionaryFragment : BaseFragment() {
             viewModel.showMessage.collect() { msg ->
                 msg?.let { showMessage(it) }
                 viewModel.showMessage.value = null
+            }
+        }
+        lifecycleScope.launch {
+            viewModel.loadingWords.collect() {
+                it?.let {
+                    binding.progress.isVisible = false
+                    initAdapter(it)
+                }
             }
         }
     }
