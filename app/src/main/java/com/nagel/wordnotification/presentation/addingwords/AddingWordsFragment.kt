@@ -127,7 +127,7 @@ class AddingWordsFragment : BaseFragment() {
     }
 
     private fun showMenuActionOnWord(word: Word, position: Int) {
-        MenuSelectingActionsOnWord {
+        MenuSelectingActions {
             viewModel.deleteWord(word.idWord) {
                 viewModel.dictionary?.wordList?.removeIf { it.idWord == word.idWord }
                 listWordsAdapter?.notifyItemRemoved(position)

@@ -29,6 +29,9 @@ interface DictionaryDao {
 
     @Query("DELETE FROM words WHERE id_word =:idWord")
     suspend fun deleteWord(idWord: Long): Int
+
+    @Query("DELETE FROM dictionaries WHERE id =:idDictionary")
+    suspend fun deleteDictionary(idDictionary: Long): Int
 //    fun deleteWord(idWord: Long): Flow<Int>
 
     @Query("SELECT * FROM words WHERE id_dictionary = :idDictionary")

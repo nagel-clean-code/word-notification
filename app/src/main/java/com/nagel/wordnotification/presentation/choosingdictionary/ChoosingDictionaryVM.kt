@@ -36,4 +36,14 @@ class ChoosingDictionaryVM @Inject constructor(
             }
         }
     }
+
+    fun deleteWord(idWord: Long, success: () -> Unit) {
+        dictionaryRepository.deleteDictionaryById(idWord) { successfully ->
+            if (successfully) {
+                success.invoke()
+            } else {
+                showMessage.value = "Не удалось удалить словарь"
+            }
+        }
+    }
 }

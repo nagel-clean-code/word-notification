@@ -50,9 +50,8 @@ class ListWordsAdapter(
     }
 
 
-
     override fun getItemViewType(position: Int): Int {
-        val words = wordList[position]
+        val words = wordList[wordList.size - 1 - position]
         return when {
             words.textFirst.length <= 11 && words.textLast.length <= 11 -> WORD_TYPE_1
             words.textFirst.length <= 20 && words.textLast.length <= 50 -> WORD_TYPE_2

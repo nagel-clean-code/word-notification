@@ -3,7 +3,9 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:gravity="center"
-    android:background="@android:color/transparent"
+    android:paddingVertical="30dp"
+    android:paddingHorizontal="20dp"
+    android:background="@drawable/rounded_background_settings"
     android:orientation="vertical">
 
     <Button

@@ -11,6 +11,7 @@ interface DictionaryRepository {
     fun loadDictionaryByName(name: String, idAuthor: Long, success: (Dictionary?) -> Unit)
     fun loadDictionaryById(idDictionary: Long, success: (Dictionary?) -> Unit)
     fun deleteWordById(idWord: Long, success: (Boolean) -> Unit)
+    fun deleteDictionaryById(idDictionary: Long, success: (Boolean) -> Unit)
     fun addWord(word: Word, success: (Long) -> Unit)
     fun createDictionary(name: String, idAccount: Long, success: (dictionary: Dictionary) -> Unit = {})
 }

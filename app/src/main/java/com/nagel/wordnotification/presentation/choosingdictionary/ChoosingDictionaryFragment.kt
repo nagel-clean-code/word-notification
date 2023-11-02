@@ -15,8 +15,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nagel.wordnotification.Constants
 import com.nagel.wordnotification.R
+import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.databinding.FragmentChoosingDictionaryBinding
+import com.nagel.wordnotification.presentation.addingwords.MenuSelectingActions
 import com.nagel.wordnotification.presentation.base.BaseFragment
 import com.nagel.wordnotification.presentation.navigator
 import com.nagel.wordnotification.utils.SharedPrefsUtils
@@ -52,7 +54,8 @@ class ChoosingDictionaryFragment : BaseFragment() {
             allWord = words,
             idAccount = idAccount,
             requireContext(),
-            ::openDictionary
+            ::openDictionary,
+            ::showMenuActionOnWord
         )
         binding.dictionariesList.adapter = adapter
         val layoutManager = LinearLayoutManager(requireContext())
@@ -60,6 +63,14 @@ class ChoosingDictionaryFragment : BaseFragment() {
         binding.dictionariesList.addItemDecoration(
             DictionariesListAdapter.VerticalSpaceItemDecoration(50)
         )
+    }
+
+    private fun showMenuActionOnWord(dictionary: Dictionary, position: Int) {
+        MenuSelectingActions {
+            viewModel.deleteWord(dictionary.idDictionaries) {
+                adapter.notifyItemRemoved(position)
+            }
+        }.show(parentFragmentManager, null)
     }
 
     private fun openDictionary(idDictionary: Long) {

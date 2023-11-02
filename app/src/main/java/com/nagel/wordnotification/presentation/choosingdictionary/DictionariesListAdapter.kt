@@ -24,7 +24,8 @@ class DictionariesListAdapter(
     private val allWord: List<Word>,
     private val idAccount: Long,
     private val context: Context,
-    private val selectDictionary: (Long) -> Unit
+    private val selectDictionary: (Long) -> Unit,
+    private val showMenuActionOnWord: (dictionary: Dictionary, position: Int) -> Unit
 ) : RecyclerView.Adapter<DictionariesListAdapter.Holder>() {
 
     private var dictionaries: Flow<List<Dictionary>> =
@@ -72,6 +73,10 @@ class DictionariesListAdapter(
             progress.text = "${currentLearnedWords}/${currentDictionary.wordList.size}"
             root.setOnClickListener {
                 selectDictionary.invoke(currentDictionary.idDictionaries)
+            }
+            root.setOnLongClickListener {
+                showMenuActionOnWord.invoke(currentDictionary, position)
+                true
             }
         }
     }

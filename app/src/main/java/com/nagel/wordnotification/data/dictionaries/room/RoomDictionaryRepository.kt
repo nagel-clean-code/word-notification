@@ -57,9 +57,15 @@ class RoomDictionaryRepository @Inject constructor(
         CoroutineScope(Dispatchers.IO).launch() {
             val count = dictionaryDao.deleteWord(idWord)
             withContext(Dispatchers.Main) {
-//                if (count > 0) {
-//                    currentDictionary!!.wordList.removeIf { it.idWord == idWord }
-//                }
+                success.invoke(count > 0)
+            }
+        }
+    }
+
+    override fun deleteDictionaryById(idDictionary: Long, success: (Boolean) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch() {
+            val count = dictionaryDao.deleteDictionary(idDictionary)
+            withContext(Dispatchers.Main) {
                 success.invoke(count > 0)
             }
         }
