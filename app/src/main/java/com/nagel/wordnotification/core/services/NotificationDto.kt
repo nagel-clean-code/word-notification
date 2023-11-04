@@ -7,12 +7,14 @@ data class NotificationDto(
     var text: String?,
     var translation: String?,
     val date: Long,
-    var uniqueId: Int
+    var uniqueId: Int,
+    var step: Int
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString(),
         parcel.readString(),
         parcel.readLong(),
+        parcel.readInt(),
         parcel.readInt()
     ) {
     }
@@ -22,6 +24,7 @@ data class NotificationDto(
         parcel.writeString(translation)
         parcel.writeLong(date)
         parcel.writeInt(uniqueId)
+        parcel.writeInt(step)
     }
 
     override fun describeContents(): Int {
@@ -37,5 +40,4 @@ data class NotificationDto(
             return arrayOfNulls(size)
         }
     }
-
 }

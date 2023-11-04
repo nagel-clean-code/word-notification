@@ -9,13 +9,13 @@ import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.nagel.wordnotification.Constants.NOTIFICATION_CHANNEL_ID
 import com.nagel.wordnotification.Constants.TAKE_AWAY
 import com.nagel.wordnotification.Constants.TYPE
 import com.nagel.wordnotification.Constants.TYPE_ANSWER
 import com.nagel.wordnotification.Constants.TYPE_QUEST
-import com.nagel.wordnotification.Constants.UNIQUE_NOTIFICATION_ID
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.presentation.MainActivity
 
@@ -32,13 +32,14 @@ class AlarmReceiver : BroadcastReceiver() {
             newNotification(context, notificationDto)
         } ?: kotlin.run {
             Log.d("CoroutineWorker", "Не удалось сериализовать")
+            Toast.makeText(context, "Не удалось сериализовать", Toast.LENGTH_LONG).show()
         }
     }
 
     private fun newNotification(context: Context, dto: NotificationDto) {
         val pendingIntent = PendingIntent.getActivity(
             context,
-            0,
+            dto.uniqueId + dto.step,
             Intent(context, MainActivity::class.java),
             PendingIntent.FLAG_IMMUTABLE
         )
@@ -55,7 +56,7 @@ class AlarmReceiver : BroadcastReceiver() {
         }
         val customNotification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.arrow)
-            .setContentTitle("Слово для запоминания")
+            .setContentTitle("Шаг запоминания:" + dto.step)
             .setContentIntent(pendingIntent)
         if (currentType == TYPE_ANSWER) {
             customNotification
@@ -63,34 +64,35 @@ class AlarmReceiver : BroadcastReceiver() {
                 .addAction(
                     R.drawable.baseline_casino_24,
                     context.getString(R.string.show_answer),
-                    getAction(context, dto)
+                    getAction(context, dto, TYPE_ANSWER)
                 )
         }
         if (currentType == TYPE_QUEST) {
             customNotification
-                .setContentText(dto.translation)
+                .setContentText("${dto.text} - ${dto.translation}")
                 .addAction(
                     R.drawable.baseline_casino_24,
                     context.getString(R.string.ok),
-                    getAction(context, dto)
+                    getAction(context, dto, TYPE_QUEST)
                 )
         }
 
-        notificationManager.notify(UNIQUE_NOTIFICATION_ID, customNotification.build())
+        notificationManager.notify(dto.uniqueId + dto.step, customNotification.build())
     }
 
     private fun getAction(
         context: Context,
-        word: NotificationDto
+        word: NotificationDto,
+        type: Int
     ): PendingIntent {
         val snoozeIntent = Intent(context, AlgorithmReceiver::class.java).apply {
             putExtra(TAKE_AWAY, word)
-            putExtra(TYPE, currentType)
+            putExtra(TYPE, type)
         }
 
         return PendingIntent.getBroadcast(
             context,
-            0,
+            word.uniqueId + word.step,
             snoozeIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )

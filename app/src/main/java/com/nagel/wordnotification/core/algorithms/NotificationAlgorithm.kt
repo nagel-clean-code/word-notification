@@ -12,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -25,15 +26,17 @@ class NotificationAlgorithm @Inject constructor(
 
     val wordsForNotifications = MutableStateFlow<List<NotificationDto?>?>(null)
     private lateinit var bufArray: ArrayList<NotificationDto?>
+    private var countFirstNotifications = 0
 
     suspend fun start() {
         Log.d("CoroutineWorker:", "start")
         wordsForNotifications.emit(null)
         bufArray = arrayListOf()
+        countFirstNotifications = 0
         loadWords()
     }
 
-    private fun loadWords() {
+    private suspend fun loadWords() {
         Log.d("CoroutineWorker:", "loadWords")
         CoroutineScope(Dispatchers.IO).launch {
             val accountId = sessionRepository.getSession()?.account?.id
@@ -53,7 +56,11 @@ class NotificationAlgorithm @Inject constructor(
     }
 
     private suspend fun setupNotification(dictionary: Dictionary) {
-        val mode = settingsRepository.getModeSettings(dictionary.idDictionaries) ?: return
+        val mode = settingsRepository.getModeSettings(dictionary.idDictionaries)
+        if (mode == null) {
+            Log.d("CoroutineWorker:", "mode == null")
+            return
+        }
         when (mode.selectedMode) {
             SelectedMode.PlateauEffect.toString() -> {
                 plateauEffect(dictionary)
@@ -71,29 +78,42 @@ class NotificationAlgorithm @Inject constructor(
     }
 
     //TODO нужно учитывать выбранные дни недели и время
-    private var countFirstNotifications = 0
     private suspend fun plateauEffect(dictionary: Dictionary) {
-        bufArray.addAll(
-            dictionary.wordList.filter { !it.learned && !it.active }.map {
-                if (it.learnStep == 0) {
-                    it.lastDateMention += countFirstNotifications++ * 5 * 60
-                }
-                val nextTimeNotification =
-                    AlgorithmPlateauEffect.getNewDate(it.learnStep++, it.lastDateMention)
-                val d = if (nextTimeNotification == null) {
+        dictionary.wordList.filter { !it.learned && it.lastDateMention < Date().time }.forEach {
+            if (it.learnStep == 0) {
+                //Добавление интервала между словами на первом шаге, чтобы не появились все в один раз
+                it.lastDateMention = countFirstNotifications++ * getIntervalBetweenWords()
+            }
+            var nextTime = AlgorithmPlateauEffect.getNewDate(it.learnStep++, it.lastDateMention)
+            do {
+                val d = if (nextTime == null) {
                     it.learned = true
                     null
                 } else {
-                    it.lastDateMention = nextTimeNotification
-                    NotificationDto(it.textFirst, it.textLast, nextTimeNotification, it.uniqueId)
+                    it.lastDateMention = nextTime
+                    NotificationDto(
+                        it.textFirst,
+                        it.textLast,
+                        nextTime,
+                        it.uniqueId,
+                        it.learnStep
+                    )
                 }
                 updateWord(it)
-                d
-            }
-        )
+                bufArray.add(d)
+                nextTime = AlgorithmPlateauEffect.getNewDate(it.learnStep++, it.lastDateMention)
+            } while (nextTime != null && nextTime - Date().time < MAX_WORKER_RESTART_INTERVAL)
+
+        }
     }
 
-    private suspend fun updateWord(word: Word){
+    private suspend fun updateWord(word: Word) {
         dictionaryRepository.updateWord(word)
+    }
+
+    private fun getIntervalBetweenWords() = (2..5).random() * 60 * 1000L
+
+    companion object {
+        const val MAX_WORKER_RESTART_INTERVAL = 20 * 60 * 1000L
     }
 }

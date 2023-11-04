@@ -155,6 +155,9 @@ class AddingWordsFragment : BaseFragment() {
                 listWordsAdapter?.notifyItemInserted(0)
                 binding.listWordsRecyclerView.scrollToPosition(0)
             }
+            binding.editTextTranslation.setText("")
+            binding.editTextWord.setText("")
+            binding.editTextWord.requestFocus()
         }
     }
 

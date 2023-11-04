@@ -8,6 +8,4 @@ object Constants {
     const val TYPE_QUEST = 1
     const val DICTIONARY_ID_KEY = "DICTIONARY_ID_KEY"
     const val NOTIFICATION_CHANNEL_ID = "NOTIFICATION_CHANNEL_ID"
-    const val UNIQUE_NOTIFICATION_ID = 294951663
-
 }

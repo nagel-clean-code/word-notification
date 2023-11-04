@@ -1,10 +1,15 @@
 package com.nagel.wordnotification.presentation
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.graphics.Rect
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
@@ -54,6 +59,23 @@ class MainActivity : AppCompatActivity(), Navigator {
                 ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
                 work
             )
+        checkPermissions()
+    }
+
+    private fun checkPermissions() {
+        if (Build.VERSION.SDK_INT >= 33) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    101
+                )
+            }
+        }
     }
 
     private fun replaceFragment(fragment: Fragment) {

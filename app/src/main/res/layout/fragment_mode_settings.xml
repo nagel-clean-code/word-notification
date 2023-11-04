@@ -142,8 +142,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
-                    android:layout_marginEnd="-15dp"
-                    android:checked="true" />
+                    android:layout_marginEnd="-15dp" />
             </FrameLayout>
 
             <TextView
@@ -178,8 +177,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
-                    android:layout_marginEnd="-15dp"
-                    android:checked="true" />
+                    android:layout_marginEnd="-15dp" />
             </FrameLayout>
 
             <LinearLayout
@@ -372,9 +370,9 @@
                         android:textSize="14sp" />
 
                     <LinearLayout
-                        android:layout_marginTop="10dp"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp">
 
                         <TextView
                             android:id="@+id/time1"

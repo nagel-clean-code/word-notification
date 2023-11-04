@@ -40,19 +40,17 @@ class AlgorithmAdjustmentWork @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
         algorithm.start()
-        delay(5 * 60 * 1000) //FIXME
+        delay(5 * 60 * 1000)
         return Result.success()
-
     }
 
     private fun startAlarm(word: NotificationDto) {
         Log.d("CoroutineWorker:startAlarm:", word.toString())
-//        AlgorithmPlateauEffect.getNewDate()
         val intent = Intent(appContext, AlarmReceiver::class.java)
         intent.putExtra("TAKE_AWAY", word)
         val pendingIntent = PendingIntent.getBroadcast(
             appContext,
-            word.uniqueId,
+            word.uniqueId + word.step,
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )

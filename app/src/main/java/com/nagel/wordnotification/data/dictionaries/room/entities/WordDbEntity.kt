@@ -30,7 +30,6 @@ class WordDbEntity(
     @ColumnInfo(name = "text_last") val textLast: String,
     @ColumnInfo(name = "learn_step") val learnStep: Int,
     @ColumnInfo(name = "last_date_mention") val lastDateMention: Long,
-    @ColumnInfo(name = "active") val active: Boolean,
     @ColumnInfo(name = "unique_id") val uniqueId: Int,
     val learned: Boolean,
 ) {
@@ -44,7 +43,6 @@ class WordDbEntity(
             learned = learned,
             learnStep = learnStep,
             lastDateMention = lastDateMention,
-            active = active,
             uniqueId = uniqueId
         )
         word.idWord = idWord
@@ -62,7 +60,6 @@ class WordDbEntity(
                 textLast = word.textLast,
                 learnStep = word.learnStep,
                 lastDateMention = word.lastDateMention,
-                active = word.active,
                 uniqueId = word.uniqueId
             )
     }

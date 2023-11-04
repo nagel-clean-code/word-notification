@@ -26,7 +26,8 @@
         <receiver
             android:name=".core.services.AlgorithmReceiver"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="true"
+            android:permission="android.permission.POST_NOTIFICATIONS" />
 
         <activity
             android:name=".presentation.MainActivity"
