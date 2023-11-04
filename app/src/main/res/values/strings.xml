@@ -41,5 +41,8 @@
     <string name="save">Сохранить</string>
     <string name="translation">Перевод</string>
     <string name="enter_word">Введите слово</string>
+    <string name="dictionaries">Словари</string>
+    <string name="dictionary_not_selected">Словарь не выбран</string>
+    <string name="changes_saved">Изменения сохранены</string>
 
 </resources>

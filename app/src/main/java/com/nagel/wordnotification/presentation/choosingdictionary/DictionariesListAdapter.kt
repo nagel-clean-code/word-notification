@@ -28,8 +28,7 @@ class DictionariesListAdapter(
     private val showMenuActionOnWord: (dictionary: Dictionary, position: Int) -> Unit
 ) : RecyclerView.Adapter<DictionariesListAdapter.Holder>() {
 
-    private var dictionaries: Flow<List<Dictionary>> =
-        dictionaryRepository.loadDictionaries(idAccount)
+    var dictionaries: Flow<List<Dictionary>> = dictionaryRepository.loadDictionaries(idAccount)
     private var size: Int = 0
     private var dataList = listOf<Dictionary>()
 
@@ -93,18 +92,5 @@ class DictionariesListAdapter(
     class Holder(
         val binding: ItemCardDictionaryBinding
     ) : RecyclerView.ViewHolder(binding.root)
-
-    class VerticalSpaceItemDecoration(private val verticalSpaceHeight: Int) : ItemDecoration() {
-        override fun getItemOffsets(
-            outRect: Rect,
-            view: View,
-            parent: RecyclerView,
-            state: RecyclerView.State
-        ) {
-            if (parent.getChildAdapterPosition(view) != parent.adapter!!.itemCount - 1) {
-                outRect.bottom = verticalSpaceHeight
-            }
-        }
-    }
 
 }

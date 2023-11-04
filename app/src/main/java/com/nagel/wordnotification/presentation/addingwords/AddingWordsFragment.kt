@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nagel.wordnotification.Constants.DICTIONARY_ID_KEY
+import com.nagel.wordnotification.R
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.databinding.FragmentAddingWordsBinding
 import com.nagel.wordnotification.presentation.MainActivityVM
@@ -34,16 +35,15 @@ class AddingWordsFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentAddingWordsBinding.inflate(inflater, container, false)
-//        if(listWordsAdapter == null) {
+        binding.listWordsRecyclerView.addItemDecoration(
+            ListWordsAdapter.VerticalSpaceItemDecoration(50)
+        )
         initButtons()
         initListeners()
-//        }
         return binding.root
     }
 
     private fun initListeners() {
-//        initScroll()
-
         binding.selectDictionary.setOnClickListener {
             viewModel.loadedDictionaryFlow.value = false
             navigator().showChoosingDictionaryFragment(
@@ -62,6 +62,9 @@ class AddingWordsFragment : BaseFragment() {
 
         lifecycleScope.launch {
             viewModel.loadedDictionaryFlow.collect() {
+                binding.nameDictionary.text = viewModel.dictionary?.name
+                    ?: requireContext().getString(R.string.dictionary_not_selected)
+
                 binding.progressBar.isVisible = !it
                 if (it) {
                     initAdapter()
@@ -121,9 +124,6 @@ class AddingWordsFragment : BaseFragment() {
         binding.listWordsRecyclerView.adapter = listWordsAdapter
         val layoutManager = LinearLayoutManager(requireContext())
         binding.listWordsRecyclerView.layoutManager = layoutManager
-        binding.listWordsRecyclerView.addItemDecoration(
-            ListWordsAdapter.VerticalSpaceItemDecoration(50)
-        )
     }
 
     private fun showMenuActionOnWord(word: Word, position: Int) {

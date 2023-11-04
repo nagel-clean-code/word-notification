@@ -5,9 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.helper.widget.Flow
 import androidx.core.view.children
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import com.nagel.wordnotification.data.settings.entities.SelectedMode
@@ -15,6 +17,7 @@ import com.nagel.wordnotification.databinding.FragmentModeSettingsBinding
 import com.nagel.wordnotification.presentation.base.BaseFragment
 import com.nagel.wordnotification.presentation.navigator
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
@@ -29,6 +32,7 @@ class ModeSettingsFragment : BaseFragment() {
     ): View {
         binding = FragmentModeSettingsBinding.inflate(inflater, container, false)
         viewModel.idDictionary = requireArguments().getLong(ID_DICTIONARY)
+        viewModel.loadCurrentSettings()
         return binding.root
     }
 
@@ -52,6 +56,53 @@ class ModeSettingsFragment : BaseFragment() {
         initRadioButtons()
         binding.saveButton.setOnClickListener {
             navigator().goBack()
+        }
+        initData()
+    }
+
+    private fun initData() {
+        lifecycleScope.launch() {
+            viewModel.loadingMode.collect() { mode ->
+                if (mode == null) return@collect
+                initSelectedMode(mode)
+                if (mode.sampleDays) {
+                    binding.sampleDays.isChecked = true
+                    initSelectedDays(mode)
+                }
+                if (mode.timeIntervals) {
+                    binding.timeIntervals.isChecked = true
+                    binding.time1.text = mode.workingTimeInterval.first
+                    binding.time2.text = mode.workingTimeInterval.second
+                }
+            }
+        }
+    }
+
+    private fun initSelectedDays(mode: ModeSettingsDto) {
+        binding.chainDaysWeek.children.forEach { view ->
+            if (view is TextView) {
+                if (mode.days.contains(view.text.toString())) {
+                    selectedDayWeek(view)
+                } else {
+                    unselectedDayWeek(view)
+                }
+            }
+        }
+    }
+
+    private fun initSelectedMode(mode: ModeSettingsDto) {
+        when (mode.selectedMode) {
+            SelectedMode.PlateauEffect -> {
+                binding.plateauEffect.isChecked = true
+            }
+
+            SelectedMode.ForgetfulnessCurveLong -> {
+                binding.forgetfulnessCurveLong.isChecked = true
+            }
+
+            SelectedMode.ForgetfulnessCurve -> {
+                binding.forgetfulnessCurve.isChecked = true
+            }
         }
     }
 
@@ -90,15 +141,24 @@ class ModeSettingsFragment : BaseFragment() {
     private fun initClickListenerItem(textView: TextView) {
         textView.setOnClickListener {
             if (textView.tag != true) {
-                textView.setBackgroundResource(R.drawable.unselected_day_week)
-                textView.setTextColor(resources.getColor(R.color.black))
-                textView.tag = true
+                unselectedDayWeek(textView)
             } else {
-                textView.setTextColor(resources.getColor(R.color.light_beige))
-                textView.setBackgroundResource(R.drawable.selected_day_week)
-                textView.tag = false
+                selectedDayWeek(textView)
             }
         }
+    }
+
+
+    private fun unselectedDayWeek(textView: TextView) {
+        textView.setBackgroundResource(R.drawable.unselected_day_week)
+        textView.setTextColor(resources.getColor(R.color.black))
+        textView.tag = true
+    }
+
+    private fun selectedDayWeek(textView: TextView) {
+        textView.setTextColor(resources.getColor(R.color.light_beige))
+        textView.setBackgroundResource(R.drawable.selected_day_week)
+        textView.tag = false
     }
 
     override fun onPause() {
@@ -116,6 +176,8 @@ class ModeSettingsFragment : BaseFragment() {
                 ),
             )
         )
+        val msg = requireContext().getString(R.string.changes_saved)
+        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
     }
 
     private fun selectedDays(): List<String> {
