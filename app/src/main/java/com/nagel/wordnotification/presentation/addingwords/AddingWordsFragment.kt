@@ -145,10 +145,9 @@ class AddingWordsFragment : BaseFragment() {
             val textLast = binding.editTextTranslation.text.toString().replace("\n", ", ")
             if (textFirst.isEmpty() || textLast.isEmpty()) return@setOnClickListener
             val word = Word(
-                viewModel.dictionary!!.idDictionaries,
-                textFirst,
-                textLast,
-                true
+                idDictionary = viewModel.dictionary!!.idDictionaries,
+                textFirst = textFirst,
+                textLast = textLast
             )
             viewModel.dictionaryRepository.addWord(word) { idWord ->
                 word.idWord = idWord

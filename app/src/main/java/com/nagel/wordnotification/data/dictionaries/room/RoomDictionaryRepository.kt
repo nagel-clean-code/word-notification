@@ -5,7 +5,6 @@ import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.dictionaries.room.entities.DictionaryDbEntity
 import com.nagel.wordnotification.data.dictionaries.room.entities.WordDbEntity
-import com.nagel.wordnotification.data.wrapSQLiteException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -82,13 +81,17 @@ class RoomDictionaryRepository @Inject constructor(
     override fun addWord(wordDto: Word, success: (Long) -> Unit) {
         val word = WordDbEntity.createWordDbEntity(wordDto)
         GlobalScope.launch {
-            wrapSQLiteException(Dispatchers.IO) {
+            withContext(Dispatchers.IO) {
                 val id = dictionaryDao.addWord(word)
                 withContext(Dispatchers.Main) {
                     success.invoke(id)
                 }
             }
         }
+    }
+
+    override suspend fun updateWord(word: Word) {
+        dictionaryDao.updateWord(WordDbEntity.createWordDbEntity(word))
     }
 
     override fun createDictionary(
@@ -99,7 +102,7 @@ class RoomDictionaryRepository @Inject constructor(
         GlobalScope.launch {
             val dictionaryDbEntity =
                 DictionaryDbEntity.createDictionary(name, idFolder = 0, idAuthor = idAccount)
-            wrapSQLiteException(Dispatchers.IO) {
+            withContext(Dispatchers.IO) {
                 val id = dictionaryDao.saveDictionary(dictionaryDbEntity)
                 val currentDictionary = dictionaryDbEntity.toDictionary()
                 currentDictionary.idDictionaries = id

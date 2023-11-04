@@ -12,10 +12,6 @@ import com.nagel.wordnotification.data.settings.entities.SelectedMode
 
 @Entity(
     tableName = "modes",
-    indices = [
-        Index("id", unique = true),
-        Index("id_dictionary", unique = true),
-    ],
     foreignKeys = [
         ForeignKey(
             entity = DictionaryDbEntity::class,

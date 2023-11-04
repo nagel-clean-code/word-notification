@@ -3,6 +3,7 @@ package com.nagel.wordnotification.data.dictionaries.room
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import com.nagel.wordnotification.data.dictionaries.room.entities.DictionaryDbEntity
 import com.nagel.wordnotification.data.dictionaries.room.entities.WordDbEntity
 import kotlinx.coroutines.flow.Flow
@@ -24,8 +25,14 @@ interface DictionaryDao {
     @Query("SELECT * FROM dictionaries WHERE id = :idDictionary")
     suspend fun getDictionaryById(idDictionary: Long): DictionaryDbEntity?
 
+    @Query("UPDATE dictionaries SET id_mode=:idMode WHERE id = :idDictionary")
+    suspend fun setIdModeInDictionary(idMode: Long, idDictionary: Long)
+
     @Insert(entity = WordDbEntity::class)
     suspend fun addWord(wordDbEntity: WordDbEntity): Long
+
+    @Update(entity = WordDbEntity::class)
+    suspend fun updateWord(wordDbEntity: WordDbEntity)
 
     @Query("DELETE FROM words WHERE id_word =:idWord")
     suspend fun deleteWord(idWord: Long): Int

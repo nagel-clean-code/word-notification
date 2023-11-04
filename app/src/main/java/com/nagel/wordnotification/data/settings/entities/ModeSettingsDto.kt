@@ -8,10 +8,6 @@ data class ModeSettingsDto(
     val days: List<String>,
     val timeIntervals: Boolean,
     val workingTimeInterval: Pair<String, String>,
-
-//    val repeat: Pair<String, String>,
-//    val repeatWords: Boolean,
-//    val repeatCount: Int
 )
 
 sealed class SelectedMode {

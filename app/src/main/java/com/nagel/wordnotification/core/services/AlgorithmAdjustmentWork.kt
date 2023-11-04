@@ -9,14 +9,13 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.nagel.wordnotification.core.NotificationAlgorithm
+import com.nagel.wordnotification.core.algorithms.NotificationAlgorithm
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.Calendar
 
 
 @HiltWorker
@@ -30,8 +29,10 @@ class AlgorithmAdjustmentWork @AssistedInject constructor(
         CoroutineScope(Dispatchers.Main).launch {
             algorithm.wordsForNotifications.collect() { words ->
                 Log.d("CoroutineWorker:", "words -> ${words?.size}")
-                words?.forEach {
-                    startAlarm(it)
+                words?.forEach { word ->
+                    word?.let {
+                        startAlarm(it)
+                    }
                 }
             }
         }
@@ -39,23 +40,19 @@ class AlgorithmAdjustmentWork @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
         algorithm.start()
-        delay(5 * 60 * 1000)
+        delay(5 * 60 * 1000) //FIXME
         return Result.success()
 
     }
 
     private fun startAlarm(word: NotificationDto) {
-        Log.d("CoroutineWorker:", word.toString())
-        val notifyTime: Calendar = Calendar.getInstance()
-        notifyTime.set(Calendar.HOUR_OF_DAY, 12)
-        notifyTime.set(Calendar.MINUTE, 0)
-        notifyTime.set(Calendar.SECOND, 0)
-
+        Log.d("CoroutineWorker:startAlarm:", word.toString())
+//        AlgorithmPlateauEffect.getNewDate()
         val intent = Intent(appContext, AlarmReceiver::class.java)
         intent.putExtra("TAKE_AWAY", word)
         val pendingIntent = PendingIntent.getBroadcast(
             appContext,
-            Math.random().toInt(),
+            word.uniqueId,
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )

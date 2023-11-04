@@ -5,17 +5,23 @@ import android.os.Parcelable
 
 data class NotificationDto(
     var text: String?,
-    val date: Long
-): Parcelable {
+    var translation: String?,
+    val date: Long,
+    var uniqueId: Int
+) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString(),
-        parcel.readLong()
+        parcel.readString(),
+        parcel.readLong(),
+        parcel.readInt()
     ) {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(text)
+        parcel.writeString(translation)
         parcel.writeLong(date)
+        parcel.writeInt(uniqueId)
     }
 
     override fun describeContents(): Int {

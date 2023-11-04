@@ -1,6 +1,7 @@
 package com.nagel.wordnotification.data.settings.room
 
 import android.util.Log
+import com.nagel.wordnotification.data.dictionaries.room.DictionaryDao
 import com.nagel.wordnotification.data.settings.SettingsRepository
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import com.nagel.wordnotification.data.settings.room.entities.ModeDbEntity
@@ -11,22 +12,23 @@ import javax.inject.Singleton
 @Singleton
 class RoomModeRepository @Inject constructor(
     private val modeDao: ModeDao,
+    private val dictionary: DictionaryDao
 ) : SettingsRepository {
 
     override suspend fun saveModeSettings(data: ModeSettingsDto) {
         Log.d("saveModeSettings", "idDictionary: ${data.idDictionary}")
-        modeDao.getModeByIdDictionary(data.idDictionary).collect() {
-            val dto = ModeDbEntity.createMode(data)
-            if (it == null) {
-                modeDao.saveMode(dto)
-            } else {
-                dto.idMode = it.idMode
-                modeDao.update(dto)
-            }
+        val mode = modeDao.getModeByIdDictionary(data.idDictionary)
+        val dto = ModeDbEntity.createMode(data)
+        if (mode == null) {
+            val idMode = modeDao.saveMode(dto)
+            dictionary.setIdModeInDictionary(idMode, data.idDictionary)
+        } else {
+            dto.idMode = mode.idMode
+            modeDao.update(dto)
         }
     }
 
-    override suspend fun getModeSettings(idDictionary: Long): Flow<ModeDbEntity?> {
+    override suspend fun getModeSettings(idDictionary: Long): ModeDbEntity? {
         return modeDao.getModeByIdDictionary(idDictionary)
     }
 

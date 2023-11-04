@@ -5,6 +5,11 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.nagel.wordnotification.data.dictionaries.entities.Word
+import com.nagel.wordnotification.utils.GlobalFunction
+import java.util.UUID
+
+
+
 
 @Entity(
     tableName = "words",
@@ -23,6 +28,10 @@ class WordDbEntity(
     @ColumnInfo(name = "id_dictionary") val idDictionary: Long,
     @ColumnInfo(name = "text_first") val textFirst: String,
     @ColumnInfo(name = "text_last") val textLast: String,
+    @ColumnInfo(name = "learn_step") val learnStep: Int,
+    @ColumnInfo(name = "last_date_mention") val lastDateMention: Long,
+    @ColumnInfo(name = "active") val active: Boolean,
+    @ColumnInfo(name = "unique_id") val uniqueId: Int,
     val learned: Boolean,
 ) {
 
@@ -32,7 +41,11 @@ class WordDbEntity(
             idDictionary = idDictionary,
             textFirst = textFirst,
             textLast = textLast,
-            learned = learned
+            learned = learned,
+            learnStep = learnStep,
+            lastDateMention = lastDateMention,
+            active = active,
+            uniqueId = uniqueId
         )
         word.idWord = idWord
         return word
@@ -42,11 +55,15 @@ class WordDbEntity(
 
         fun createWordDbEntity(word: Word) =
             WordDbEntity(
-                idWord = 0,
+                idWord = word.idWord,
                 idDictionary = word.idDictionary,
-                learned = false,
+                learned = word.learned,
                 textFirst = word.textFirst,
-                textLast = word.textLast
+                textLast = word.textLast,
+                learnStep = word.learnStep,
+                lastDateMention = word.lastDateMention,
+                active = word.active,
+                uniqueId = word.uniqueId
             )
     }
 }

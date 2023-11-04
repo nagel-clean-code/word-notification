@@ -56,21 +56,24 @@ class AlarmReceiver : BroadcastReceiver() {
         val customNotification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.arrow)
             .setContentTitle("Слово для запоминания")
-            .setContentText(dto.text)
             .setContentIntent(pendingIntent)
         if (currentType == TYPE_ANSWER) {
-            customNotification.addAction(
-                R.drawable.baseline_casino_24,
-                context.getString(R.string.show_answer),
-                getAction(context, dto)
-            )
+            customNotification
+                .setContentText(dto.text)
+                .addAction(
+                    R.drawable.baseline_casino_24,
+                    context.getString(R.string.show_answer),
+                    getAction(context, dto)
+                )
         }
         if (currentType == TYPE_QUEST) {
-            customNotification.addAction(
-                R.drawable.baseline_casino_24,
-                context.getString(R.string.ok),
-                getAction(context, dto)
-            )
+            customNotification
+                .setContentText(dto.translation)
+                .addAction(
+                    R.drawable.baseline_casino_24,
+                    context.getString(R.string.ok),
+                    getAction(context, dto)
+                )
         }
 
         notificationManager.notify(UNIQUE_NOTIFICATION_ID, customNotification.build())
