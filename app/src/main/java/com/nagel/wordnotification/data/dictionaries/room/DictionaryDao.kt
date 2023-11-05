@@ -33,6 +33,8 @@ interface DictionaryDao {
 
     @Update(entity = WordDbEntity::class)
     suspend fun updateWord(wordDbEntity: WordDbEntity)
+    @Query("UPDATE dictionaries SET included = :include WHERE id=:idDictionary")
+    suspend fun setInclude(idDictionary: Long, include: Boolean)
 
     @Query("DELETE FROM words WHERE id_word =:idWord")
     suspend fun deleteWord(idWord: Long): Int

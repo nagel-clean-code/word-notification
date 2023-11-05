@@ -20,9 +20,9 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="29dp"
         android:fontFamily="@font/montserrat_bold"
-        android:text="Стандартный"
         android:textColor="@color/white"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        tools:text="Стандартный" />
 
     <TextView
         android:id="@+id/data"
@@ -34,9 +34,9 @@
         android:ellipsize="end"
         android:fontFamily="@font/montserrat_bold"
         android:lines="2"
-        android:text="Hard, cete, car, fly, reade, brad, sog, sun, left, rignt kfkfkkfk fkkfkf kfk kfk fk kkf fkkfkfk f k kfkfkkf"
         android:textColor="@color/white"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        tools:text="Hard, cete, car, fly, reade, brad, sog, sun, left, rignt kfkfkkfk fkkfkf kfk kfk fk kkf fkkfkfk f k kfkfkkf" />
 
     <TextView
         android:id="@+id/progress"
@@ -48,4 +48,11 @@
         android:text="14/20"
         android:textColor="@color/white"
         android:textSize="20sp" />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/isActive"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end" />
+
 </FrameLayout>

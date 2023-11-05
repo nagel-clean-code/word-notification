@@ -94,6 +94,10 @@ class RoomDictionaryRepository @Inject constructor(
         dictionaryDao.updateWord(WordDbEntity.createWordDbEntity(word))
     }
 
+    override suspend fun updateIncludeDictionary(include: Boolean, idDictionary: Long) {
+        dictionaryDao.setInclude(idDictionary, include)
+    }
+
     override fun createDictionary(
         name: String,
         idAccount: Long,

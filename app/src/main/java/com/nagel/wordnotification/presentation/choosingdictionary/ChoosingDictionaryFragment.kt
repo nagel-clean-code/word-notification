@@ -23,7 +23,6 @@ import com.nagel.wordnotification.presentation.base.BaseFragment
 import com.nagel.wordnotification.presentation.navigator
 import com.nagel.wordnotification.utils.SharedPrefsUtils
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 
@@ -40,6 +39,9 @@ class ChoosingDictionaryFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentChoosingDictionaryBinding.inflate(layoutInflater, container, false)
+        binding.dictionariesList.addItemDecoration(
+            DictionariesListAdapter.VerticalSpaceItemDecoration(70)
+        )
         return binding.root
     }
 
@@ -52,11 +54,14 @@ class ChoosingDictionaryFragment : BaseFragment() {
         idAccount = arguments?.getLong(ID_ACCOUNT) ?: -1
         val dictionariesAdapter = DictionariesListAdapter(
             dictionaryRepository = viewModel.dictionaryRepository,
+            settingsRepository = viewModel.settingsRepository,
             allWord = words,
             idAccount = idAccount,
             requireContext(),
             ::openDictionary,
-            ::showMenuActionOnWord
+            ::showMenuActionOnWord,
+            viewModel::toggleActiveDictionary,
+            ::openModeSettings
         )
         adapter = dictionariesAdapter
         binding.dictionariesList.adapter = adapter
@@ -68,6 +73,10 @@ class ChoosingDictionaryFragment : BaseFragment() {
                 binding.countDictionaries.text = it.size.toString()
             }
         }
+    }
+
+    private fun openModeSettings(idDictionary: Long) {
+        navigator().showModeSettingsFragment(idDictionary)
     }
 
     private fun showMenuActionOnWord(dictionary: Dictionary, position: Int) {

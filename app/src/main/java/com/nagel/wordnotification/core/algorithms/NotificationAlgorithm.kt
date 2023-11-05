@@ -62,15 +62,15 @@ class NotificationAlgorithm @Inject constructor(
             return
         }
         when (mode.selectedMode) {
-            SelectedMode.PlateauEffect.toString() -> {
+            SelectedMode.PlateauEffect::class.simpleName -> {
                 plateauEffect(dictionary)
             }
 
-            SelectedMode.ForgetfulnessCurveLong.toString() -> {
+            SelectedMode.ForgetfulnessCurveLong::class.simpleName -> {
 //                plateauEffect(dictionary)
             }
 
-            SelectedMode.ForgetfulnessCurve.toString() -> {
+            SelectedMode.ForgetfulnessCurve::class.simpleName -> {
 //                plateauEffect(dictionary)
             }
             else -> {

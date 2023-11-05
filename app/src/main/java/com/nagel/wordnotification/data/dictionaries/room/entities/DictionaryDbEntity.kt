@@ -7,7 +7,6 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.nagel.wordnotification.data.accounts.room.entities.AccountDbEntity
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
-import com.nagel.wordnotification.data.settings.room.entities.ModeDbEntity
 
 /**
  * CREATE TABLE "dictionaries" (
@@ -59,16 +58,17 @@ class DictionaryDbEntity(
         )
     }
 
-    companion object{
+    companion object {
 
-        fun createDictionary(nameDictionary: String, idFolder: Long, idAuthor: Long) = DictionaryDbEntity(
-            idDictionaries = 0,
-            idAuthor = idAuthor,
-            dateCreated = System.currentTimeMillis(),
-            name = nameDictionary,
-            idFolder = idFolder,
-            mode = 0L,
-            included = true
-        )
+        fun createDictionary(nameDictionary: String, idFolder: Long, idAuthor: Long) =
+            DictionaryDbEntity(
+                idDictionaries = 0,
+                idAuthor = idAuthor,
+                dateCreated = System.currentTimeMillis(),
+                name = nameDictionary,
+                idFolder = idFolder,
+                mode = 0L,
+                included = false
+            )
     }
 }
