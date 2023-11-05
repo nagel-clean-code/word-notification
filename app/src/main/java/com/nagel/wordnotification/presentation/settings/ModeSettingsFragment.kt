@@ -91,6 +91,7 @@ class ModeSettingsFragment : BaseFragment() {
     }
 
     private fun initSelectedMode(mode: ModeSettingsDto) {
+        viewModel.selectedMode = mode.selectedMode
         when (mode.selectedMode) {
             SelectedMode.PlateauEffect -> {
                 binding.plateauEffect.isChecked = true
@@ -102,6 +103,9 @@ class ModeSettingsFragment : BaseFragment() {
 
             SelectedMode.ForgetfulnessCurve -> {
                 binding.forgetfulnessCurve.isChecked = true
+            }
+
+            else -> {
             }
         }
     }

@@ -3,7 +3,7 @@ package com.nagel.wordnotification.data.settings.entities
 data class ModeSettingsDto(
     val idMode: Long = 0,
     val idDictionary: Long,
-    val selectedMode: SelectedMode,
+    val selectedMode: SelectedMode?,
     val sampleDays: Boolean,
     val days: List<String>,
     val timeIntervals: Boolean,

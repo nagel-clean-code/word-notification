@@ -3,7 +3,6 @@ package com.nagel.wordnotification.data.settings.room.entities
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.nagel.wordnotification.data.dictionaries.room.entities.DictionaryDbEntity
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
@@ -44,21 +43,23 @@ class ModeDbEntity(
         )
     }
 
-    private fun getSelectedMode(): SelectedMode {
+    private fun getSelectedMode(): SelectedMode? {
         return when (selectedMode) {
-            SelectedMode.PlateauEffect.toString() -> {
+            SelectedMode.PlateauEffect::class.simpleName -> {
                 SelectedMode.PlateauEffect
             }
 
-            SelectedMode.ForgetfulnessCurveLong.toString() -> {
+            SelectedMode.ForgetfulnessCurveLong::class.simpleName -> {
                 SelectedMode.ForgetfulnessCurveLong
             }
 
-            SelectedMode.ForgetfulnessCurve.toString() -> {
+            SelectedMode.ForgetfulnessCurve::class.simpleName -> {
                 SelectedMode.ForgetfulnessCurve
             }
 
-            else -> SelectedMode.ForgetfulnessCurve
+            else -> {
+                null
+            }
         }
     }
 
@@ -66,7 +67,7 @@ class ModeDbEntity(
         fun createMode(mode: ModeSettingsDto) = ModeDbEntity(
             idMode = 0,
             idDictionary = mode.idDictionary,
-            selectedMode = mode.selectedMode.toString(),
+            selectedMode = mode.selectedMode?.let { it::class.simpleName.toString() } ?: "",
             sampleDays = mode.sampleDays,
             timeIntervals = mode.timeIntervals,
             timeIntervalsFirst = mode.workingTimeInterval.first,

@@ -73,6 +73,8 @@ class NotificationAlgorithm @Inject constructor(
             SelectedMode.ForgetfulnessCurve.toString() -> {
 //                plateauEffect(dictionary)
             }
+            else -> {
+            }
         }
 
     }

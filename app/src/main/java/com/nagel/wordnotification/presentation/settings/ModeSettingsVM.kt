@@ -17,7 +17,7 @@ class ModeSettingsVM @Inject constructor(
 ) : BaseViewModel() {
 
     var idDictionary: Long = -1
-    var selectedMode: SelectedMode = SelectedMode.PlateauEffect
+    var selectedMode: SelectedMode? = null
     val loadingMode = MutableStateFlow<ModeSettingsDto?>(null)
 
 
