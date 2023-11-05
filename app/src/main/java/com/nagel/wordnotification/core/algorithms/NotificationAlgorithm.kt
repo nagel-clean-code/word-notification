@@ -8,6 +8,7 @@ import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.data.settings.SettingsRepository
 import com.nagel.wordnotification.data.settings.entities.SelectedMode
+import com.nagel.wordnotification.data.settings.room.entities.ModeDbEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,7 +47,7 @@ class NotificationAlgorithm @Inject constructor(
                     Log.d("CoroutineWorker:", "dictionariesSize:${dictionaries.size}")
                     dictionaries.forEach {
                         if (it.include) {
-                            setupNotification(it)
+                            initNotifications(it)
                         }
                     }
                     wordsForNotifications.emit(bufArray.toList())
@@ -55,38 +56,19 @@ class NotificationAlgorithm @Inject constructor(
         }
     }
 
-    private suspend fun setupNotification(dictionary: Dictionary) {
+    //TODO нужно учитывать выбранные дни недели и время
+    private suspend fun initNotifications(dictionary: Dictionary) {
         val mode = settingsRepository.getModeSettings(dictionary.idDictionaries)
         if (mode == null) {
             Log.d("CoroutineWorker:", "mode == null")
             return
         }
-        when (mode.selectedMode) {
-            SelectedMode.PlateauEffect::class.simpleName -> {
-                plateauEffect(dictionary)
-            }
-
-            SelectedMode.ForgetfulnessCurveLong::class.simpleName -> {
-//                plateauEffect(dictionary)
-            }
-
-            SelectedMode.ForgetfulnessCurve::class.simpleName -> {
-//                plateauEffect(dictionary)
-            }
-            else -> {
-            }
-        }
-
-    }
-
-    //TODO нужно учитывать выбранные дни недели и время
-    private suspend fun plateauEffect(dictionary: Dictionary) {
         dictionary.wordList.filter { !it.learned && it.lastDateMention < Date().time }.forEach {
             if (it.learnStep == 0) {
                 //Добавление интервала между словами на первом шаге, чтобы не появились все в один раз
                 it.lastDateMention = countFirstNotifications++ * getIntervalBetweenWords()
             }
-            var nextTime = AlgorithmPlateauEffect.getNewDate(it.learnStep++, it.lastDateMention)
+            var nextTime = getNewDate(mode, it.learnStep++, it.lastDateMention)
             do {
                 val d = if (nextTime == null) {
                     it.learned = true
@@ -106,6 +88,26 @@ class NotificationAlgorithm @Inject constructor(
                 nextTime = AlgorithmPlateauEffect.getNewDate(it.learnStep++, it.lastDateMention)
             } while (nextTime != null && nextTime - Date().time < MAX_WORKER_RESTART_INTERVAL)
 
+        }
+    }
+
+    private fun getNewDate(mode: ModeDbEntity, step: Int, lastDate: Long): Long? {
+        return when (mode.selectedMode) {
+            SelectedMode.PlateauEffect::class.simpleName -> {
+                AlgorithmPlateauEffect.getNewDate(step, lastDate)
+            }
+
+            SelectedMode.ForgetfulnessCurveLong::class.simpleName -> {
+                AlgorithmForgetfulnessCurveLong.getNewDate(step, lastDate)
+            }
+
+            SelectedMode.ForgetfulnessCurve::class.simpleName -> {
+                AlgorithmForgetfulnessCurve.getNewDate(step, lastDate)
+            }
+
+            else -> {
+                null
+            }
         }
     }
 
