@@ -15,6 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nagel.wordnotification.Constants
 import com.nagel.wordnotification.R
+import com.nagel.wordnotification.core.services.Utils
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.databinding.FragmentChoosingDictionaryBinding
@@ -83,6 +84,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
         MenuSelectingActions {
             viewModel.deleteWord(dictionary.idDictionaries) {
                 adapter.notifyItemRemoved(position)
+                Utils.deleteNotification(requireContext(), dictionary)
             }
         }.show(parentFragmentManager, null)
     }

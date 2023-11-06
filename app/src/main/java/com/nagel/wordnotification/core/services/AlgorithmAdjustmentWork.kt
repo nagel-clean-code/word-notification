@@ -40,7 +40,6 @@ class AlgorithmAdjustmentWork @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
         algorithm.start()
-        delay(5 * 60 * 1000)
         return Result.success()
     }
 

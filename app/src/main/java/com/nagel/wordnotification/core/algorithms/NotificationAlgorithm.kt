@@ -87,7 +87,6 @@ class NotificationAlgorithm @Inject constructor(
                 bufArray.add(d)
                 nextTime = AlgorithmPlateauEffect.getNewDate(it.learnStep++, it.lastDateMention)
             } while (nextTime != null && nextTime - Date().time < MAX_WORKER_RESTART_INTERVAL)
-
         }
     }
 

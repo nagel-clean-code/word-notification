@@ -44,5 +44,5 @@
     <string name="dictionaries">Словари</string>
     <string name="dictionary_not_selected">Словарь не выбран</string>
     <string name="changes_saved">Изменения сохранены</string>
-
+    <string name="choose_dictionary">Выберете словарь</string>
 </resources>

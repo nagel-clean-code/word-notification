@@ -63,7 +63,11 @@ class ModeSettingsFragment : BaseFragment() {
     private fun initData() {
         lifecycleScope.launch() {
             viewModel.loadingMode.collect() { mode ->
-                if (mode == null) return@collect
+                if (mode == null){
+                    binding.plateauEffect.isChecked = true
+                    return@collect
+                }
+                binding.plateauEffect.isChecked = false
                 initSelectedMode(mode)
                 if (mode.sampleDays) {
                     binding.sampleDays.isChecked = true
@@ -187,7 +191,7 @@ class ModeSettingsFragment : BaseFragment() {
     private fun selectedDays(): List<String> {
         val listDays = arrayListOf<String>()
         binding.chainDaysWeek.children.forEach() { view: View ->
-            if (view !is Flow) {
+            if (view !is Flow && view.tag == false) {
                 listDays.add((view as TextView).text.toString())
             }
         }

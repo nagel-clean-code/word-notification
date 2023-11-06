@@ -12,6 +12,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.nagel.wordnotification.R
@@ -28,6 +29,7 @@ class MainActivity : AppCompatActivity(), Navigator {
 
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainActivityVM by viewModels()
+    private var worker: PeriodicWorkRequest? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,14 +54,21 @@ class MainActivity : AppCompatActivity(), Navigator {
         }
         settingKeyboard()
         viewModel.startSession()
-        val work = PeriodicWorkRequestBuilder<AlgorithmAdjustmentWork>(20, TimeUnit.MINUTES).build()
-        WorkManager.getInstance(this)
-            .enqueueUniquePeriodicWork(
-                "AlgorithmWork",
-                ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
-                work
-            )
         checkPermissions()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (worker == null) {
+            worker =
+                PeriodicWorkRequestBuilder<AlgorithmAdjustmentWork>(15, TimeUnit.MINUTES).build()
+            WorkManager.getInstance(this)
+                .enqueueUniquePeriodicWork(
+                    "AlgorithmWork",
+                    ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+                    worker!!
+                )
+        }
     }
 
     private fun checkPermissions() {

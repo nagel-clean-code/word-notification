@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nagel.wordnotification.Constants.DICTIONARY_ID_KEY
 import com.nagel.wordnotification.R
+import com.nagel.wordnotification.core.services.Utils
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.databinding.FragmentAddingWordsBinding
 import com.nagel.wordnotification.presentation.MainActivityVM
@@ -46,9 +47,7 @@ class AddingWordsFragment : BaseFragment() {
     private fun initListeners() {
         binding.selectDictionary.setOnClickListener {
             viewModel.loadedDictionaryFlow.value = false
-            navigator().showChoosingDictionaryFragment(
-                idAccount = viewModelActivity.myAccountDbEntity.value?.id ?: -1
-            )
+            showChoosingDictionary()
         }
 
         binding.modeSettings.setOnClickListener {
@@ -67,7 +66,13 @@ class AddingWordsFragment : BaseFragment() {
 
                 binding.progressBar.isVisible = !it
                 if (it) {
-                    initAdapter()
+                    if (viewModel.dictionary == null) {
+                        val msg = requireContext().getString(R.string.choose_dictionary)
+                        Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
+                        showChoosingDictionary()
+                    } else {
+                        initAdapter()
+                    }
                 }
             }
         }
@@ -77,6 +82,12 @@ class AddingWordsFragment : BaseFragment() {
                 viewModel.showMessage.value = null
             }
         }
+    }
+
+    private fun showChoosingDictionary() {
+        navigator().showChoosingDictionaryFragment(
+            idAccount = viewModelActivity.myAccountDbEntity.value?.id ?: -1
+        )
     }
 
     private fun loadCurrentDictionary() {
@@ -131,6 +142,7 @@ class AddingWordsFragment : BaseFragment() {
             viewModel.deleteWord(word.idWord) {
                 viewModel.dictionary?.wordList?.removeIf { it.idWord == word.idWord }
                 listWordsAdapter?.notifyItemRemoved(position)
+                Utils.deleteNotification(requireContext(), word)
             }
         }.show(parentFragmentManager, null)
     }
