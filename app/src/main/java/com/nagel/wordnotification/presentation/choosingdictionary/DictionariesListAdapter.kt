@@ -2,6 +2,7 @@ package com.nagel.wordnotification.presentation.choosingdictionary
 
 import android.content.Context
 import android.graphics.Rect
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.lang.Integer.min
+import java.util.Date
 
 class DictionariesListAdapter(
     private val dictionaryRepository: DictionaryRepository,
@@ -73,7 +75,7 @@ class DictionariesListAdapter(
                     currentBackground
                 )
             )
-            val currentLearnedWords = currentDictionary.wordList.count { it.learned }
+            val currentLearnedWords = currentDictionary.wordList.count { it.isLearned() }
             name.text = currentDictionary.name
             data.text = generateStringData(currentDictionary.wordList)
             progress.text = "${currentLearnedWords}/${currentDictionary.wordList.size}"
@@ -105,8 +107,7 @@ class DictionariesListAdapter(
         repeat(min(6, listWord.size)) {
             resultString += listWord[it].textFirst + ", "
         }
-        resultString.removeSuffix(",")
-        return resultString
+        return resultString.removeSuffix(", ")
     }
 
     class Holder(

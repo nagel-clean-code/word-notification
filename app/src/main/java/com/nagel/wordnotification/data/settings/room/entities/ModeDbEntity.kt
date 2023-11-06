@@ -59,8 +59,8 @@ class ModeDbEntity(
                 SelectedMode.ForgetfulnessCurveLong
             }
 
-            SelectedMode.ForgetfulnessCurve::class.simpleName -> {
-                SelectedMode.ForgetfulnessCurve
+            SelectedMode.ForgetfulnessCurveShort::class.simpleName -> {
+                SelectedMode.ForgetfulnessCurveShort
             }
 
             else -> {

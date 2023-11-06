@@ -19,5 +19,5 @@ data class ModeSettingsDto(
 sealed class SelectedMode {
     object PlateauEffect : SelectedMode()
     object ForgetfulnessCurveLong : SelectedMode()
-    object ForgetfulnessCurve : SelectedMode()
+    object ForgetfulnessCurveShort : SelectedMode()
 }

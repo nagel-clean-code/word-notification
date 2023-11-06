@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
 import androidx.core.os.bundleOf
@@ -120,6 +121,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
 
     private fun showAlertDialog() {
         val input = EditText(requireContext())
+        input.inputType = EditorInfo.TYPE_TEXT_FLAG_CAP_WORDS
         input.setHint(R.string.input_name_dictionary)
         val buttonClickListener = DialogInterface.OnClickListener { dialog, witch ->
             when (witch) {

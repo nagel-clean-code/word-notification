@@ -13,6 +13,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -30,7 +31,6 @@ class NotificationAlgorithm @Inject constructor(
     private var countFirstNotifications = 0
 
     suspend fun start() {
-        Log.d("CoroutineWorker:", "start")
         wordsForNotifications.emit(null)
         bufArray = arrayListOf()
         countFirstNotifications = 0
@@ -38,7 +38,6 @@ class NotificationAlgorithm @Inject constructor(
     }
 
     private suspend fun loadWords() {
-        Log.d("CoroutineWorker:", "loadWords")
         CoroutineScope(Dispatchers.IO).launch {
             val accountId = sessionRepository.getSession()?.account?.id
             Log.d("CoroutineWorker:", "accountId:${accountId}")
@@ -63,51 +62,60 @@ class NotificationAlgorithm @Inject constructor(
             Log.d("CoroutineWorker:", "mode == null")
             return
         }
-        dictionary.wordList.filter { !it.learned && it.lastDateMention < Date().time }.forEach {
-            if (it.learnStep == 0) {
-                //Добавление интервала между словами на первом шаге, чтобы не появились все в один раз
-                it.lastDateMention = countFirstNotifications++ * getIntervalBetweenWords()
-            }
-            var nextTime = getNewDate(mode, it.learnStep++, it.lastDateMention)
-            do {
-                val d = if (nextTime == null) {
-                    it.learned = true
-                    null
-                } else {
-                    it.lastDateMention = nextTime
-                    NotificationDto(
-                        it.textFirst,
-                        it.textLast,
-                        nextTime,
-                        it.uniqueId,
-                        it.learnStep
-                    )
+        dictionary.wordList.filter { !it.allNotificationsCreated && it.lastDateMention < Date().time }
+            .forEach {
+                if (it.learnStep == 0) {
+                    //Добавление интервала между словами на первом шаге, чтобы не появились все в один раз
+                    it.lastDateMention = countFirstNotifications++ * getIntervalBetweenWords()
                 }
-                updateWord(it)
-                bufArray.add(d)
-                nextTime = AlgorithmPlateauEffect.getNewDate(it.learnStep++, it.lastDateMention)
-            } while (nextTime != null && nextTime - Date().time < MAX_WORKER_RESTART_INTERVAL)
-        }
+                var nextTime = getNewDate(mode, it.learnStep++, it.lastDateMention)
+                do {
+                    val d = if (nextTime == null) {
+                        it.allNotificationsCreated = true
+                        null
+                    } else {
+                        it.lastDateMention = nextTime
+                        NotificationDto(
+                            it.textFirst,
+                            it.textLast,
+                            nextTime,
+                            it.uniqueId,
+                            it.learnStep
+                        )
+                    }
+                    updateWord(it)
+                    bufArray.add(d)
+                    nextTime = getNewDate(mode, it.learnStep++, it.lastDateMention)
+                } while (nextTime != null && nextTime - Date().time < MAX_WORKER_RESTART_INTERVAL)
+            }
     }
 
     private fun getNewDate(mode: ModeDbEntity, step: Int, lastDate: Long): Long? {
-        return when (mode.selectedMode) {
+        val time = when (mode.selectedMode) {
             SelectedMode.PlateauEffect::class.simpleName -> {
+                Log.d("CoroutineWorker:", "AlgorithmPlateauEffect")
                 AlgorithmPlateauEffect.getNewDate(step, lastDate)
             }
 
             SelectedMode.ForgetfulnessCurveLong::class.simpleName -> {
+                Log.d("CoroutineWorker:", "AlgorithmForgetfulnessCurveLong")
                 AlgorithmForgetfulnessCurveLong.getNewDate(step, lastDate)
             }
 
-            SelectedMode.ForgetfulnessCurve::class.simpleName -> {
-                AlgorithmForgetfulnessCurve.getNewDate(step, lastDate)
+            SelectedMode.ForgetfulnessCurveShort::class.simpleName -> {
+                Log.d("CoroutineWorker:", "ForgetfulnessCurveShort")
+                AlgorithmForgetfulnessCurveShort.getNewDate(step, lastDate)
             }
 
             else -> {
                 null
             }
         }
+        Log.d(
+            "CoroutineWorker:",
+            "nextTime = ${time?.let { SimpleDateFormat("d, hh:mm:ss").format(Date(time)) }}"
+        )
+        return time
     }
 
     private suspend fun updateWord(word: Word) {

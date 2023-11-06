@@ -2,7 +2,7 @@ package com.nagel.wordnotification.core.algorithms
 
 import java.util.Date
 
-object AlgorithmForgetfulnessCurve {
+object AlgorithmForgetfulnessCurveShort {
 
     private val mapDate = mapOf<Int, Long>(
         1 to 1 * 60,

@@ -10,6 +10,8 @@ import androidx.constraintlayout.helper.widget.Flow
 import androidx.core.view.children
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.TimeFormat
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import com.nagel.wordnotification.data.settings.entities.SelectedMode
@@ -44,15 +46,12 @@ class ModeSettingsFragment : BaseFragment() {
 
     private fun initListeners() {
         binding.time1.setOnClickListener {
-            DoubleNumberPikerFragmentDialog(binding.time1.text.toString()) { resultPikers ->
-                binding.time1.text = resultPikers
-            }.show(childFragmentManager, "")
+            getTimePiker(binding.time1)
         }
         binding.time2.setOnClickListener {
-            DoubleNumberPikerFragmentDialog(binding.time2.text.toString()) { resultPikers ->
-                binding.time2.text = resultPikers
-            }.show(childFragmentManager, "")
+            getTimePiker(binding.time2)
         }
+
         initRadioButtons()
         binding.saveButton.setOnClickListener {
             navigator().goBack()
@@ -60,10 +59,24 @@ class ModeSettingsFragment : BaseFragment() {
         initData()
     }
 
+    private fun getTimePiker(textView: TextView) {
+        val picker = MaterialTimePicker.Builder()
+            .setTimeFormat(TimeFormat.CLOCK_24H)
+            .setHour(23)
+            .setMinute(10)
+            .setTitleText("Select Appointment time")
+            .build()
+        picker.show(childFragmentManager, "")
+
+        picker.addOnPositiveButtonClickListener {
+            textView.text = "${picker.hour}:${picker.minute}"
+        }
+    }
+
     private fun initData() {
         lifecycleScope.launch() {
             viewModel.loadingMode.collect() { mode ->
-                if (mode == null){
+                if (mode == null) {
                     binding.plateauEffect.isChecked = true
                     return@collect
                 }
@@ -105,7 +118,7 @@ class ModeSettingsFragment : BaseFragment() {
                 binding.forgetfulnessCurveLong.isChecked = true
             }
 
-            SelectedMode.ForgetfulnessCurve -> {
+            SelectedMode.ForgetfulnessCurveShort -> {
                 binding.forgetfulnessCurve.isChecked = true
             }
 
@@ -127,7 +140,7 @@ class ModeSettingsFragment : BaseFragment() {
                 forgetfulnessCurve.isChecked = false
             }
             forgetfulnessCurve.setOnClickListener {
-                viewModel.selectedMode = SelectedMode.ForgetfulnessCurve
+                viewModel.selectedMode = SelectedMode.ForgetfulnessCurveShort
                 forgetfulnessCurveLong.isChecked = false
                 plateauEffect.isChecked = false
             }

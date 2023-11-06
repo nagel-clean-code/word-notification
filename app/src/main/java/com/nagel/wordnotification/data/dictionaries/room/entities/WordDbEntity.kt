@@ -5,10 +5,6 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.nagel.wordnotification.data.dictionaries.entities.Word
-import com.nagel.wordnotification.utils.GlobalFunction
-import java.util.UUID
-
-
 
 
 @Entity(
@@ -40,7 +36,7 @@ class WordDbEntity(
             idDictionary = idDictionary,
             textFirst = textFirst,
             textLast = textLast,
-            learned = learned,
+            allNotificationsCreated = learned,
             learnStep = learnStep,
             lastDateMention = lastDateMention,
             uniqueId = uniqueId
@@ -55,7 +51,7 @@ class WordDbEntity(
             WordDbEntity(
                 idWord = word.idWord,
                 idDictionary = word.idDictionary,
-                learned = word.learned,
+                learned = word.allNotificationsCreated,
                 textFirst = word.textFirst,
                 textLast = word.textLast,
                 learnStep = word.learnStep,

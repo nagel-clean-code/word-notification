@@ -83,8 +83,7 @@
         android:clickable="true"
         android:gravity="center"
         android:src="@drawable/baseline_add_24"
-
-        />
+        android:focusable="true" />
 
     <ProgressBar
         android:id="@+id/progress"

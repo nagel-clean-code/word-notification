@@ -65,6 +65,7 @@ class MainActivity : AppCompatActivity(), Navigator {
             WorkManager.getInstance(this)
                 .enqueueUniquePeriodicWork(
                     "AlgorithmWork",
+                    //FIXME По какой то причине не заменяет пока приложении живо
                     ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
                     worker!!
                 )
