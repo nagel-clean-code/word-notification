@@ -62,7 +62,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
             requireContext(),
             ::openDictionary,
             ::showMenuActionOnWord,
-            viewModel::toggleActiveDictionary,
+            ::toggleActiveDictionary,
             ::openModeSettings
         )
         adapter = dictionariesAdapter
@@ -77,6 +77,11 @@ class ChoosingDictionaryFragment : BaseFragment() {
         }
     }
 
+    private fun toggleActiveDictionary(dictionary: Dictionary, active: Boolean){
+        Utils.deleteNotification(requireContext(), dictionary.wordList)
+        viewModel.toggleActiveDictionary(dictionary.idDictionaries,active)
+    }
+
     private fun openModeSettings(idDictionary: Long) {
         navigator().showModeSettingsFragment(idDictionary)
     }
@@ -85,7 +90,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
         MenuSelectingActions {
             viewModel.deleteWord(dictionary.idDictionaries) {
                 adapter.notifyItemRemoved(position)
-                Utils.deleteNotification(requireContext(), dictionary)
+                Utils.deleteNotification(requireContext(), dictionary.wordList)
             }
         }.show(parentFragmentManager, null)
     }

@@ -13,6 +13,8 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.nagel.wordnotification.R
+import com.nagel.wordnotification.core.services.Utils
+import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import com.nagel.wordnotification.data.settings.entities.SelectedMode
 import com.nagel.wordnotification.databinding.FragmentModeSettingsBinding
@@ -33,7 +35,9 @@ class ModeSettingsFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentModeSettingsBinding.inflate(inflater, container, false)
-        viewModel.idDictionary = requireArguments().getLong(ID_DICTIONARY)
+        val idDictionary = requireArguments().getLong(ID_DICTIONARY)
+        viewModel.idDictionary = idDictionary
+        viewModel.loadWords(idDictionary)
         viewModel.loadCurrentSettings()
         return binding.root
     }
@@ -55,6 +59,13 @@ class ModeSettingsFragment : BaseFragment() {
         initRadioButtons()
         binding.saveButton.setOnClickListener {
             navigator().goBack()
+        }
+        binding.chainDaysWeek.children.forEachIndexed() { i, view: View ->
+            if (view !is Flow) {
+                if (i < 5) {
+                    view.tag = false
+                }
+            }
         }
         initData()
     }
@@ -184,21 +195,47 @@ class ModeSettingsFragment : BaseFragment() {
 
     override fun onPause() {
         super.onPause()
-        viewModel.saveSettings(
-            ModeSettingsDto(
-                idDictionary = viewModel.idDictionary,
-                selectedMode = viewModel.selectedMode,
-                sampleDays = binding.sampleDays.isChecked,
-                days = selectedDays(),
-                timeIntervals = binding.timeIntervals.isChecked,
-                workingTimeInterval = Pair(
-                    binding.time1.text.toString(),
-                    binding.time2.text.toString()
-                ),
-            )
-        )
-        val msg = requireContext().getString(R.string.changes_saved)
+        val prevMode = viewModel.loadingMode.value
+        val newMode = makeModeSettingsDto()
+        if (newMode != prevMode) {
+            viewModel.saveSettings(newMode)
+            showMsg(R.string.changes_saved)
+            viewModel.words?.let { words ->
+                Utils.deleteNotification(requireContext(), words)
+                if (newMode.selectedMode != prevMode?.selectedMode) {
+                    resetSteps(words)
+                }
+            }
+        }
+    }
+
+    private fun showMsg(idMsg: Int) {
+        val msg = requireContext().getString(idMsg)
         Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun resetSteps(words: List<Word>) {
+        words.forEach { word ->
+            if (word.learnStep > 0) {
+                viewModel.resettingAlgorithm(word)
+            }
+        }
+    }
+
+    private fun makeModeSettingsDto(): ModeSettingsDto {
+        val prevMode = viewModel.loadingMode.value
+        return ModeSettingsDto(
+            idMode = prevMode?.idMode ?: 0,
+            idDictionary = viewModel.idDictionary,
+            selectedMode = viewModel.selectedMode,
+            sampleDays = binding.sampleDays.isChecked,
+            days = selectedDays(),
+            timeIntervals = binding.timeIntervals.isChecked,
+            workingTimeInterval = Pair(
+                binding.time1.text.toString(),
+                binding.time2.text.toString()
+            ),
+        )
     }
 
     private fun selectedDays(): List<String> {

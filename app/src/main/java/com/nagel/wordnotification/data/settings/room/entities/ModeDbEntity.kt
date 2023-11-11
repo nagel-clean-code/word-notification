@@ -27,8 +27,8 @@ class ModeDbEntity(
     @ColumnInfo(name = "id_dictionary") val idDictionary: Long,
     @ColumnInfo(name = "selected_mode") val selectedMode: String,
     @ColumnInfo(name = "sample_days") val sampleDays: Boolean,
-    @ColumnInfo(name = "time_intervals") val timeIntervals: Boolean,
     @ColumnInfo(name = "days_in_json") val daysInJson: String,
+    @ColumnInfo(name = "time_intervals") val timeIntervals: Boolean,
     @ColumnInfo(name = "time_intervals_first") val timeIntervalsFirst: String,
     @ColumnInfo(name = "time_intervals_second") val timeIntervalsSecond: String,
 ) {

@@ -33,7 +33,7 @@ class DictionariesListAdapter(
     private val context: Context,
     private val selectDictionary: (Long) -> Unit,
     private val showMenuActionOnWord: (dictionary: Dictionary, position: Int) -> Unit,
-    private val setActive: (dictionary: Long, active: Boolean) -> Unit,
+    private val setActive: (dictionary: Dictionary, active: Boolean) -> Unit,
     private val openModeSettings: (idDictionary: Long) -> Unit
 ) : RecyclerView.Adapter<DictionariesListAdapter.Holder>() {
 
@@ -90,7 +90,7 @@ class DictionariesListAdapter(
             isActive.isChecked = currentDictionary.include
 
             isActive.setOnClickListener {
-                setActive.invoke(currentDictionary.idDictionaries, isActive.isChecked)
+                setActive.invoke(currentDictionary, isActive.isChecked)
                 CoroutineScope(Dispatchers.IO).launch {
                     val mode = settingsRepository.getModeSettings(currentDictionary.idDictionaries)
                     if (mode == null) {

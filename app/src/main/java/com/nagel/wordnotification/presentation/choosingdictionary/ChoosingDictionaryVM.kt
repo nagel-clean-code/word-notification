@@ -32,6 +32,8 @@ class ChoosingDictionaryVM @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             dictionaryRepository.updateIncludeDictionary(active, dictionary)
         }
+
+
     }
 
     fun addDictionary(name: String, idAccount: Long) {

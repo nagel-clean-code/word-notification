@@ -54,7 +54,7 @@ class AlgorithmAdjustmentWork @AssistedInject constructor(
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         val alarmManager = ContextCompat.getSystemService(appContext, AlarmManager::class.java)
-        alarmManager!!.set(AlarmManager.RTC_WAKEUP, word.date, pendingIntent)
+        alarmManager!!.setExact(AlarmManager.RTC_WAKEUP, word.date, pendingIntent)
         Log.d("CoroutineWorker:", "End alarm")
     }
 

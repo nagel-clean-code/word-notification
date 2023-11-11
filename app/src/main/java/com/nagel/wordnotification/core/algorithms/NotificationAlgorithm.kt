@@ -7,6 +7,7 @@ import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.data.settings.SettingsRepository
+import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import com.nagel.wordnotification.data.settings.entities.SelectedMode
 import com.nagel.wordnotification.data.settings.room.entities.ModeDbEntity
 import kotlinx.coroutines.CoroutineScope
@@ -14,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -55,7 +57,6 @@ class NotificationAlgorithm @Inject constructor(
         }
     }
 
-    //TODO нужно учитывать выбранные дни недели и время
     private suspend fun initNotifications(dictionary: Dictionary) {
         val mode = settingsRepository.getModeSettings(dictionary.idDictionaries)
         if (mode == null) {
@@ -83,11 +84,90 @@ class NotificationAlgorithm @Inject constructor(
                             it.learnStep
                         )
                     }
-                    updateWord(it)
-                    bufArray.add(d)
-                    nextTime = getNewDate(mode, it.learnStep++, it.lastDateMention)
+                    nextTime = if (nextTime == null ||
+                        !checkOccurrenceInTimeInterval(nextTime, mode.toMode())
+                    ) {
+                        it.learnStep--
+                        updateWord(it)
+                        null
+                    } else {
+                        updateWord(it)
+                        bufArray.add(d)
+                        getNewDate(mode, it.learnStep++, it.lastDateMention)
+                    }
                 } while (nextTime != null && nextTime - Date().time < MAX_WORKER_RESTART_INTERVAL)
             }
+    }
+
+    private fun checkOccurrenceInTimeInterval(time: Long, mode: ModeSettingsDto): Boolean {
+        var timeInterval = true
+        if (mode.timeIntervals) {
+            timeInterval = checkMinutes(mode, time)
+        }
+
+        var daysSelected = true
+        if (mode.sampleDays) {
+            val day = SimpleDateFormat("EE").format(Date(time))
+            val str = day[0].uppercase() + day[1]
+            daysSelected = mode.days.contains(str)
+        }
+        return timeInterval && daysSelected
+    }
+
+    private fun checkMinutes(mode: ModeSettingsDto, time: Long): Boolean {
+        val startInterval = mode.workingTimeInterval.first
+        val endInterval = mode.workingTimeInterval.second
+
+        val sIHour = startInterval.substring(0, startInterval.indexOf(':')).toInt()
+        val sIMinutes = startInterval.substring(startInterval.indexOf(':') + 1).toInt()
+
+        val eIHour = endInterval.substring(0, endInterval.indexOf(':')).toInt()
+        val eIMinutes = endInterval.substring(endInterval.indexOf(':') + 1).toInt()
+
+        val c = Calendar.getInstance()
+        c.time = Date(time)
+        val hours = c.get(Calendar.HOUR_OF_DAY)
+        val minutes = c.get(Calendar.MINUTE)
+
+        var timeInterval = true
+        if (sIHour < eIHour) {
+            if (hours < sIHour || hours > eIHour) {
+                timeInterval = false
+            } else if (hours == sIHour && minutes < sIMinutes) {
+                timeInterval = false
+            } else if (hours == eIHour && minutes > eIMinutes) {
+                timeInterval = false
+            }
+        } else if (sIHour > eIHour) {
+            if (hours < sIHour && hours > eIHour) {
+                timeInterval = false
+            } else if (hours == sIHour && minutes < sIMinutes) {
+                timeInterval = false
+            } else if (hours == eIHour && minutes > eIMinutes) {
+                timeInterval = false
+            }
+        } else {
+            if (hours != sIHour) {
+                timeInterval = false
+            } else if (sIMinutes < eIMinutes) {
+                if (minutes < sIMinutes || minutes > eIMinutes) {
+                    timeInterval = false
+                }
+            } else {
+                if (minutes > sIMinutes || minutes < eIMinutes) {
+                    timeInterval = false
+                }
+            }
+        }
+        val dateTime = dateFormat.format(Date(time))
+        Log.d(
+            "CoroutineWorker:",
+            "CHECK_TIME: time = $dateTime, " +
+                    "timeInterval = $timeInterval, " +
+                    "startInterval = $startInterval, " +
+                    "endInterval = $endInterval"
+        )
+        return timeInterval
     }
 
     private fun getNewDate(mode: ModeDbEntity, step: Int, lastDate: Long): Long? {
@@ -113,7 +193,7 @@ class NotificationAlgorithm @Inject constructor(
         }
         Log.d(
             "CoroutineWorker:",
-            "nextTime = ${time?.let { SimpleDateFormat("d, hh:mm:ss").format(Date(time)) }}"
+            "nextTime = ${time?.let { dateFormat.format(Date(time)) }}"
         )
         return time
     }
@@ -122,9 +202,11 @@ class NotificationAlgorithm @Inject constructor(
         dictionaryRepository.updateWord(word)
     }
 
-    private fun getIntervalBetweenWords() = (2..5).random() * 60 * 1000L
 
     companion object {
+        val dateFormat = SimpleDateFormat("d, hh:mm:ss")
+
         const val MAX_WORKER_RESTART_INTERVAL = 20 * 60 * 1000L
+        fun getIntervalBetweenWords() = (2..5).random() * 60 * 1000L
     }
 }

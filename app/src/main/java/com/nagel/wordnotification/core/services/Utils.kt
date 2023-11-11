@@ -14,12 +14,9 @@ object Utils {
         }
     }
 
-    fun deleteNotification(context: Context, dictionary: Dictionary) {
-        val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
-        dictionary.wordList.forEach { word ->
-            for (i in (0..MAX_NUMBER_NOTIFICATION_CREATED)) {
-                manager?.cancel(word.uniqueId + word.learnStep - i)
-            }
+    fun deleteNotification(context: Context, wordList: List<Word>) {
+        wordList.forEach { word ->
+            deleteNotification(context, word)
         }
     }
 

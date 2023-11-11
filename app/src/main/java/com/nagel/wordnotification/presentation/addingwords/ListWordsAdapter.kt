@@ -37,7 +37,6 @@ class ListWordsAdapter(
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        Log.d("ListWordsAdapter: bind", position.toString())
         val currentWord = wordList[wordList.size - position - 1]
         holder.setWordFirst(currentWord.textFirst)
         holder.setWordSecond(currentWord.textLast)
