@@ -10,5 +10,6 @@ interface Navigator {
     fun showAddingWordsFragment()
     fun showModeSettingsFragment(idDictionary: Long)
     fun showChoosingDictionaryFragment(idAccount: Long)
+    fun showProfileFragment()
     fun goBack()
 }

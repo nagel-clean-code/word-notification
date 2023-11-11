@@ -15,5 +15,10 @@ interface DictionaryRepository {
     fun addWord(word: Word, success: (Long) -> Unit)
     suspend fun updateWord(word: Word)
     suspend fun updateIncludeDictionary(include: Boolean, idDictionary: Long)
-    fun createDictionary(name: String, idAccount: Long, success: (dictionary: Dictionary) -> Unit = {})
+    fun createDictionary(
+        name: String,
+        idAccount: Long,
+        include: Boolean = false,
+        success: (dictionary: Dictionary) -> Unit = {},
+    )
 }

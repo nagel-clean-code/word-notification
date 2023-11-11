@@ -45,4 +45,9 @@
     <string name="dictionary_not_selected">Словарь не выбран</string>
     <string name="changes_saved">Изменения сохранены</string>
     <string name="choose_dictionary">Выберете словарь</string>
+    <string name="such_dictionary_already_exists">Такой словарь уже существует</string>
+    <string name="dictionary_has_been_created_successfully">Словарь успешно создан</string>
+    <string name="couldnt_delete_dictionary">Не удалось удалить словарь</string>
+    <string name="statistics">Статистика</string>
+    <string name="recommendations">Рекомендации</string>
 </resources>

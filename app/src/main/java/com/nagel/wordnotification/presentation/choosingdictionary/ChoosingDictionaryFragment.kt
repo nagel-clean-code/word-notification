@@ -78,7 +78,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
     }
 
     private fun toggleActiveDictionary(dictionary: Dictionary, active: Boolean){
-        Utils.deleteNotification(requireContext(), dictionary.wordList)
+        Utils.deleteNotification(requireActivity().applicationContext, dictionary.wordList)
         viewModel.toggleActiveDictionary(dictionary.idDictionaries,active)
     }
 
@@ -90,7 +90,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
         MenuSelectingActions {
             viewModel.deleteWord(dictionary.idDictionaries) {
                 adapter.notifyItemRemoved(position)
-                Utils.deleteNotification(requireContext(), dictionary.wordList)
+                Utils.deleteNotification(requireActivity().applicationContext, dictionary.wordList)
             }
         }.show(parentFragmentManager, null)
     }
@@ -145,7 +145,8 @@ class ChoosingDictionaryFragment : BaseFragment() {
             .show()
     }
 
-    private fun showMessage(msg: String) {
+    private fun showMessage(msgId: Int) {
+        val msg = requireContext().getString(msgId)
         Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
     }
 

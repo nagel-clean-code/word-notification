@@ -101,11 +101,17 @@ class RoomDictionaryRepository @Inject constructor(
     override fun createDictionary(
         name: String,
         idAccount: Long,
-        success: (dictionary: Dictionary) -> Unit
+        include: Boolean,
+        success: (dictionary: Dictionary) -> Unit,
     ) {
         GlobalScope.launch {
             val dictionaryDbEntity =
-                DictionaryDbEntity.createDictionary(name, idFolder = 0, idAuthor = idAccount)
+                DictionaryDbEntity.createDictionary(
+                    name,
+                    idFolder = 0,
+                    idAuthor = idAccount,
+                    included = include
+                )
             withContext(Dispatchers.IO) {
                 val id = dictionaryDao.saveDictionary(dictionaryDbEntity)
                 val currentDictionary = dictionaryDbEntity.toDictionary()

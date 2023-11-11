@@ -20,6 +20,7 @@ import com.nagel.wordnotification.core.services.AlgorithmAdjustmentWork
 import com.nagel.wordnotification.databinding.ActivityMainBinding
 import com.nagel.wordnotification.presentation.addingwords.AddingWordsFragment
 import com.nagel.wordnotification.presentation.choosingdictionary.ChoosingDictionaryFragment
+import com.nagel.wordnotification.presentation.profile.ProfileFragment
 import com.nagel.wordnotification.presentation.settings.ModeSettingsFragment
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.concurrent.TimeUnit
@@ -46,7 +47,7 @@ class MainActivity : AppCompatActivity(), Navigator {
                     viewModel.myAccountDbEntity.value?.id ?: -1
                 )
 //                R.id.randomizing -> AddRecipeFragment()
-//                R.id.profile -> FindRecipeFragment()
+                R.id.profile -> ProfileFragment()
                 else -> AddingWordsFragment()
             }
             replaceFragment(bufFragment)
@@ -112,6 +113,10 @@ class MainActivity : AppCompatActivity(), Navigator {
 
     override fun showChoosingDictionaryFragment(idAccount: Long) {
         launchFragment(ChoosingDictionaryFragment.newInstance(idAccount))
+    }
+
+    override fun showProfileFragment() {
+        launchFragment(ProfileFragment.newInstance())
     }
 
     private fun getTurnTrue(): Boolean {

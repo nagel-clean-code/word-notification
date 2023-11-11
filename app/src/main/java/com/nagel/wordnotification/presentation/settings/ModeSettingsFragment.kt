@@ -201,7 +201,7 @@ class ModeSettingsFragment : BaseFragment() {
             viewModel.saveSettings(newMode)
             showMsg(R.string.changes_saved)
             viewModel.words?.let { words ->
-                Utils.deleteNotification(requireContext(), words)
+                Utils.deleteNotification(requireActivity().applicationContext, words)
                 if (newMode.selectedMode != prevMode?.selectedMode) {
                     resetSteps(words)
                 }

@@ -55,7 +55,6 @@ class AlgorithmAdjustmentWork @AssistedInject constructor(
         )
         val alarmManager = ContextCompat.getSystemService(appContext, AlarmManager::class.java)
         alarmManager!!.setExact(AlarmManager.RTC_WAKEUP, word.date, pendingIntent)
-        Log.d("CoroutineWorker:", "End alarm")
     }
 
 }

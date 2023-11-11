@@ -60,7 +60,7 @@ class DictionaryDbEntity(
 
     companion object {
 
-        fun createDictionary(nameDictionary: String, idFolder: Long, idAuthor: Long) =
+        fun createDictionary(nameDictionary: String, idFolder: Long, idAuthor: Long, included: Boolean) =
             DictionaryDbEntity(
                 idDictionaries = 0,
                 idAuthor = idAuthor,
@@ -68,7 +68,7 @@ class DictionaryDbEntity(
                 name = nameDictionary,
                 idFolder = idFolder,
                 mode = 0L,
-                included = false
+                included = included
             )
     }
 }

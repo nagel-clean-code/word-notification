@@ -1,6 +1,7 @@
 package com.nagel.wordnotification.presentation.choosingdictionary
 
 import androidx.lifecycle.viewModelScope
+import com.nagel.wordnotification.R
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.dictionaries.room.DictionaryDao
@@ -19,7 +20,7 @@ class ChoosingDictionaryVM @Inject constructor(
     private val dictionaryDao: DictionaryDao
 ) : BaseViewModel() {
 
-    val showMessage = MutableStateFlow<String?>(null)
+    val showMessage = MutableStateFlow<Int?>(null)
     val loadingWords = MutableStateFlow<List<Word>?>(null)
 
     init {
@@ -37,12 +38,15 @@ class ChoosingDictionaryVM @Inject constructor(
     }
 
     fun addDictionary(name: String, idAccount: Long) {
+        if (name.isBlank()) {
+            return
+        }
         dictionaryRepository.loadDictionaryByName(name, idAccount) { dicrionary ->
             if (dicrionary != null) {
-                showMessage.value = "Такой словарь уже существует"
+                showMessage.value = R.string.such_dictionary_already_exists
             } else {
                 dictionaryRepository.createDictionary(name, idAccount) {
-                    showMessage.value = "Словарь успешно создан"
+                    showMessage.value = R.string.dictionary_has_been_created_successfully
                 }
             }
         }
@@ -53,7 +57,7 @@ class ChoosingDictionaryVM @Inject constructor(
             if (successfully) {
                 success.invoke()
             } else {
-                showMessage.value = "Не удалось удалить словарь"
+                showMessage.value = R.string.couldnt_delete_dictionary
             }
         }
     }

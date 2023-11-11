@@ -1,16 +1,25 @@
 package com.nagel.wordnotification.core.services
 
-import android.app.NotificationManager
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
-import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
+import android.content.Intent
 import com.nagel.wordnotification.data.dictionaries.entities.Word
+
 
 object Utils {
 
     fun deleteNotification(context: Context, word: Word) {
-        val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
-        for (i in (0..MAX_NUMBER_NOTIFICATION_CREATED)) {
-            manager?.cancel(word.uniqueId + word.learnStep - i)
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager?
+        val myIntent = Intent(context, AlarmReceiver::class.java)
+        for (i in (0..word.learnStep)) {
+            val pendingIntent = PendingIntent.getBroadcast(
+                context,
+                word.uniqueId + word.learnStep - i,
+                myIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+            alarmManager?.cancel(pendingIntent)
         }
     }
 
@@ -20,5 +29,4 @@ object Utils {
         }
     }
 
-    private const val MAX_NUMBER_NOTIFICATION_CREATED = 8
 }
