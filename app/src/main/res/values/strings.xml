@@ -50,4 +50,8 @@
     <string name="couldnt_delete_dictionary">Не удалось удалить словарь</string>
     <string name="statistics">Статистика</string>
     <string name="recommendations">Рекомендации</string>
+    <string name="profile">Профиль</string>
+    <string name="randomizing">Рандомайзер</string>
+    <string name="i_do_not_remember">Не помню</string>
+    <string name="remember_2">Помню</string>
 </resources>

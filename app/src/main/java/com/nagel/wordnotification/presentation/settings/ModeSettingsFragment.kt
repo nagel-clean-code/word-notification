@@ -73,8 +73,8 @@ class ModeSettingsFragment : BaseFragment() {
     private fun getTimePiker(textView: TextView) {
         val picker = MaterialTimePicker.Builder()
             .setTimeFormat(TimeFormat.CLOCK_24H)
-            .setHour(23)
-            .setMinute(10)
+            .setHour(textView.text.toString().substringBefore(':').toInt())
+            .setMinute(textView.text.toString().substringAfter(':').toInt())
             .setTitleText("Select Appointment time")
             .build()
         picker.show(childFragmentManager, "")

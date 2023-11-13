@@ -21,6 +21,7 @@ import com.nagel.wordnotification.databinding.ActivityMainBinding
 import com.nagel.wordnotification.presentation.addingwords.AddingWordsFragment
 import com.nagel.wordnotification.presentation.choosingdictionary.ChoosingDictionaryFragment
 import com.nagel.wordnotification.presentation.profile.ProfileFragment
+import com.nagel.wordnotification.presentation.randomizer.RandomizingFragment
 import com.nagel.wordnotification.presentation.settings.ModeSettingsFragment
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.concurrent.TimeUnit
@@ -46,7 +47,7 @@ class MainActivity : AppCompatActivity(), Navigator {
                 R.id.dictionaries -> ChoosingDictionaryFragment.newInstance(
                     viewModel.myAccountDbEntity.value?.id ?: -1
                 )
-//                R.id.randomizing -> AddRecipeFragment()
+                R.id.randomizing -> RandomizingFragment()
                 R.id.profile -> ProfileFragment()
                 else -> AddingWordsFragment()
             }
@@ -105,6 +106,10 @@ class MainActivity : AppCompatActivity(), Navigator {
 
     override fun showAddingWordsFragment() {
         binding.bottomNavigationView.selectedItemId = R.id.add_in_dictionaries
+    }
+
+    override fun showRandomizingFragment() {
+        launchFragment(RandomizingFragment.newInstance())
     }
 
     override fun showModeSettingsFragment(idDictionary: Long) {
