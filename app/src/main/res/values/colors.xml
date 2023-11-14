@@ -15,5 +15,7 @@
     <color name="red">#F44336</color>
     <color name="carrot">#FF7A41</color>
     <color name="yellow">#FFD600</color>
+    <color name="yellow_2">#FFFB40</color>
     <color name="orange">#FFC741</color>
+    <color name="green_2">#70E813</color>
 </resources>

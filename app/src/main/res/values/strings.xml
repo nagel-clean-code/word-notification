@@ -43,6 +43,7 @@
     <string name="enter_word">Введите слово</string>
     <string name="dictionaries">Словари</string>
     <string name="dictionary_not_selected">Словарь не выбран</string>
+    <string name="dictionary_not_found">Словарь не найден</string>
     <string name="changes_saved">Изменения сохранены</string>
     <string name="choose_dictionary">Выберете словарь</string>
     <string name="such_dictionary_already_exists">Такой словарь уже существует</string>
@@ -54,4 +55,5 @@
     <string name="randomizing">Рандомайзер</string>
     <string name="i_do_not_remember">Не помню</string>
     <string name="remember_2">Помню</string>
+    <string name="your_result">Ваш результат</string>
 </resources>

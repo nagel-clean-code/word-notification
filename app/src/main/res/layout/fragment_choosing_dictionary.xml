@@ -15,8 +15,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/background_header"
-            android:orientation="horizontal">
+            android:background="@drawable/background_header_short"
+            android:orientation="horizontal"
+            android:paddingVertical="17.5dp">
 
             <FrameLayout
                 android:layout_width="0dp"
@@ -81,9 +82,9 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="30dp"
         android:clickable="true"
+        android:focusable="true"
         android:gravity="center"
-        android:src="@drawable/baseline_add_24"
-        android:focusable="true" />
+        android:src="@drawable/baseline_add_24" />
 
     <ProgressBar
         android:id="@+id/progress"
