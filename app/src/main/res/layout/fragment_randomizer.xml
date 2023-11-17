@@ -29,7 +29,7 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="220dp"
+            android:layout_height="230dp"
             android:layout_marginHorizontal="30dp"
             android:layout_marginTop="10dp"
             android:background="@drawable/rounded_background_settings" />
@@ -84,6 +84,39 @@
                 android:textColor="@color/purple"
                 android:textSize="16sp"
                 tools:text="Test" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/notRememberTextView"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textColor="@color/red"
+                    tools:text="10" />
+
+                <TextView
+                    android:id="@+id/counterWords"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textColor="@color/gray_2"
+                    tools:text="2/10" />
+
+                <TextView
+                    android:id="@+id/rememberTextView"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textColor="@color/green"
+                    tools:text="2" />
+            </LinearLayout>
+
         </LinearLayout>
     </FrameLayout>
 
@@ -101,8 +134,8 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_marginBottom="100dp"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_marginBottom="100dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/chainDictionaries"

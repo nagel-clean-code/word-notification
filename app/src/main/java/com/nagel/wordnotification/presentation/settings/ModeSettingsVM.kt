@@ -1,11 +1,12 @@
 package com.nagel.wordnotification.presentation.settings
 
 import androidx.lifecycle.viewModelScope
+import com.nagel.wordnotification.core.algorithms.Algorithm
+import com.nagel.wordnotification.core.algorithms.PlateauEffect
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.settings.SettingsRepository
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
-import com.nagel.wordnotification.data.settings.entities.SelectedMode
 import com.nagel.wordnotification.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +21,7 @@ class ModeSettingsVM @Inject constructor(
 ) : BaseViewModel() {
 
     var idDictionary: Long = -1
-    var selectedMode: SelectedMode? = SelectedMode.PlateauEffect
+    var selectedMode: Algorithm? = PlateauEffect
     val loadingMode = MutableStateFlow<ModeSettingsDto?>(null)
     var words: List<Word>? = null
 

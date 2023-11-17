@@ -63,11 +63,10 @@ class MainActivity : AppCompatActivity(), Navigator {
         super.onPause()
         if (worker == null) {
             worker =
-                PeriodicWorkRequestBuilder<AlgorithmAdjustmentWork>(15, TimeUnit.MINUTES).build()
+                PeriodicWorkRequestBuilder<AlgorithmAdjustmentWork>(15, TimeUnit.MINUTES).addTag("AlgorithmWork").build()
             WorkManager.getInstance(this)
                 .enqueueUniquePeriodicWork(
                     "AlgorithmWork",
-                    //FIXME По какой то причине не заменяет пока приложении живо
                     ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
                     worker!!
                 )

@@ -15,5 +15,5 @@ data class Word(
 ) {
     var idWord: Long = 0
 
-    fun isLearned() = allNotificationsCreated && lastDateMention < Date().time
+    fun isItWasRepeated() = allNotificationsCreated && lastDateMention < Date().time
 }

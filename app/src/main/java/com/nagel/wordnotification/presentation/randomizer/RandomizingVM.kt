@@ -22,11 +22,11 @@ class RandomizingVM @Inject constructor(
     val currentDictionary = MutableStateFlow<String?>(null)
     val currentWord = MutableStateFlow<Word?>(null)
     val loadingDictionaries = MutableStateFlow<List<Dictionary>?>(null)
-    private val listWord = mutableListOf<Word>()
+    val listWord = mutableListOf<Word>()
     private val listIndexes1 = mutableListOf<Int>()
     val selectedDictionarySet = mutableSetOf<String>()
-    private var countRemember = 0
-    private var countNotRemember = 0
+    var countRemember = 0
+    var countNotRemember = 0
 
     init {
         viewModelScope.launch {
@@ -74,23 +74,24 @@ class RandomizingVM @Inject constructor(
 
     fun notRemember() {
         ++countNotRemember
-        nextWord()
     }
 
     fun remember() {
         ++countRemember
-        nextWord()
     }
 
-    private fun nextWord() {
+    fun nextWord() {
         if (listWord.isEmpty()) {
             showWord(Word(0, EMPTY_WORD, EMPTY_WORD))
             return
         }
         if (listIndexes1.isEmpty()) {
             if (countRemember > 0 || countNotRemember > 0) {
-                showResult.value = Pair(countRemember, listWord.size)
+                val result = Pair(countRemember, listWord.size)
                 countRemember = 0
+                countNotRemember = 0
+                showResult.value = result
+                showResult.value = null
             }
             initList1()
         }

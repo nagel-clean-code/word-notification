@@ -56,4 +56,5 @@
     <string name="i_do_not_remember">Не помню</string>
     <string name="remember_2">Помню</string>
     <string name="your_result">Ваш результат</string>
+    <string name="text_statistic">Изучено %d/%d слова (%d%%)\nВыучены %d из %d словарей.\nДля полного запоминания\nсловарей, вам требуется ещё\nxxx дней</string>
 </resources>

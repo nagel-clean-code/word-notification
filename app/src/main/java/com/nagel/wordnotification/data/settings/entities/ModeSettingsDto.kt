@@ -1,11 +1,12 @@
 package com.nagel.wordnotification.data.settings.entities
 
 import com.google.gson.Gson
+import com.nagel.wordnotification.core.algorithms.Algorithm
 
 data class ModeSettingsDto(
     val idMode: Long = 0,
     val idDictionary: Long,
-    val selectedMode: SelectedMode?,
+    val selectedMode: Algorithm?,
     val sampleDays: Boolean,
     val days: List<String>,
     val timeIntervals: Boolean,
@@ -14,10 +15,4 @@ data class ModeSettingsDto(
     fun getDaysInJson(): String {
         return Gson().toJson(days)
     }
-}
-
-sealed class SelectedMode {
-    object PlateauEffect : SelectedMode()
-    object ForgetfulnessCurveLong : SelectedMode()
-    object ForgetfulnessCurveShort : SelectedMode()
 }

@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.os.HandlerCompat.postDelayed
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -31,24 +32,37 @@ class RandomizingFragment : BaseFragment() {
         return binding.root
     }
 
+    private fun onClickAnswer(){
+        if(binding.translation.text == EMPTY_WORD) {
+            binding.translation.text = viewModel.currentWord.value?.textLast ?: ""
+            binding.root.postDelayed({
+                viewModel.nextWord()
+            }, DURATION_SHOW_ANSWER)
+        }else{
+            viewModel.nextWord()
+        }
+    }
+
     private fun initListeners() {
         with(binding.notRememberButton) {
             setOnClickListener {
                 setBackgroundResource(R.drawable.background_selected_not_remember)
-                viewModel.notRemember()
                 postDelayed({
                     setBackgroundResource(R.drawable.background_open_book_view)
                 }, DURATION_PRESSING_BUTTON)
+                viewModel.notRemember()
+                onClickAnswer()
             }
         }
 
         with(binding.rememberButton) {
             setOnClickListener {
                 setBackgroundResource(R.drawable.background_selected_remember)
-                viewModel.remember()
                 postDelayed({
                     setBackgroundResource(R.drawable.background_open_book_view)
                 }, DURATION_PRESSING_BUTTON)
+                viewModel.remember()
+                onClickAnswer()
             }
         }
 
@@ -75,6 +89,7 @@ class RandomizingFragment : BaseFragment() {
             viewModel.currentWord.collect() {
                 binding.word.text = it?.textFirst
                 binding.translation.text = EMPTY_WORD
+                showDataCounter()
             }
         }
         lifecycleScope.launch {
@@ -92,9 +107,18 @@ class RandomizingFragment : BaseFragment() {
                         it.first,
                         it.second
                     ).show(parentFragmentManager, null)
+                    binding.translation.text = EMPTY_WORD
+                    showDataCounter()
                 }
             }
         }
+    }
+
+    private fun showDataCounter() {
+        binding.notRememberTextView.text = "${viewModel.countNotRemember}"
+        binding.counterWords.text =
+            "${viewModel.countNotRemember + viewModel.countRemember}/${viewModel.listWord.size}"
+        binding.rememberTextView.text = "${viewModel.countRemember}"
     }
 
     private fun openBookButtonClick() {
@@ -162,6 +186,7 @@ class RandomizingFragment : BaseFragment() {
         fun newInstance() = RandomizingFragment()
 
         private const val DURATION_PRESSING_BUTTON = 200L
+        private const val DURATION_SHOW_ANSWER = 800L
         const val EMPTY_WORD = "?"
     }
 }

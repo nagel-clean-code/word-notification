@@ -13,10 +13,12 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.nagel.wordnotification.R
+import com.nagel.wordnotification.core.algorithms.ForgetfulnessCurveLong
+import com.nagel.wordnotification.core.algorithms.ForgetfulnessCurveShort
+import com.nagel.wordnotification.core.algorithms.PlateauEffect
 import com.nagel.wordnotification.core.services.Utils
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
-import com.nagel.wordnotification.data.settings.entities.SelectedMode
 import com.nagel.wordnotification.databinding.FragmentModeSettingsBinding
 import com.nagel.wordnotification.presentation.base.BaseFragment
 import com.nagel.wordnotification.presentation.navigator
@@ -121,15 +123,15 @@ class ModeSettingsFragment : BaseFragment() {
     private fun initSelectedMode(mode: ModeSettingsDto) {
         viewModel.selectedMode = mode.selectedMode
         when (mode.selectedMode) {
-            SelectedMode.PlateauEffect -> {
+            PlateauEffect -> {
                 binding.plateauEffect.isChecked = true
             }
 
-            SelectedMode.ForgetfulnessCurveLong -> {
+            ForgetfulnessCurveLong -> {
                 binding.forgetfulnessCurveLong.isChecked = true
             }
 
-            SelectedMode.ForgetfulnessCurveShort -> {
+            ForgetfulnessCurveShort -> {
                 binding.forgetfulnessCurve.isChecked = true
             }
 
@@ -141,17 +143,17 @@ class ModeSettingsFragment : BaseFragment() {
     private fun initRadioButtons() {
         binding.apply {
             plateauEffect.setOnClickListener {
-                viewModel.selectedMode = SelectedMode.PlateauEffect
+                viewModel.selectedMode = PlateauEffect
                 forgetfulnessCurveLong.isChecked = false
                 forgetfulnessCurve.isChecked = false
             }
             forgetfulnessCurveLong.setOnClickListener {
-                viewModel.selectedMode = SelectedMode.ForgetfulnessCurveLong
+                viewModel.selectedMode = ForgetfulnessCurveLong
                 plateauEffect.isChecked = false
                 forgetfulnessCurve.isChecked = false
             }
             forgetfulnessCurve.setOnClickListener {
-                viewModel.selectedMode = SelectedMode.ForgetfulnessCurveShort
+                viewModel.selectedMode = ForgetfulnessCurveShort
                 forgetfulnessCurveLong.isChecked = false
                 plateauEffect.isChecked = false
             }

@@ -47,16 +47,16 @@
                     app:layout_constraintTop_toBottomOf="@+id/head" />
 
                 <TextView
-                    android:id="@+id/textView"
+                    android:id="@+id/textView1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="25dp"
-                    android:text="Изучено 123/1000 слова (10%)\nВыучены 2 словаря\nВы запоминаете в среднем \n2 слова в день.\nДля полного запоминания\nсловарей, вам требуется ещё\n236 дней"
                     android:textColor="@color/purple"
                     android:textSize="15sp"
                     app:layout_constraintBottom_toBottomOf="@+id/imageView2"
                     app:layout_constraintStart_toStartOf="@+id/imageView2"
-                    app:layout_constraintTop_toTopOf="@+id/imageView2" />
+                    app:layout_constraintTop_toTopOf="@+id/imageView2"
+                    tools:text="@string/text_statistic" />
 
 
                 <TextView

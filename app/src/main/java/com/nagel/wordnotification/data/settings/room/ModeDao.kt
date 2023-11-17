@@ -11,6 +11,9 @@ interface ModeDao {
     @Query("SELECT * FROM modes WHERE id_dictionary = :dictionaryId")
     suspend fun getModeByIdDictionary(dictionaryId: Long): ModeDbEntity?
 
+    @Query("SELECT * FROM modes")
+    suspend fun getModes(): List<ModeDbEntity>?
+
     @Update(entity = ModeDbEntity::class)
     suspend fun update(mode: ModeDbEntity)
 

@@ -39,6 +39,7 @@ class AlgorithmAdjustmentWork @AssistedInject constructor(
     }
 
     override suspend fun doWork(): Result {
+        Log.d("CoroutineWorker:doWork:", "start")
         algorithm.start()
         return Result.success()
     }

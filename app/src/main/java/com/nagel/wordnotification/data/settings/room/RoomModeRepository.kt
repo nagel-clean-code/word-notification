@@ -34,8 +34,13 @@ class RoomModeRepository @Inject constructor(
 
     override suspend fun getModeSettings(idDictionary: Long): ModeDbEntity? {
         mutex.withLock {
-            val r = modeDao.getModeByIdDictionary(idDictionary)
-            return r
+            return modeDao.getModeByIdDictionary(idDictionary)
+        }
+    }
+
+    override suspend fun getModes(): List<ModeSettingsDto>? {
+        mutex.withLock {
+            return modeDao.getModes()?.map { it.toMode() }
         }
     }
 

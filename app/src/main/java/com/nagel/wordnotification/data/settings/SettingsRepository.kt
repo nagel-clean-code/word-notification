@@ -7,4 +7,5 @@ import kotlinx.coroutines.flow.Flow
 interface SettingsRepository {
     suspend fun saveModeSettings(data: ModeSettingsDto)
     suspend fun getModeSettings(idDictionary: Long): ModeDbEntity?
+    suspend fun getModes(): List<ModeSettingsDto>?
 }

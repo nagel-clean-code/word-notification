@@ -5,9 +5,12 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.google.gson.Gson
+import com.nagel.wordnotification.core.algorithms.Algorithm
+import com.nagel.wordnotification.core.algorithms.ForgetfulnessCurveLong
+import com.nagel.wordnotification.core.algorithms.ForgetfulnessCurveShort
+import com.nagel.wordnotification.core.algorithms.PlateauEffect
 import com.nagel.wordnotification.data.dictionaries.room.entities.DictionaryDbEntity
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
-import com.nagel.wordnotification.data.settings.entities.SelectedMode
 
 
 @Entity(
@@ -49,18 +52,18 @@ class ModeDbEntity(
         return Gson().fromJson(daysInJson, Array<String>::class.java).toList()
     }
 
-    private fun getSelectedMode(): SelectedMode? {
+    private fun getSelectedMode(): Algorithm? {
         return when (selectedMode) {
-            SelectedMode.PlateauEffect::class.simpleName -> {
-                SelectedMode.PlateauEffect
+            PlateauEffect::class.simpleName -> {
+                PlateauEffect
             }
 
-            SelectedMode.ForgetfulnessCurveLong::class.simpleName -> {
-                SelectedMode.ForgetfulnessCurveLong
+            ForgetfulnessCurveLong::class.simpleName -> {
+                ForgetfulnessCurveLong
             }
 
-            SelectedMode.ForgetfulnessCurveShort::class.simpleName -> {
-                SelectedMode.ForgetfulnessCurveShort
+            ForgetfulnessCurveShort::class.simpleName -> {
+                ForgetfulnessCurveShort
             }
 
             else -> {

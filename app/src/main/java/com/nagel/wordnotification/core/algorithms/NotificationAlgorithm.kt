@@ -8,7 +8,6 @@ import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.data.settings.SettingsRepository
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
-import com.nagel.wordnotification.data.settings.entities.SelectedMode
 import com.nagel.wordnotification.data.settings.room.entities.ModeDbEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -172,19 +171,19 @@ class NotificationAlgorithm @Inject constructor(
 
     private fun getNewDate(mode: ModeDbEntity, step: Int, lastDate: Long): Long? {
         val time = when (mode.selectedMode) {
-            SelectedMode.PlateauEffect::class.simpleName -> {
+            PlateauEffect::class.simpleName -> {
                 Log.d("CoroutineWorker:", "AlgorithmPlateauEffect")
-                AlgorithmPlateauEffect.getNewDate(step, lastDate)
+                PlateauEffect.getNewDate(step, lastDate)
             }
 
-            SelectedMode.ForgetfulnessCurveLong::class.simpleName -> {
+            ForgetfulnessCurveLong::class.simpleName -> {
                 Log.d("CoroutineWorker:", "AlgorithmForgetfulnessCurveLong")
-                AlgorithmForgetfulnessCurveLong.getNewDate(step, lastDate)
+                ForgetfulnessCurveLong.getNewDate(step, lastDate)
             }
 
-            SelectedMode.ForgetfulnessCurveShort::class.simpleName -> {
+            ForgetfulnessCurveShort::class.simpleName -> {
                 Log.d("CoroutineWorker:", "ForgetfulnessCurveShort")
-                AlgorithmForgetfulnessCurveShort.getNewDate(step, lastDate)
+                ForgetfulnessCurveShort.getNewDate(step, lastDate)
             }
 
             else -> {
