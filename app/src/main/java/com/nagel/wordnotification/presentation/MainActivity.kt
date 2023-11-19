@@ -12,7 +12,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.nagel.wordnotification.R
@@ -31,15 +30,11 @@ class MainActivity : AppCompatActivity(), Navigator {
 
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainActivityVM by viewModels()
-    private var worker: PeriodicWorkRequest? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-//        if (savedInstanceState == null)
-//            replaceFragment(AddingWordsFragment())
 
         binding.bottomNavigationView.setOnItemSelectedListener {
             val bufFragment = when (it.itemId) {
@@ -47,6 +42,7 @@ class MainActivity : AppCompatActivity(), Navigator {
                 R.id.dictionaries -> ChoosingDictionaryFragment.newInstance(
                     viewModel.myAccountDbEntity.value?.id ?: -1
                 )
+
                 R.id.randomizing -> RandomizingFragment()
                 R.id.profile -> ProfileFragment()
                 else -> AddingWordsFragment()
@@ -61,15 +57,23 @@ class MainActivity : AppCompatActivity(), Navigator {
 
     override fun onPause() {
         super.onPause()
-        if (worker == null) {
-            worker =
-                PeriodicWorkRequestBuilder<AlgorithmAdjustmentWork>(15, TimeUnit.MINUTES).addTag("AlgorithmWork").build()
-            WorkManager.getInstance(this)
-                .enqueueUniquePeriodicWork(
-                    "AlgorithmWork",
-                    ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
-                    worker!!
-                )
+        startAlgorithm()
+    }
+
+    private fun startAlgorithm() {
+        val workManager = WorkManager.getInstance(this)
+        val info = workManager.getWorkInfosByTag("AlgorithmWork")
+        if (info.get().isEmpty() || info.isCancelled) {
+            //Добавить аналитику аналитику
+            val worker = PeriodicWorkRequestBuilder<AlgorithmAdjustmentWork>(
+                WORK_REPEAT_INTERVAL,
+                TimeUnit.MINUTES
+            ).addTag(TAG_WORK).build()
+            workManager.enqueueUniquePeriodicWork(
+                TAG_WORK,
+                ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+                worker
+            )
         }
     }
 
@@ -144,5 +148,10 @@ class MainActivity : AppCompatActivity(), Navigator {
                 binding.bottomNavigationView.visibility = View.VISIBLE
             }
         }
+    }
+
+    companion object {
+        const val TAG_WORK = "AlgorithmWork"
+        const val WORK_REPEAT_INTERVAL = 15L
     }
 }
