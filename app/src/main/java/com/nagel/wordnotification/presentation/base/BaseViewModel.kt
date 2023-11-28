@@ -11,7 +11,7 @@ typealias MutableLiveResult<T> = MutableLiveData<Result<T>>
 
 open class BaseViewModel : ViewModel() {
 
-    fun onResult(result: Any) {
+    open fun onResult(result: Any) {
 
     }
 

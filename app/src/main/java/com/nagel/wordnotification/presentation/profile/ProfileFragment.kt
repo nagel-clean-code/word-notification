@@ -9,12 +9,14 @@ import androidx.lifecycle.lifecycleScope
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.databinding.FragmentProfileBinding
 import com.nagel.wordnotification.presentation.base.BaseFragment
+import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
 class ProfileFragment : BaseFragment() {
+    class Screen: BaseScreen
 
     private lateinit var binding: FragmentProfileBinding
     override val viewModel: ProfileVM by viewModels()

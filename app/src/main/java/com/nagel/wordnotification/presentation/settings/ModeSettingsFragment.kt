@@ -21,13 +21,17 @@ import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import com.nagel.wordnotification.databinding.FragmentModeSettingsBinding
 import com.nagel.wordnotification.presentation.base.BaseFragment
-import com.nagel.wordnotification.presentation.navigator
+import com.nagel.wordnotification.presentation.navigator.BaseScreen
+import com.nagel.wordnotification.presentation.navigator.MainNavigator
+import com.nagel.wordnotification.presentation.navigator.navigator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
 class ModeSettingsFragment : BaseFragment() {
+
+    data class Screen(val idDictionary: Long) : BaseScreen
 
     private lateinit var binding: FragmentModeSettingsBinding
     override val viewModel: ModeSettingsVM by viewModels()
@@ -37,7 +41,8 @@ class ModeSettingsFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentModeSettingsBinding.inflate(inflater, container, false)
-        val idDictionary = requireArguments().getLong(ID_DICTIONARY)
+        val screen = arguments?.getSerializable(MainNavigator.ARG_SCREEN) as Screen
+        val idDictionary = screen.idDictionary
         viewModel.idDictionary = idDictionary
         viewModel.loadWords(idDictionary)
         viewModel.loadCurrentSettings()

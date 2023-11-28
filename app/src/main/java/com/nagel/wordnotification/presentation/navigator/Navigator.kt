@@ -1,4 +1,4 @@
-package com.nagel.wordnotification.presentation
+package com.nagel.wordnotification.presentation.navigator
 
 import androidx.fragment.app.Fragment
 

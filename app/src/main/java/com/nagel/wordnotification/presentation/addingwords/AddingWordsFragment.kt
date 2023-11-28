@@ -15,9 +15,10 @@ import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.services.Utils
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.databinding.FragmentAddingWordsBinding
+import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import com.nagel.wordnotification.presentation.MainActivityVM
 import com.nagel.wordnotification.presentation.base.BaseFragment
-import com.nagel.wordnotification.presentation.navigator
+import com.nagel.wordnotification.presentation.navigator.navigator
 import com.nagel.wordnotification.utils.SharedPrefsUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -25,6 +26,8 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class AddingWordsFragment : BaseFragment() {
+
+    class Screen: BaseScreen
 
     private lateinit var binding: FragmentAddingWordsBinding
     private var listWordsAdapter: ListWordsAdapter? = null

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
+import com.nagel.wordnotification.presentation.navigator.NavigatorV2
 import com.nagel.wordnotification.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -18,7 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AddingWordsVM @Inject constructor(
     val dictionaryRepository: DictionaryRepository,
-    @ApplicationContext context: Context
+    @ApplicationContext context: Context,
+    val navigator: NavigatorV2
 ) : BaseViewModel() {
     private val defaultNameDictionary =
         context.resources.getString(R.string.default_name_dictionary)
@@ -61,7 +63,7 @@ class AddingWordsVM @Inject constructor(
             if (successfully) {
                 success.invoke()
             } else {
-                showMessage.value = "Не удалось удалить слово"
+                showMessage.value = navigator.getString(R.string.couldnt_delete_word)
             }
         }
     }

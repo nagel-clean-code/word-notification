@@ -10,44 +10,59 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.google.firebase.Firebase
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.analytics
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.services.AlgorithmAdjustmentWork
 import com.nagel.wordnotification.databinding.ActivityMainBinding
 import com.nagel.wordnotification.presentation.addingwords.AddingWordsFragment
 import com.nagel.wordnotification.presentation.choosingdictionary.ChoosingDictionaryFragment
+import com.nagel.wordnotification.presentation.navigator.MainNavigator
+import com.nagel.wordnotification.presentation.navigator.Navigator
 import com.nagel.wordnotification.presentation.profile.ProfileFragment
 import com.nagel.wordnotification.presentation.randomizer.RandomizingFragment
 import com.nagel.wordnotification.presentation.settings.ModeSettingsFragment
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), Navigator {
 
     private lateinit var binding: ActivityMainBinding
+
+    @Inject
+    lateinit var navigator: MainNavigator
     private val viewModel: MainActivityVM by viewModels()
+    private lateinit var analytics: FirebaseAnalytics
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        analytics = Firebase.analytics
 
         binding.bottomNavigationView.setOnItemSelectedListener {
-            val bufFragment = when (it.itemId) {
-                R.id.add_in_dictionaries -> AddingWordsFragment()
-                R.id.dictionaries -> ChoosingDictionaryFragment.newInstance(
+            val screen = when (it.itemId) {
+                R.id.add_in_dictionaries -> AddingWordsFragment.Screen()
+
+                R.id.dictionaries -> ChoosingDictionaryFragment.Screen(
                     viewModel.myAccountDbEntity.value?.id ?: -1
                 )
 
-                R.id.randomizing -> RandomizingFragment()
-                R.id.profile -> ProfileFragment()
-                else -> AddingWordsFragment()
+                R.id.randomizing -> RandomizingFragment.Screen()
+                R.id.profile -> ProfileFragment.Screen()
+                else -> AddingWordsFragment.Screen()
             }
-            replaceFragment(bufFragment)
+            navigator.launchFragment(this, screen)
+
             getTurnTrue()
         }
         settingKeyboard()
@@ -57,14 +72,25 @@ class MainActivity : AppCompatActivity(), Navigator {
 
     override fun onPause() {
         super.onPause()
+        navigator.whenActivityActive.mainActivity = null
         startAlgorithm()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        navigator.whenActivityActive.mainActivity = this
     }
 
     private fun startAlgorithm() {
         val workManager = WorkManager.getInstance(this)
         val info = workManager.getWorkInfosByTag("AlgorithmWork")
         if (info.get().isEmpty() || info.isCancelled) {
-            //Добавить аналитику аналитику
+            //TODO отменять все созданные алерты если они были (в бд поменять флаг lesson)
+            val bundle = bundleOf(
+                "Work" to "start",
+                "info.get()" to info.get()
+            )
+            analytics.logEvent("CoroutineWorker", bundle)
             val worker = PeriodicWorkRequestBuilder<AlgorithmAdjustmentWork>(
                 WORK_REPEAT_INTERVAL,
                 TimeUnit.MINUTES
@@ -93,12 +119,6 @@ class MainActivity : AppCompatActivity(), Navigator {
         }
     }
 
-    private fun replaceFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .commit()
-    }
-
     private fun launchFragment(fragment: Fragment) {
         supportFragmentManager
             .beginTransaction()
@@ -112,19 +132,19 @@ class MainActivity : AppCompatActivity(), Navigator {
     }
 
     override fun showRandomizingFragment() {
-        launchFragment(RandomizingFragment.newInstance())
+        navigator.launchFragment(this, RandomizingFragment.Screen())
     }
 
     override fun showModeSettingsFragment(idDictionary: Long) {
-        launchFragment(ModeSettingsFragment.newInstance(idDictionary))
+        navigator.launchFragment(this, ModeSettingsFragment.Screen(idDictionary))
     }
 
     override fun showChoosingDictionaryFragment(idAccount: Long) {
-        launchFragment(ChoosingDictionaryFragment.newInstance(idAccount))
+        navigator.launchFragment(this, ChoosingDictionaryFragment.Screen(idAccount))
     }
 
     override fun showProfileFragment() {
-        launchFragment(ProfileFragment.newInstance())
+        navigator.launchFragment(this, ProfileFragment.Screen())
     }
 
     private fun getTurnTrue(): Boolean {

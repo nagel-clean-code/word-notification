@@ -22,7 +22,9 @@ import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.databinding.FragmentChoosingDictionaryBinding
 import com.nagel.wordnotification.presentation.addingwords.MenuSelectingActions
 import com.nagel.wordnotification.presentation.base.BaseFragment
-import com.nagel.wordnotification.presentation.navigator
+import com.nagel.wordnotification.presentation.navigator.BaseScreen
+import com.nagel.wordnotification.presentation.navigator.MainNavigator.Companion.ARG_SCREEN
+import com.nagel.wordnotification.presentation.navigator.navigator
 import com.nagel.wordnotification.utils.SharedPrefsUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -30,6 +32,7 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ChoosingDictionaryFragment : BaseFragment() {
+    data class Screen(val idAccount: Long): BaseScreen
 
     private lateinit var binding: FragmentChoosingDictionaryBinding
     override val viewModel: ChoosingDictionaryVM by viewModels()
@@ -53,7 +56,8 @@ class ChoosingDictionaryFragment : BaseFragment() {
     }
 
     private fun initAdapter(words: List<Word>) {
-        idAccount = arguments?.getLong(ID_ACCOUNT) ?: -1
+        val screen = arguments?.getSerializable(ARG_SCREEN) as Screen
+        idAccount = screen.idAccount
         val dictionariesAdapter = DictionariesListAdapter(
             dictionaryRepository = viewModel.dictionaryRepository,
             settingsRepository = viewModel.settingsRepository,

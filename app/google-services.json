@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "920199925776",
+    "project_id": "notifire-7d04d",
+    "storage_bucket": "notifire-7d04d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:920199925776:android:b2310f4f17cc03e57cfa95",
+        "android_client_info": {
+          "package_name": "com.nagel.wordnotification"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDHM8eKva6lo04kEBZDMxzt2STkALhH9zs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

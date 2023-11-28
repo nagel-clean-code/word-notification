@@ -6,19 +6,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.os.HandlerCompat.postDelayed
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.databinding.FragmentRandomizerBinding
 import com.nagel.wordnotification.presentation.base.BaseFragment
+import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
 class RandomizingFragment : BaseFragment() {
+    class Screen : BaseScreen
 
     private lateinit var binding: FragmentRandomizerBinding
     override val viewModel: RandomizingVM by viewModels()
@@ -32,13 +33,13 @@ class RandomizingFragment : BaseFragment() {
         return binding.root
     }
 
-    private fun onClickAnswer(){
-        if(binding.translation.text == EMPTY_WORD) {
+    private fun onClickAnswer() {
+        if (binding.translation.text == EMPTY_WORD) {
             binding.translation.text = viewModel.currentWord.value?.textLast ?: ""
             binding.root.postDelayed({
                 viewModel.nextWord()
             }, DURATION_SHOW_ANSWER)
-        }else{
+        } else {
             viewModel.nextWord()
         }
     }
