@@ -58,4 +58,7 @@
     <string name="your_result">Ваш результат</string>
     <string name="couldnt_delete_word">Не удалось удалить слово</string>
     <string name="text_statistic">Изучено %d/%d слова (%d%%)\nВыучены %d из %d словарей.\nДля полного запоминания\nсловарей, вам требуется ещё\nxxx дней</string>
+    <string name="update">Обновить</string>
+    <string name="new_version_app">Вышла новая версия приложения, обновите.</string>
+    <string name="later">Позже</string>
 </resources>

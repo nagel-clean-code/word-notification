@@ -10,7 +10,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
@@ -18,8 +18,12 @@ import androidx.work.WorkManager
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.analytics
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.nagel.wordnotification.R
+import com.nagel.wordnotification.core.analytecs.Analytic
 import com.nagel.wordnotification.core.services.AlgorithmAdjustmentWork
+import com.nagel.wordnotification.data.firbase.RealtimeDbRepository
 import com.nagel.wordnotification.databinding.ActivityMainBinding
 import com.nagel.wordnotification.presentation.addingwords.AddingWordsFragment
 import com.nagel.wordnotification.presentation.choosingdictionary.ChoosingDictionaryFragment
@@ -40,15 +44,19 @@ class MainActivity : AppCompatActivity(), Navigator {
 
     @Inject
     lateinit var navigator: MainNavigator
+
+    @Inject
+    lateinit var realtimeDb: RealtimeDbRepository
+
     private val viewModel: MainActivityVM by viewModels()
-    private lateinit var analytics: FirebaseAnalytics
+    private lateinit var commonFirebaseAnalytics: FirebaseAnalytics
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        analytics = Firebase.analytics
-
+        initFirebase()
         binding.bottomNavigationView.setOnItemSelectedListener {
             val screen = when (it.itemId) {
                 R.id.add_in_dictionaries -> AddingWordsFragment.Screen()
@@ -61,13 +69,35 @@ class MainActivity : AppCompatActivity(), Navigator {
                 R.id.profile -> ProfileFragment.Screen()
                 else -> AddingWordsFragment.Screen()
             }
-            navigator.launchFragment(this, screen)
+            navigator.launchFragment(this, screen, false)
 
             getTurnTrue()
         }
         settingKeyboard()
         viewModel.startSession()
         checkPermissions()
+    }
+
+    private fun initFirebase() {
+        commonFirebaseAnalytics = Firebase.analytics
+        auth = com.google.firebase.ktx.Firebase.auth
+        auth.signInAnonymously()
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    Analytic.logEvent(
+                        FirebaseAnalytics.Event.LOGIN,
+                        FirebaseAnalytics.Param.METHOD,
+                        "successful"
+                    )
+//                    val user = auth.currentUser
+                } else {
+                    Analytic.logEvent(
+                        FirebaseAnalytics.Event.LOGIN,
+                        FirebaseAnalytics.Param.METHOD,
+                        "fails"
+                    )
+                }
+            }
     }
 
     override fun onPause() {
@@ -86,11 +116,11 @@ class MainActivity : AppCompatActivity(), Navigator {
         val info = workManager.getWorkInfosByTag("AlgorithmWork")
         if (info.get().isEmpty() || info.isCancelled) {
             //TODO отменять все созданные алерты если они были (в бд поменять флаг lesson)
-            val bundle = bundleOf(
+            val logs = mapOf(
                 "Work" to "start",
                 "info.get()" to info.get()
             )
-            analytics.logEvent("CoroutineWorker", bundle)
+            Analytic.logEvent("CoroutineWorker", logs, false)
             val worker = PeriodicWorkRequestBuilder<AlgorithmAdjustmentWork>(
                 WORK_REPEAT_INTERVAL,
                 TimeUnit.MINUTES
@@ -168,6 +198,14 @@ class MainActivity : AppCompatActivity(), Navigator {
                 binding.bottomNavigationView.visibility = View.VISIBLE
             }
         }
+    }
+
+    fun showUpdateAppDialog(mandatory: Boolean, link: String) {
+        val prevDialog = supportFragmentManager.findFragmentByTag(PopupUpdateAppDialog.TAG)
+        (prevDialog as? DialogFragment)?.dismiss()
+
+        PopupUpdateAppDialog(mandatory, link)
+            .show(supportFragmentManager, PopupUpdateAppDialog.TAG)
     }
 
     companion object {

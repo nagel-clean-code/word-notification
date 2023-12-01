@@ -10,13 +10,14 @@ import com.nagel.wordnotification.R
 import com.nagel.wordnotification.databinding.FragmentProfileBinding
 import com.nagel.wordnotification.presentation.base.BaseFragment
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
+import com.nagel.wordnotification.utils.GlobalFunction.openUrl
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
 class ProfileFragment : BaseFragment() {
-    class Screen: BaseScreen
+    class Screen : BaseScreen
 
     private lateinit var binding: FragmentProfileBinding
     override val viewModel: ProfileVM by viewModels()
@@ -31,6 +32,17 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun initListeners() {
+        binding.apply {
+            vkButton.setOnClickListener {
+                requireContext().openUrl("https://vk.com/club223679470")  //Желательно ссылки брать с Firbase
+            }
+            okButton.setOnClickListener {
+                requireContext().openUrl("https://ok.ru/group/70000004748309")
+            }
+            telegramButton.setOnClickListener {
+                requireContext().openUrl("https://t.me/+iiziqMIl-fQzYzYy")
+            }
+        }
         lifecycleScope.launch {
             viewModel.showData.collect() {
                 if (it != null) {

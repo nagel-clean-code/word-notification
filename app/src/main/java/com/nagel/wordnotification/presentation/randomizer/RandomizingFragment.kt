@@ -23,7 +23,7 @@ class RandomizingFragment : BaseFragment() {
 
     private lateinit var binding: FragmentRandomizerBinding
     override val viewModel: RandomizingVM by viewModels()
-
+    private var runable: Runnable? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -31,6 +31,15 @@ class RandomizingFragment : BaseFragment() {
         binding = FragmentRandomizerBinding.inflate(inflater, container, false)
         initListeners()
         return binding.root
+    }
+
+    private fun addRunnable(duration: Long, run: () -> Unit) {
+        if (runable != null) return
+        runable = Runnable {
+            run.invoke()
+            runable = null
+        }
+        binding.root.postDelayed(runable, duration)
     }
 
     private fun onClickAnswer() {
@@ -47,23 +56,27 @@ class RandomizingFragment : BaseFragment() {
     private fun initListeners() {
         with(binding.notRememberButton) {
             setOnClickListener {
-                setBackgroundResource(R.drawable.background_selected_not_remember)
-                postDelayed({
-                    setBackgroundResource(R.drawable.background_open_book_view)
-                }, DURATION_PRESSING_BUTTON)
-                viewModel.notRemember()
-                onClickAnswer()
+                if (runable == null) {
+                    setBackgroundResource(R.drawable.background_selected_not_remember)
+                    viewModel.notRemember()
+                    onClickAnswer()
+                    addRunnable(DURATION_PRESSING_BUTTON) {
+                        setBackgroundResource(R.drawable.background_open_book_view)
+                    }
+                }
             }
         }
 
         with(binding.rememberButton) {
             setOnClickListener {
-                setBackgroundResource(R.drawable.background_selected_remember)
-                postDelayed({
-                    setBackgroundResource(R.drawable.background_open_book_view)
-                }, DURATION_PRESSING_BUTTON)
-                viewModel.remember()
-                onClickAnswer()
+                if (runable == null) {
+                    setBackgroundResource(R.drawable.background_selected_remember)
+                    viewModel.remember()
+                    onClickAnswer()
+                    addRunnable(DURATION_PRESSING_BUTTON) {
+                        setBackgroundResource(R.drawable.background_open_book_view)
+                    }
+                }
             }
         }
 
@@ -71,9 +84,9 @@ class RandomizingFragment : BaseFragment() {
             setOnClickListener {
                 setBackgroundResource(R.drawable.background_selected_book_view)
                 openBookButtonClick()
-                postDelayed({
+                addRunnable(DURATION_PRESSING_BUTTON) {
                     setBackgroundResource(R.drawable.background_open_book_view)
-                }, DURATION_PRESSING_BUTTON)
+                }
             }
         }
         lifecycleScope.launch {
