@@ -1,7 +1,7 @@
 package com.nagel.wordnotification.data.dictionaries.entities
 
 data class Dictionary(
-    var idDictionaries: Long,
+    var idDictionary: Long,
     val idAuthor: Long,
     val name: String,
     val dateCreated: Long,

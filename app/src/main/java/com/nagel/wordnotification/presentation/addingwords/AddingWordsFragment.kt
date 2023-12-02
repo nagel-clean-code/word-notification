@@ -56,7 +56,7 @@ class AddingWordsFragment : BaseFragment() {
         binding.modeSettings.setOnClickListener {
             viewModel.loadedDictionaryFlow.value = false
             viewModel.dictionary?.let {
-                navigator().showModeSettingsFragment(it.idDictionaries)
+                navigator().showModeSettingsFragment(it.idDictionary)
             }
         }
 
@@ -145,7 +145,7 @@ class AddingWordsFragment : BaseFragment() {
             viewModel.deleteWord(word.idWord) {
                 viewModel.dictionary?.wordList?.removeIf { it.idWord == word.idWord }
                 listWordsAdapter?.notifyItemRemoved(position)
-                Utils.deleteNotification(requireActivity().applicationContext, word)
+                Utils.deleteNotification(word)
             }
         }.show(parentFragmentManager, null)
     }
@@ -160,7 +160,7 @@ class AddingWordsFragment : BaseFragment() {
             val textLast = binding.editTextTranslation.text.toString().replace("\n", ", ")
             if (textFirst.isBlank() || textLast.isBlank()) return@setOnClickListener
             val word = Word(
-                idDictionary = viewModel.dictionary!!.idDictionaries,
+                idDictionary = viewModel.dictionary!!.idDictionary,
                 textFirst = textFirst,
                 textLast = textLast
             )

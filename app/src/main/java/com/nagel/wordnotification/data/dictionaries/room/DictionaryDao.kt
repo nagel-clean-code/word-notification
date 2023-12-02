@@ -28,11 +28,15 @@ interface DictionaryDao {
     @Query("UPDATE dictionaries SET id_mode=:idMode WHERE id = :idDictionary")
     suspend fun setIdModeInDictionary(idMode: Long, idDictionary: Long)
 
+    @Query("UPDATE dictionaries SET name=:name WHERE id = :idDictionary")
+    suspend fun updateDictionaryName(name: String, idDictionary: Long)
+
     @Insert(entity = WordDbEntity::class)
     suspend fun addWord(wordDbEntity: WordDbEntity): Long
 
     @Update(entity = WordDbEntity::class)
     suspend fun updateWord(wordDbEntity: WordDbEntity)
+
     @Query("UPDATE dictionaries SET included = :include WHERE id=:idDictionary")
     suspend fun setInclude(idDictionary: Long, include: Boolean)
 

@@ -4,12 +4,15 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.util.Log
+import com.nagel.wordnotification.app.App
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 
 
 object Utils {
 
-    fun deleteNotification(context: Context, word: Word) {
+    fun deleteNotification(word: Word) {
+        val context = App.get()
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager?
         val myIntent = Intent(context, AlarmReceiver::class.java)
         for (i in (0..word.learnStep)) {
@@ -17,15 +20,16 @@ object Utils {
                 context,
                 word.uniqueId + word.learnStep - i,
                 myIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
             )
+            Log.d("deleteNotification:", "requestCode:${word.uniqueId + word.learnStep - i}")
             alarmManager?.cancel(pendingIntent)
         }
     }
 
-    fun deleteNotification(context: Context, wordList: List<Word>) {
+    fun deleteNotification(wordList: List<Word>) {
         wordList.forEach { word ->
-            deleteNotification(context, word)
+            deleteNotification(word)
         }
     }
 

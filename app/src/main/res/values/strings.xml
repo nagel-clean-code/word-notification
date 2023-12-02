@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Word Notification</string>
+    <string name="app_name">NotiFier</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="network_error">Ошибка сети</string>
     <string name="repeat">Повторить</string>
@@ -61,4 +61,7 @@
     <string name="update">Обновить</string>
     <string name="new_version_app">Вышла новая версия приложения, обновите.</string>
     <string name="later">Позже</string>
+    <string name="dictionary_number_one">Словарь №1</string>
+    <string name="saving">Сохранение...</string>
+    <string name="error_saving_mode">Ошибка сохранения режима</string>
 </resources>

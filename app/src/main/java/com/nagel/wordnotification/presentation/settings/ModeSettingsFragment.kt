@@ -8,6 +8,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.helper.widget.Flow
 import androidx.core.view.children
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.timepicker.MaterialTimePicker
@@ -21,6 +22,9 @@ import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import com.nagel.wordnotification.databinding.FragmentModeSettingsBinding
 import com.nagel.wordnotification.presentation.base.BaseFragment
+import com.nagel.wordnotification.presentation.base.ErrorResult
+import com.nagel.wordnotification.presentation.base.PendingResult
+import com.nagel.wordnotification.presentation.base.SuccessResult
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import com.nagel.wordnotification.presentation.navigator.MainNavigator
 import com.nagel.wordnotification.presentation.navigator.navigator
@@ -65,7 +69,7 @@ class ModeSettingsFragment : BaseFragment() {
 
         initRadioButtons()
         binding.saveButton.setOnClickListener {
-            navigator().goBack()
+            saveMode()
         }
         binding.chainDaysWeek.children.forEachIndexed() { i, view: View ->
             if (view !is Flow) {
@@ -74,7 +78,37 @@ class ModeSettingsFragment : BaseFragment() {
                 }
             }
         }
+        initListenerLiveResult()
         initData()
+    }
+
+    private fun initListenerLiveResult() {
+        binding.loadFrame.apply {
+        viewModel.liveResult.observe(viewLifecycleOwner) { status ->
+                when (status) {
+                    is PendingResult -> {
+                        root.isVisible = true
+                        loadingLayout.isVisible = true
+                        errorLayout.isVisible = false
+                        navigator().blackoutBottomNavigationView(true)
+                    }
+
+                    is ErrorResult -> {
+                        loadingLayout.isVisible = true
+                        errorLayout.isVisible = false
+                    }
+
+                    is SuccessResult -> {
+                        navigator().blackoutBottomNavigationView(false)
+                        showMsg(R.string.changes_saved)
+                        navigator().goBack()
+                    }
+                }
+            }
+            repeatButton.setOnClickListener {
+                saveMode()
+            }
+        }
     }
 
     private fun getTimePiker(textView: TextView) {
@@ -202,17 +236,22 @@ class ModeSettingsFragment : BaseFragment() {
 
     override fun onPause() {
         super.onPause()
+        saveMode()
+    }
+
+    private fun saveMode() {
         val prevMode = viewModel.loadingMode.value
         val newMode = makeModeSettingsDto()
         if (newMode != prevMode) {
             viewModel.saveSettings(newMode)
-            showMsg(R.string.changes_saved)
             viewModel.words?.let { words ->
-                Utils.deleteNotification(requireActivity().applicationContext, words)
+                Utils.deleteNotification(words)
                 if (newMode.selectedMode != prevMode?.selectedMode) {
                     resetSteps(words)
                 }
             }
+        } else {
+            navigator().goBack()
         }
     }
 

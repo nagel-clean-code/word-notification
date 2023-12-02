@@ -57,7 +57,7 @@ class NotificationAlgorithm @Inject constructor(
     }
 
     private suspend fun initNotifications(dictionary: Dictionary) {
-        val mode = settingsRepository.getModeSettings(dictionary.idDictionaries)
+        val mode = settingsRepository.getModeSettings(dictionary.idDictionary)
         if (mode == null) {
             Log.d("CoroutineWorker:", "mode == null")
             return
@@ -68,6 +68,7 @@ class NotificationAlgorithm @Inject constructor(
                     //Добавление интервала между словами на первом шаге, чтобы не появились все в один раз
                     it.lastDateMention = countFirstNotifications++ * getIntervalBetweenWords()
                 }
+                Log.d(TAG, "Current word: $it")
                 var nextTime = getNewDate(mode, it.learnStep++, it.lastDateMention)
                 do {
                     val d = if (nextTime == null) {
@@ -94,6 +95,7 @@ class NotificationAlgorithm @Inject constructor(
                         bufArray.add(d)
                         getNewDate(mode, it.learnStep++, it.lastDateMention)
                     }
+                    Log.d(TAG, "nextTime = $nextTime")
                 } while (nextTime != null && nextTime - Date().time < MAX_WORKER_RESTART_INTERVAL)
             }
     }
@@ -207,5 +209,6 @@ class NotificationAlgorithm @Inject constructor(
 
         const val MAX_WORKER_RESTART_INTERVAL = 20 * 60 * 1000L
         fun getIntervalBetweenWords() = (2..5).random() * 60 * 1000L
+        const val TAG = "CoroutineWorker:"
     }
 }

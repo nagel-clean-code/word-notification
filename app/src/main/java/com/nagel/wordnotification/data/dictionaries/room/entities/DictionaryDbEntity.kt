@@ -48,7 +48,7 @@ class DictionaryDbEntity(
 
     fun toDictionary(): Dictionary {
         return Dictionary(
-            idDictionaries = idDictionaries,
+            idDictionary = idDictionaries,
             idAuthor = idAuthor,
             name = name,
             dateCreated = dateCreated,

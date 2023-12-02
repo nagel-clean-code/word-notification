@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/rounded_background_settings"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingHorizontal="60dp"
+    android:paddingVertical="25dp">
+
+    <TextView
+        android:id="@+id/headerTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="@string/input_name_dictionary"
+        android:textColor="@color/gray_3"
+        android:textSize="16sp" />
+
+    <EditText
+        android:id="@+id/dictionaryName"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:fontFamily="@font/montserrat_bold"
+        android:hint="@string/dictionary_number_one"
+        android:inputType="textCapWords"
+        android:textColor="@color/black"
+        android:textColorHint="@color/gray"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/save_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:paddingVertical="14dp"
+        android:text="@string/add"
+        android:textSize="16sp" />
+
+</LinearLayout>

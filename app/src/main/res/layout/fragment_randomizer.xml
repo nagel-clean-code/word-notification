@@ -19,7 +19,7 @@
         android:paddingBottom="20dp"
         android:text="@string/randomizing"
         android:textColor="@color/white"
-        android:textSize="22sp" />
+        android:textSize="20sp" />
 
     <FrameLayout
         android:layout_width="wrap_content"

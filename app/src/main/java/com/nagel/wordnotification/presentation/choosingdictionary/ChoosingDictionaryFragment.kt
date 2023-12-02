@@ -1,13 +1,9 @@
 package com.nagel.wordnotification.presentation.choosingdictionary
 
-import android.app.AlertDialog
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
-import android.widget.EditText
 import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
@@ -15,7 +11,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nagel.wordnotification.Constants
-import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.services.Utils
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.dictionaries.entities.Word
@@ -32,7 +27,7 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ChoosingDictionaryFragment : BaseFragment() {
-    data class Screen(val idAccount: Long): BaseScreen
+    data class Screen(val idAccount: Long) : BaseScreen
 
     private lateinit var binding: FragmentChoosingDictionaryBinding
     override val viewModel: ChoosingDictionaryVM by viewModels()
@@ -81,9 +76,9 @@ class ChoosingDictionaryFragment : BaseFragment() {
         }
     }
 
-    private fun toggleActiveDictionary(dictionary: Dictionary, active: Boolean){
-        Utils.deleteNotification(requireActivity().applicationContext, dictionary.wordList)
-        viewModel.toggleActiveDictionary(dictionary.idDictionaries,active)
+    private fun toggleActiveDictionary(dictionary: Dictionary, active: Boolean) {
+        Utils.deleteNotification(dictionary.wordList)
+        viewModel.toggleActiveDictionary(dictionary.idDictionary, active)
     }
 
     private fun openModeSettings(idDictionary: Long) {
@@ -91,10 +86,12 @@ class ChoosingDictionaryFragment : BaseFragment() {
     }
 
     private fun showMenuActionOnWord(dictionary: Dictionary, position: Int) {
-        MenuSelectingActions {
-            viewModel.deleteWord(dictionary.idDictionaries) {
+        MenuSelectingActions({
+            showEditDictionaryDialog(dictionary)
+        }) {
+            viewModel.deleteWord(dictionary.idDictionary) {
                 adapter.notifyItemRemoved(position)
-                Utils.deleteNotification(requireActivity().applicationContext, dictionary.wordList)
+                Utils.deleteNotification(dictionary.wordList)
             }
         }.show(parentFragmentManager, null)
     }
@@ -110,7 +107,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
 
     private fun initListeners() {
         binding.addButton.setOnClickListener {
-            showAlertDialog()
+            showAddDictionaryDialog()
         }
         lifecycleScope.launch {
             viewModel.showMessage.collect() { msg ->
@@ -128,25 +125,18 @@ class ChoosingDictionaryFragment : BaseFragment() {
         }
     }
 
-    private fun showAlertDialog() {
-        val input = EditText(requireContext())
-        input.inputType = EditorInfo.TYPE_TEXT_FLAG_CAP_WORDS
-        input.setHint(R.string.input_name_dictionary)
-        val buttonClickListener = DialogInterface.OnClickListener { dialog, witch ->
-            when (witch) {
-                DialogInterface.BUTTON_POSITIVE -> {
-                    viewModel.addDictionary(name = input.text.toString(), idAccount)
-                    binding.dictionariesList.scrollToPosition(0)
-                }
-            }
-        }
+    private fun showEditDictionaryDialog(dictionary: Dictionary) {
+        DictionaryEditorAppDialog(dictionary.name) { name ->
+            viewModel.replaceNameDictionary(name = name, idDictionary = dictionary.idDictionary)
+            binding.dictionariesList.scrollToPosition(0)
+        }.show(childFragmentManager, DictionaryEditorAppDialog.TAG)
+    }
 
-        AlertDialog.Builder(requireContext())
-            .setTitle(R.string.create_dictionary)
-            .setView(input)
-            .setPositiveButton(R.string.add, buttonClickListener)
-            .setNegativeButton(R.string.cancel, buttonClickListener)
-            .show()
+    private fun showAddDictionaryDialog() {
+        DictionaryEditorAppDialog() { name ->
+            viewModel.addDictionary(name = name, idAccount)
+            binding.dictionariesList.scrollToPosition(0)
+        }.show(childFragmentManager, DictionaryEditorAppDialog.TAG)
     }
 
     private fun showMessage(msgId: Int) {

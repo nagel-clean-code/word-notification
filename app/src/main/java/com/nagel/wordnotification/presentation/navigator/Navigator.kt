@@ -12,5 +12,7 @@ interface Navigator {
     fun showModeSettingsFragment(idDictionary: Long)
     fun showChoosingDictionaryFragment(idAccount: Long)
     fun showProfileFragment()
+    fun clearBackStack()
+    fun blackoutBottomNavigationView(show: Boolean)
     fun goBack()
 }

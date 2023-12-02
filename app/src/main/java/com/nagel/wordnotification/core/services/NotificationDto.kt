@@ -2,6 +2,8 @@ package com.nagel.wordnotification.core.services
 
 import android.os.Parcel
 import android.os.Parcelable
+import java.text.SimpleDateFormat
+import java.util.Date
 
 data class NotificationDto(
     var text: String?,
@@ -39,5 +41,13 @@ data class NotificationDto(
         override fun newArray(size: Int): Array<NotificationDto?> {
             return arrayOfNulls(size)
         }
+
+        val dateFormat = SimpleDateFormat("d, HH:mm:ss")
+    }
+
+    override fun toString(): String {
+        return "NotificationDto(text=$text, translation=$translation, date=" + dateFormat.format(
+            Date(date)
+        ) + ", uniqueId=$uniqueId, step=$step)"
     }
 }

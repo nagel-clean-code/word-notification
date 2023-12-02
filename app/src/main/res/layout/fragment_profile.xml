@@ -28,7 +28,7 @@
                 android:paddingBottom="20dp"
                 android:text="@string/profile"
                 android:textColor="@color/white"
-                android:textSize="22sp" />
+                android:textSize="20sp" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"

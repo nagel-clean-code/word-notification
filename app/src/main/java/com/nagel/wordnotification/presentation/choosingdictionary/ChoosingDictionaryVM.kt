@@ -33,16 +33,23 @@ class ChoosingDictionaryVM @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             dictionaryRepository.updateIncludeDictionary(active, dictionary)
         }
+    }
 
-
+    fun replaceNameDictionary(name: String, idDictionary: Long) {
+        if (name.isBlank()) {
+            return
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            dictionaryRepository.updateNameDictionary(idDictionary, name)
+        }
     }
 
     fun addDictionary(name: String, idAccount: Long) {
         if (name.isBlank()) {
             return
         }
-        dictionaryRepository.loadDictionaryByName(name, idAccount) { dicrionary ->
-            if (dicrionary != null) {
+        dictionaryRepository.loadDictionaryByName(name, idAccount) { dictionary ->
+            if (dictionary != null) {
                 showMessage.value = R.string.such_dictionary_already_exists
             } else {
                 dictionaryRepository.createDictionary(name, idAccount) {

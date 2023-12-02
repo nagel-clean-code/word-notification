@@ -12,6 +12,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -69,9 +70,9 @@ class MainActivity : AppCompatActivity(), Navigator {
                 R.id.profile -> ProfileFragment.Screen()
                 else -> AddingWordsFragment.Screen()
             }
+            clearBackStack()
             navigator.launchFragment(this, screen, false)
-
-            getTurnTrue()
+            true
         }
         settingKeyboard()
         viewModel.startSession()
@@ -177,8 +178,12 @@ class MainActivity : AppCompatActivity(), Navigator {
         navigator.launchFragment(this, ProfileFragment.Screen())
     }
 
-    private fun getTurnTrue(): Boolean {
-        return true
+    override fun clearBackStack() {
+        supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+    }
+
+    override fun blackoutBottomNavigationView(show: Boolean) {
+        binding.blackout.visibility = if (show) View.VISIBLE else View.INVISIBLE
     }
 
     override fun goBack() {

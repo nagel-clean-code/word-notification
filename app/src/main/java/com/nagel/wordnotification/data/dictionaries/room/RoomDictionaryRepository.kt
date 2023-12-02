@@ -24,7 +24,7 @@ class RoomDictionaryRepository @Inject constructor(
         return dictionaryDao.getMyDictionaries(accountId).map { itFlow ->
             itFlow?.map {
                 val result = it.toDictionary()
-                result.wordList = getWordsByIdDictionary(result.idDictionaries).toMutableList()
+                result.wordList = getWordsByIdDictionary(result.idDictionary).toMutableList()
                 result
             } ?: listOf()
         }
@@ -39,7 +39,7 @@ class RoomDictionaryRepository @Inject constructor(
             val dictionaryDbEntity = dictionaryDao.getDictionaryByName(name, idAuthor)
             val currentDictionary = dictionaryDbEntity?.toDictionary()
             currentDictionary?.wordList =
-                getWords(currentDictionary!!.idDictionaries).map { it.toWord() }.toMutableList()
+                getWords(currentDictionary!!.idDictionary).map { it.toWord() }.toMutableList()
             success.invoke(currentDictionary)
         }
     }
@@ -76,6 +76,10 @@ class RoomDictionaryRepository @Inject constructor(
 
     override suspend fun getWordsByIdDictionary(idDictionary: Long): List<Word> {
         return dictionaryDao.getWords(idDictionary).map { it.toWord() }
+    }
+
+    override suspend fun updateNameDictionary(idDictionary: Long, name: String) {
+        dictionaryDao.updateDictionaryName(name, idDictionary)
     }
 
     override fun addWord(wordDto: Word, success: (Long) -> Unit) {
@@ -115,7 +119,7 @@ class RoomDictionaryRepository @Inject constructor(
             withContext(Dispatchers.IO) {
                 val id = dictionaryDao.saveDictionary(dictionaryDbEntity)
                 val currentDictionary = dictionaryDbEntity.toDictionary()
-                currentDictionary.idDictionaries = id
+                currentDictionary.idDictionary = id
                 withContext(Dispatchers.Main) {
                     success.invoke(currentDictionary)
                 }

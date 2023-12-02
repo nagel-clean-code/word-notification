@@ -12,6 +12,7 @@ import androidx.fragment.app.DialogFragment
 import com.nagel.wordnotification.databinding.MenuSelectingActionsOnWordBinding
 
 class MenuSelectingActions(
+    private val edit: (() -> Unit)? = null,
     private val delete: () -> Unit
 ) : DialogFragment() {
 
@@ -31,10 +32,13 @@ class MenuSelectingActions(
             dismiss()
         }
         binding.edit.setOnClickListener {
-            Toast.makeText(requireContext(),"В процессе реализации", Toast.LENGTH_LONG).show()
+            edit?.invoke() ?: run {
+                Toast.makeText(requireContext(), "В процессе реализации", Toast.LENGTH_LONG).show()
+            }
+            dismiss()
         }
         binding.move.setOnClickListener {
-            Toast.makeText(requireContext(),"В процессе реализации", Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), "В процессе реализации", Toast.LENGTH_LONG).show()
         }
         return binding.root
     }

@@ -73,26 +73,32 @@ class RandomizingVM @Inject constructor(
     }
 
     fun notRemember() {
-        ++countNotRemember
+        if (!isFinish()) {
+            ++countNotRemember
+        }
     }
 
     fun remember() {
-        ++countRemember
+        if (!isFinish()) {
+            ++countRemember
+        }
     }
+
+    private fun isFinish() = (listIndexes1.isEmpty() && (countRemember > 0 || countNotRemember > 0))
 
     fun nextWord() {
         if (listWord.isEmpty()) {
             showWord(Word(0, EMPTY_WORD, EMPTY_WORD))
             return
         }
+        if (isFinish()) {
+            val result = Pair(countRemember, listWord.size)
+            countRemember = 0
+            countNotRemember = 0
+            showResult.value = result
+            showResult.value = null
+        }
         if (listIndexes1.isEmpty()) {
-            if (countRemember > 0 || countNotRemember > 0) {
-                val result = Pair(countRemember, listWord.size)
-                countRemember = 0
-                countNotRemember = 0
-                showResult.value = result
-                showResult.value = null
-            }
             initList1()
         }
         val randomIx = (0 until listIndexes1.size).random()
@@ -103,7 +109,7 @@ class RandomizingVM @Inject constructor(
 
     private fun showWord(word: Word) {
         currentWord.value = word
-        val dictionary = loadingDictionaries.value?.find { it.idDictionaries == word.idDictionary }
+        val dictionary = loadingDictionaries.value?.find { it.idDictionary == word.idDictionary }
         currentDictionary.value = dictionary?.name ?: ""
     }
 }

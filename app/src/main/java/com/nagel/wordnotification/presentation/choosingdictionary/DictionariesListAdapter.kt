@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import java.lang.Integer.min
 
 class DictionariesListAdapter(
     private val dictionaryRepository: DictionaryRepository,
@@ -61,11 +60,11 @@ class DictionariesListAdapter(
         val currentDictionary = dataList[dataList.size - 1 - position]
         currentDictionary.wordList =
             allWord.filter {
-                it.idDictionary == currentDictionary.idDictionaries
+                it.idDictionary == currentDictionary.idDictionary
             }.toMutableList()
 
         val currentBackground =
-            (R.drawable.background_card_dictionary_1 + currentDictionary.idDictionaries % 7).toInt()
+            (R.drawable.background_card_dictionary_1 + currentDictionary.idDictionary % 7).toInt()
         holder.binding.apply {
             backgroundCard.setImageDrawable(
                 ContextCompat.getDrawable(
@@ -79,7 +78,7 @@ class DictionariesListAdapter(
             progress.text = "${currentLearnedWords}/${currentDictionary.wordList.size}"
 
             root.setOnClickListener {
-                selectDictionary.invoke(currentDictionary.idDictionaries)
+                selectDictionary.invoke(currentDictionary.idDictionary)
             }
             root.setOnLongClickListener {
                 showMenuActionOnWord.invoke(currentDictionary, position)
@@ -90,9 +89,9 @@ class DictionariesListAdapter(
             isActive.setOnClickListener {
                 setActive.invoke(currentDictionary, isActive.isChecked)
                 CoroutineScope(Dispatchers.IO).launch {
-                    val mode = settingsRepository.getModeSettings(currentDictionary.idDictionaries)
+                    val mode = settingsRepository.getModeSettings(currentDictionary.idDictionary)
                     if (mode == null) {
-                        openModeSettings.invoke(currentDictionary.idDictionaries)
+                        openModeSettings.invoke(currentDictionary.idDictionary)
                     }
                 }
             }
@@ -102,7 +101,7 @@ class DictionariesListAdapter(
 
     private fun generateStringData(listWord: List<Word>): String {
         var resultString = ""
-        repeat(min(6, listWord.size)) {
+        repeat(listWord.size) {
             resultString += listWord[it].textFirst + ", "
         }
         return resultString.removeSuffix(", ")
