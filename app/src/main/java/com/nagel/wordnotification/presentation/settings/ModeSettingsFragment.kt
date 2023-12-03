@@ -294,6 +294,11 @@ class ModeSettingsFragment : BaseFragment() {
         return listDays
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        navigator().blackoutBottomNavigationView(false)
+    }
+
     companion object {
         private const val ID_DICTIONARY = "ID_DICTIONARY"
 

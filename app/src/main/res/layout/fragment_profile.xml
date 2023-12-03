@@ -31,8 +31,9 @@
                 android:textSize="20sp" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
+                style="@style/width_match_parent_max_600"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginTop="25dp">
 
                 <View
@@ -90,7 +91,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="25dp"
-                    android:text="1. Настройте уведомления\nчтобы не забывать слова\n\n2. Установите оптимальное\nколичество слов в день - важна\nрегулярность, а не интенсивность\n\n3. Для второго пункта рекомендую\nустановить настройку “изучение\nпротив кривой забывчивости"
+                    android:text="1. Включите уведомления\nчтобы переодически\nповторять слова\n\n2. Установите оптимальное\nколичество слов в день - важна\nрегулярность, а не интенсивность\n\n3. Для второго пункта рекомендую\nустановить настройку “изучение\nпротив кривой забывчивости"
                     android:textColor="@color/carrot"
                     android:textSize="15sp"
                     app:layout_constraintBottom_toBottomOf="@+id/view2"

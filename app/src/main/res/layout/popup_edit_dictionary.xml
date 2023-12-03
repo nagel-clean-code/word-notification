@@ -27,7 +27,7 @@
         android:focusableInTouchMode="true"
         android:fontFamily="@font/montserrat_bold"
         android:hint="@string/dictionary_number_one"
-        android:inputType="textCapWords"
+        android:inputType="textCapSentences"
         android:textColor="@color/black"
         android:textColorHint="@color/gray"
         android:textSize="16sp" />

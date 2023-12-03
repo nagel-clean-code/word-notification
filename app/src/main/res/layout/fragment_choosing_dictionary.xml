@@ -63,11 +63,12 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/dictionaries_list"
-            android:layout_width="match_parent"
             android:layout_height="match_parent"
+            style="@style/width_match_parent_max_600"
             android:layout_marginHorizontal="15dp"
             android:nestedScrollingEnabled="false"
             android:paddingHorizontal="20dp"
+            android:layout_gravity="center"
             tools:itemCount="20"
             tools:listitem="@layout/item_card_dictionary" />
     </LinearLayout>

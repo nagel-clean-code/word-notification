@@ -22,6 +22,7 @@ import com.google.firebase.analytics.analytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.nagel.wordnotification.R
+import com.nagel.wordnotification.app.App
 import com.nagel.wordnotification.core.analytecs.Analytic
 import com.nagel.wordnotification.core.services.AlgorithmAdjustmentWork
 import com.nagel.wordnotification.data.firbase.RealtimeDbRepository
@@ -113,7 +114,7 @@ class MainActivity : AppCompatActivity(), Navigator {
     }
 
     private fun startAlgorithm() {
-        val workManager = WorkManager.getInstance(this)
+        val workManager = WorkManager.getInstance(App.get())
         val info = workManager.getWorkInfosByTag("AlgorithmWork")
         if (info.get().isEmpty() || info.isCancelled) {
             //TODO отменять все созданные алерты если они были (в бд поменять флаг lesson)

@@ -16,7 +16,7 @@
         android:paddingEnd="25dp"
         android:paddingBottom="8dp"
         android:textColor="@color/white"
-        android:textSize="18sp"
+        android:textSize="16sp"
         tools:text="Lorem ipsum dolor sit amet consectetur. Eget elit augue vitae risus diam tempor. Ac" />
 
     <TextView
@@ -31,7 +31,7 @@
         android:paddingEnd="17dp"
         android:paddingBottom="15dp"
         android:textColor="@color/white"
-        android:textSize="18sp"
+        android:textSize="16sp"
         tools:text="Трудный, жесткий, влвлл аово лвлавла оооа рврыо вр
 хороший приятный влвоо" />
 </LinearLayout>

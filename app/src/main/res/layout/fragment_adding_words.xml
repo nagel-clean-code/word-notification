@@ -44,14 +44,15 @@
 
                 <View
                     android:id="@+id/imageView2"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="371dp"
                     android:layout_marginHorizontal="27dp"
                     android:layout_marginTop="-15dp"
                     android:background="@drawable/background_beige_rad_25"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView4" />
+                    app:layout_constraintTop_toBottomOf="@+id/textView4"
+                    app:layout_constraintWidth_max="600dp" />
 
                 <FrameLayout
                     android:id="@+id/textView4"
@@ -92,7 +93,7 @@
                     android:paddingVertical="7dp"
                     android:singleLine="true"
                     android:textColor="@color/purple"
-                    android:textColorHint="@color/purple"
+                    android:textColorHint="@color/gray"
                     android:textSize="16sp"
                     app:layout_constraintEnd_toEndOf="@+id/imageView2"
                     app:layout_constraintStart_toStartOf="@+id/imageView2"
@@ -124,7 +125,7 @@
                     android:paddingVertical="7dp"
                     android:singleLine="true"
                     android:textColor="@color/purple"
-                    android:textColorHint="@color/purple"
+                    android:textColorHint="@color/gray"
                     android:textSize="16sp"
                     app:layout_constraintEnd_toEndOf="@+id/imageView2"
                     app:layout_constraintStart_toStartOf="@+id/imageView2"
@@ -192,7 +193,8 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+                    app:layout_constraintWidth_max="600dp" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
 

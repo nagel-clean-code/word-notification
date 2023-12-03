@@ -156,8 +156,8 @@ class AddingWordsFragment : BaseFragment() {
 
     private fun initButtons() {
         binding.addWordButton.setOnClickListener {
-            val textFirst = binding.editTextWord.text.toString().replace("\n", ", ")
-            val textLast = binding.editTextTranslation.text.toString().replace("\n", ", ")
+            val textFirst = binding.editTextWord.text.toString().trim()
+            val textLast = binding.editTextTranslation.text.toString().trim()
             if (textFirst.isBlank() || textLast.isBlank()) return@setOnClickListener
             val word = Word(
                 idDictionary = viewModel.dictionary!!.idDictionary,
