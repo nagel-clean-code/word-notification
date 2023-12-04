@@ -1,5 +1,6 @@
 package com.nagel.wordnotification.data.dictionaries.room
 
+import android.util.Log
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.dictionaries.entities.Word
@@ -52,13 +53,8 @@ class RoomDictionaryRepository @Inject constructor(
         }
     }
 
-    override fun deleteWordById(idWord: Long, success: (Boolean) -> Unit) {
-        CoroutineScope(Dispatchers.IO).launch() {
-            val count = dictionaryDao.deleteWord(idWord)
-            withContext(Dispatchers.Main) {
-                success.invoke(count > 0)
-            }
-        }
+    override suspend fun deleteWordById(idWord: Long): Int {
+        return dictionaryDao.deleteWord(idWord)
     }
 
     override fun deleteDictionaryById(idDictionary: Long, success: (Boolean) -> Unit) {

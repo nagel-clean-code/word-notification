@@ -1,5 +1,7 @@
 package com.nagel.wordnotification.data.dictionaries.entities
 
+import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
+import com.nagel.wordnotification.presentation.addingwords.worddetails.widget.model.ShowStepsWordDto
 import com.nagel.wordnotification.utils.GlobalFunction
 import java.util.Date
 
@@ -16,4 +18,13 @@ data class Word(
     var idWord: Long = 0
 
     fun isItWasRepeated() = allNotificationsCreated && lastDateMention < Date().time
+
+    fun toShowStepsWordDto(modeSettingsDto: ModeSettingsDto): ShowStepsWordDto {
+        return ShowStepsWordDto(
+            modeSettingsDto,
+            allNotificationsCreated,
+            learnStep,
+            lastDateMention
+        )
+    }
 }

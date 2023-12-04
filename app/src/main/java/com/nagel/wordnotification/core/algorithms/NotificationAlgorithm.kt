@@ -39,12 +39,9 @@ class NotificationAlgorithm @Inject constructor(
     }
 
     private suspend fun loadWords() {
-        CoroutineScope(Dispatchers.IO).launch {
-            val accountId = sessionRepository.getSession()?.account?.id
-            Log.d("CoroutineWorker:", "accountId:${accountId}")
-            accountId?.let { id ->
+//        CoroutineScope(Dispatchers.IO).launch {
+            sessionRepository.getSession()?.account?.id?.let { id ->
                 dictionaryRepository.loadDictionaries(id).collect() { dictionaries ->
-                    Log.d("CoroutineWorker:", "dictionariesSize:${dictionaries.size}")
                     dictionaries.forEach {
                         if (it.include) {
                             initNotifications(it)
@@ -53,7 +50,7 @@ class NotificationAlgorithm @Inject constructor(
                     wordsForNotifications.emit(bufArray.toList())
                 }
             }
-        }
+//        }
     }
 
     private suspend fun initNotifications(dictionary: Dictionary) {

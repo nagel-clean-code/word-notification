@@ -14,7 +14,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -51,11 +50,9 @@ class ModeSettingsVM @Inject constructor(
     }
 
     fun saveSettings(settings: ModeSettingsDto) {
-        into(liveResult) {
-            withContext(Dispatchers.IO) {
-                settingsRepository.saveModeSettings(settings)
-                dictionaryRepository.updateIncludeDictionary(true, idDictionary)
-            }
+        into(liveResult, Dispatchers.IO) {
+            settingsRepository.saveModeSettings(settings)
+            dictionaryRepository.updateIncludeDictionary(true, idDictionary)
         }
     }
 }

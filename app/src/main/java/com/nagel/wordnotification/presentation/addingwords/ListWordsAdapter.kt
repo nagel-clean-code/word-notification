@@ -1,7 +1,6 @@
 package com.nagel.wordnotification.presentation.addingwords
 
 import android.graphics.Rect
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +14,7 @@ import com.nagel.wordnotification.data.dictionaries.entities.Word
 
 class ListWordsAdapter(
     dictionary: Dictionary,
+    private val showWordDetails: (word: Word) -> Unit,
     private val showActionMenuWithView: (Word, position: Int) -> Unit
 ) : RecyclerView.Adapter<ListWordsAdapter.Holder>() {
 
@@ -41,6 +41,10 @@ class ListWordsAdapter(
         holder.setWordFirst(currentWord.textFirst)
         holder.setWordSecond(currentWord.textLast)
         holder.view.tag = currentWord
+        holder.view.setOnClickListener {
+            val actualWord = wordList.find { currentWord.hashCode() == it.hashCode() }
+            actualWord?.let { showWordDetails.invoke(it) }
+        }
         holder.view.setOnLongClickListener {
             val actualWord = wordList.find { currentWord.hashCode() == it.hashCode() }
             actualWord?.let { showActionMenuWithView.invoke(it, holder.adapterPosition) }

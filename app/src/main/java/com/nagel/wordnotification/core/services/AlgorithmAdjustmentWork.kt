@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.nagel.wordnotification.app.App
 import com.nagel.wordnotification.core.algorithms.NotificationAlgorithm
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -41,20 +42,24 @@ class AlgorithmAdjustmentWork @AssistedInject constructor(
     override suspend fun doWork(): Result {
         Log.d("CoroutineWorker:doWork:", "start")
         algorithm.start()
+//        delay(1 * 60 * 1000)
         return Result.success()
     }
 
     private fun startAlarm(word: NotificationDto) {
         Log.d("CoroutineWorker:startAlarm:", word.toString())
-        val intent = Intent(appContext, AlarmReceiver::class.java)
+        val intent = Intent(App.get(), AlarmReceiver::class.java)
         intent.putExtra("TAKE_AWAY", word)
         val pendingIntent = PendingIntent.getBroadcast(
-            appContext,
+            App.get(),
             word.uniqueId + word.step,
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+            PendingIntent.FLAG_IMMUTABLE
         )
-        Log.d("CoroutineWorker:startAlarm:", "requestCode: ${word.uniqueId + word.step}")
+        Log.d(
+            "CoroutineWorker:startAlarm:",
+            "requestCode: ${word.uniqueId + word.step}" + ", Name:${word.text}"
+        )
         val alarmManager = ContextCompat.getSystemService(appContext, AlarmManager::class.java)
         alarmManager!!.setExact(AlarmManager.RTC_WAKEUP, word.date, pendingIntent)
     }

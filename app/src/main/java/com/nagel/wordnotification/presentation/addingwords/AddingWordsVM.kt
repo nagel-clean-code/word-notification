@@ -6,14 +6,16 @@ import androidx.lifecycle.viewModelScope
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
-import com.nagel.wordnotification.presentation.navigator.NavigatorV2
 import com.nagel.wordnotification.presentation.base.BaseViewModel
+import com.nagel.wordnotification.presentation.navigator.NavigatorV2
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -59,9 +61,12 @@ class AddingWordsVM @Inject constructor(
     }
 
     fun deleteWord(idWord: Long, success: () -> Unit) {
-        dictionaryRepository.deleteWordById(idWord) { successfully ->
-            if (successfully) {
-                success.invoke()
+        CoroutineScope(Dispatchers.IO).launch() {
+            val count = dictionaryRepository.deleteWordById(idWord)
+            if (count > 0) {
+                withContext(Dispatchers.Main) {
+                    success.invoke()
+                }
             } else {
                 showMessage.value = navigator.getString(R.string.couldnt_delete_word)
             }

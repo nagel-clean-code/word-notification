@@ -69,7 +69,7 @@ class ModeSettingsFragment : BaseFragment() {
 
         initRadioButtons()
         binding.saveButton.setOnClickListener {
-            saveMode()
+            saveMode(true)
         }
         binding.chainDaysWeek.children.forEachIndexed() { i, view: View ->
             if (view !is Flow) {
@@ -239,7 +239,7 @@ class ModeSettingsFragment : BaseFragment() {
         saveMode()
     }
 
-    private fun saveMode() {
+    private fun saveMode(goBack: Boolean = false) {
         val prevMode = viewModel.loadingMode.value
         val newMode = makeModeSettingsDto()
         if (newMode != prevMode) {
@@ -250,7 +250,7 @@ class ModeSettingsFragment : BaseFragment() {
                     resetSteps(words)
                 }
             }
-        } else {
+        } else if(goBack) {
             navigator().goBack()
         }
     }

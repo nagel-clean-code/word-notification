@@ -64,4 +64,5 @@
     <string name="dictionary_number_one">Словарь №1</string>
     <string name="saving">Сохранение...</string>
     <string name="error_saving_mode">Ошибка сохранения режима</string>
+    <string name="first_set_up_mode">Сначла настройте режим</string>
 </resources>

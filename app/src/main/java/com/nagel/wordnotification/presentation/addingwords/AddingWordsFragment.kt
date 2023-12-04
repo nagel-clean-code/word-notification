@@ -15,9 +15,10 @@ import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.services.Utils
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.databinding.FragmentAddingWordsBinding
-import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import com.nagel.wordnotification.presentation.MainActivityVM
+import com.nagel.wordnotification.presentation.addingwords.worddetails.WordDetailsDialog
 import com.nagel.wordnotification.presentation.base.BaseFragment
+import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import com.nagel.wordnotification.presentation.navigator.navigator
 import com.nagel.wordnotification.utils.SharedPrefsUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,7 +28,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class AddingWordsFragment : BaseFragment() {
 
-    class Screen: BaseScreen
+    class Screen : BaseScreen
 
     private lateinit var binding: FragmentAddingWordsBinding
     private var listWordsAdapter: ListWordsAdapter? = null
@@ -134,10 +135,15 @@ class AddingWordsFragment : BaseFragment() {
     }
 
     private fun initAdapter() {
-        listWordsAdapter = ListWordsAdapter(viewModel.dictionary!!, ::showMenuActionOnWord)
+        listWordsAdapter =
+            ListWordsAdapter(viewModel.dictionary!!, ::showWordDetails, ::showMenuActionOnWord)
         binding.listWordsRecyclerView.adapter = listWordsAdapter
         val layoutManager = LinearLayoutManager(requireContext())
         binding.listWordsRecyclerView.layoutManager = layoutManager
+    }
+
+    private fun showWordDetails(word: Word) {
+        WordDetailsDialog(word).show(childFragmentManager, WordDetailsDialog.TAG)
     }
 
     private fun showMenuActionOnWord(word: Word, position: Int) {

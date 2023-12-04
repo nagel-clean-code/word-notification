@@ -20,9 +20,9 @@ object Utils {
                 context,
                 word.uniqueId + word.learnStep - i,
                 myIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+                PendingIntent.FLAG_IMMUTABLE
             )
-            Log.d("deleteNotification:", "requestCode:${word.uniqueId + word.learnStep - i}")
+            Log.d("CoroutineWorker:delete:", "requestCode: ${word.uniqueId + word.learnStep - i}" + ", name:${word.textFirst}")
             alarmManager?.cancel(pendingIntent)
         }
     }
