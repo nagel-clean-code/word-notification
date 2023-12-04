@@ -10,10 +10,12 @@ import android.util.TypedValue
 import android.view.View
 import androidx.core.content.res.ResourcesCompat
 import com.nagel.wordnotification.R
-import com.nagel.wordnotification.core.algorithms.PlateauEffect
-import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
+import com.nagel.wordnotification.core.algorithms.AlgorithmHelper
+import com.nagel.wordnotification.data.dictionaries.entities.NotificationHistoryItem
 import com.nagel.wordnotification.presentation.addingwords.worddetails.widget.model.ShowStepsWordDto
 import java.lang.Float.max
+import java.text.SimpleDateFormat
+import java.util.Date
 
 class ShowAlgorithmSteps(
     context: Context,
@@ -40,26 +42,18 @@ class ShowAlgorithmSteps(
     private lateinit var paintCircleSelected: Paint
     private lateinit var paintCircleUnselected: Paint
     private var dataForRendering: ShowStepsWordDto? = null
+    private val mTextSize = 14f
+    private val linesWidth = 5
+    private val linesHeight = 100f
+    private val radiusCircle = 15f
+    private val marginTop = radiusCircle * 2
+    private val marginLeft = radiusCircle
+    private val marginTextLeft = 20f
+    private var currentIx = -1
+    private lateinit var textList: List<String>
 
     init {
         initPaint()
-        if (isInEditMode) {
-            dataForRendering =
-                ShowStepsWordDto(
-                    ModeSettingsDto(
-                        0,
-                        0L,
-                        PlateauEffect,
-                        false,
-                        listOf(),
-                        false,
-                        Pair("", "")
-                    ),
-                    false,
-                    5,
-                    1701679204
-                )
-        }
     }
 
     private fun initPaint() {
@@ -83,7 +77,7 @@ class ShowAlgorithmSteps(
         linePaint.style = Paint.Style.FILL
         linePaint.color = Color.parseColor("#dddddd")
 
-        paintText = initPaintText(R.color.black)
+        paintText = initPaintText(R.color.gray_3)
         paintTextSelected = initPaintText(R.color.carrot)
     }
 
@@ -99,17 +93,58 @@ class ShowAlgorithmSteps(
 
     fun setData(data: ShowStepsWordDto) {
         dataForRendering = data
+        textList = generationText()
         requestLayout()
-        invalidate() //TODO проверить надо ли
     }
 
-    private val linesWidth = 5
-    private val linesHeight = 100f
-    private val radiusCircle = 15f
-    private val marginTop = radiusCircle * 2
-    private val marginLeft = radiusCircle
-    private val marginTextLeft = 20f
-    private val mTextSize = 14f
+    private val dateTemplate = SimpleDateFormat("(yyyy.MM.dd, HH:mm:ss)")
+    private fun generationText(): List<String> {
+        val historyList = dataForRendering!!.historyList
+        val steps = dataForRendering!!.mode.selectedMode?.getCountSteps() ?: return listOf()
+        val resultList = mutableListOf<String>()
+        var lastStep = 0
+        var lastDate = 0L
+        val currentTime = Date().time
+        for (i in 0 until steps) {
+            if (i < historyList.size) {
+                val current: NotificationHistoryItem = historyList[i]
+                var text = context.getString(R.string.step)
+                text += " №${current.learnStep}   "
+                text += dateTemplate.format(current.dateMention)
+                lastStep = current.learnStep
+                lastDate = current.dateMention
+                resultList.add(text)
+                if (currentIx == -1 && currentTime < current.dateMention) {
+                    currentIx = lastStep - 1
+                }
+            } else {
+                val nextDate =
+                    dataForRendering!!.mode.selectedMode?.getNewDate(lastStep++, lastDate)
+                if (nextDate == null) {
+                    resultList.add("Завершено")
+                    continue
+                }
+                if (AlgorithmHelper.checkOccurrenceInTimeInterval(
+                        nextDate,
+                        dataForRendering!!.mode
+                    )
+                ) {
+                    var text = context.getString(R.string.step)
+                    text += " №${lastStep}   "
+                    text += dateTemplate.format(nextDate)
+                    resultList.add(text)
+                    lastDate = nextDate
+                    if (currentIx == -1 && currentTime < lastDate) {
+                        currentIx = lastStep - 2
+                    }
+                } else {
+                    resultList.add("Функционал в разработке")
+                }
+            }
+        }
+
+        return resultList
+    }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
@@ -121,7 +156,7 @@ class ShowAlgorithmSteps(
                 rect.bottom = (i + 1) * linesHeight.toInt() + marginTop.toInt()
                 canvas.drawRect(rect, linePaint)
             }
-            for (i in 0..algorithm.getCountSteps()) {
+            for (i in 0 until algorithm.getCountSteps()) {
                 val cy = i * linesHeight + marginTop
                 canvas.drawCircle(
                     marginLeft,
@@ -129,20 +164,23 @@ class ShowAlgorithmSteps(
                     radiusCircle,
                     getPaintCircle(i)
                 )
-
+                val text = if (i >= textList.size) {
+                    "Ошибка"
+                } else {
+                    textList[i]
+                }
                 canvas.drawText(
-                    "dkdkdkdkdkkdkdkdkd",
+                    text,
                     marginLeft + radiusCircle * 2 + marginTextLeft,
                     cy + mTextSize,
                     getPaintText(i)
                 )
-
             }
         }
     }
 
     private fun getPaintText(i: Int): Paint {
-        return if (dataForRendering!!.learnStep - 1 == i) {
+        return if (currentIx == i) {
             paintTextSelected
         } else {
             paintText
@@ -150,9 +188,9 @@ class ShowAlgorithmSteps(
     }
 
     private fun getPaintCircle(i: Int): Paint {
-        return if (dataForRendering!!.learnStep - 1 < i) {
+        return if (currentIx < i) {
             paintCircleUnselected
-        } else if (dataForRendering!!.learnStep - 1 == i) {
+        } else if (currentIx == i) {
             paintCircleSelected
         } else {
             paintCircle

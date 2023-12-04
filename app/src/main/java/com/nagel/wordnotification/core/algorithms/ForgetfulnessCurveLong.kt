@@ -1,5 +1,7 @@
 package com.nagel.wordnotification.core.algorithms
 
+import android.content.Context
+import com.nagel.wordnotification.R
 import java.util.Date
 
 object ForgetfulnessCurveLong : Algorithm {
@@ -27,4 +29,8 @@ object ForgetfulnessCurveLong : Algorithm {
     }
 
     override fun getCountSteps() = mapDate.size
+
+    override fun getName(context: Context): String {
+        return context.getString(R.string.forgetfulness_curve_long)
+    }
 }

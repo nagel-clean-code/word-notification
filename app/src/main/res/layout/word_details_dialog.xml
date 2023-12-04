@@ -10,7 +10,7 @@
         android:layout_gravity="center"
         android:background="@drawable/rounded_background_settings"
         android:orientation="vertical"
-        android:paddingHorizontal="50dp"
+        android:paddingHorizontal="30dp"
         android:paddingTop="40dp"
         android:paddingBottom="20dp">
 
@@ -22,17 +22,26 @@
             android:textSize="18sp"
             tools:text="Big - большой" />
 
+        <TextView
+            android:id="@+id/algorithmName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            tools:text="@string/algorithm"
+            android:textSize="16sp" />
+
         <com.nagel.wordnotification.presentation.addingwords.worddetails.widget.ShowAlgorithmSteps
             android:id="@+id/showSteps"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp" />
 
         <Button
             android:id="@+id/ok_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center|bottom"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="15dp"
             android:text="@string/ok" />
     </LinearLayout>
 

@@ -1,4 +1,4 @@
-package com.nagel.wordnotification.presentation.addingwords
+package com.nagel.wordnotification.presentation.addingwords.actions
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable

@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.nagel.wordnotification.data.dictionaries.room.entities.DictionaryDbEntity
+import com.nagel.wordnotification.data.dictionaries.room.entities.NotificationHistoryDbEntity
 import com.nagel.wordnotification.data.dictionaries.room.entities.WordDbEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -33,6 +34,12 @@ interface DictionaryDao {
 
     @Insert(entity = WordDbEntity::class)
     suspend fun addWord(wordDbEntity: WordDbEntity): Long
+
+    @Insert(entity = NotificationHistoryDbEntity::class)
+    suspend fun saveNotificationHistoryItem(notification: NotificationHistoryDbEntity): Long
+
+    @Query("SELECT * FROM notification_history_items WHERE id_word = :idWord AND id_mode = :idMode")
+    fun getNotificationHistory(idWord: Long, idMode: Long): Flow<List<NotificationHistoryDbEntity>?>
 
     @Update(entity = WordDbEntity::class)
     suspend fun updateWord(wordDbEntity: WordDbEntity)

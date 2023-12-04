@@ -16,6 +16,8 @@ import com.nagel.wordnotification.core.services.Utils
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.databinding.FragmentAddingWordsBinding
 import com.nagel.wordnotification.presentation.MainActivityVM
+import com.nagel.wordnotification.presentation.addingwords.actions.EditWordDialog
+import com.nagel.wordnotification.presentation.addingwords.actions.MenuSelectingActions
 import com.nagel.wordnotification.presentation.addingwords.worddetails.WordDetailsDialog
 import com.nagel.wordnotification.presentation.base.BaseFragment
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
@@ -147,13 +149,21 @@ class AddingWordsFragment : BaseFragment() {
     }
 
     private fun showMenuActionOnWord(word: Word, position: Int) {
-        MenuSelectingActions {
+        MenuSelectingActions({
+            chowEdit(word)
+        }) {
             viewModel.deleteWord(word.idWord) {
                 viewModel.dictionary?.wordList?.removeIf { it.idWord == word.idWord }
                 listWordsAdapter?.notifyItemRemoved(position)
                 Utils.deleteNotification(word)
             }
-        }.show(parentFragmentManager, null)
+        }.show(childFragmentManager, null)
+    }
+
+    private fun chowEdit(word: Word) {
+        EditWordDialog(word) {   //TODO поменять на flow
+            listWordsAdapter?.notifyDataSetChanged()
+        }.show(parentFragmentManager, EditWordDialog.TAG)
     }
 
     private fun showMessage(msg: String) {

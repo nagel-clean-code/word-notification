@@ -1,8 +1,10 @@
 package com.nagel.wordnotification.core.algorithms
 
+import android.content.Context
+import com.nagel.wordnotification.R
 import java.util.Date
 
-object PlateauEffect: Algorithm {
+object PlateauEffect : Algorithm {
 
     private val mapDate = mapOf<Int, Long>(
         1 to 5 * 60,
@@ -32,4 +34,8 @@ object PlateauEffect: Algorithm {
     }
 
     override fun getCountSteps(): Int = mapDate.size
+
+    override fun getName(context: Context): String {
+        return context.getString(R.string.plateau_effect)
+    }
 }

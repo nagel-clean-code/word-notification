@@ -4,15 +4,13 @@ import android.util.Log
 import com.nagel.wordnotification.core.services.NotificationDto
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
+import com.nagel.wordnotification.data.dictionaries.entities.NotificationHistoryItem
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.data.settings.SettingsRepository
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import com.nagel.wordnotification.data.settings.room.entities.ModeDbEntity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -39,18 +37,16 @@ class NotificationAlgorithm @Inject constructor(
     }
 
     private suspend fun loadWords() {
-//        CoroutineScope(Dispatchers.IO).launch {
-            sessionRepository.getSession()?.account?.id?.let { id ->
-                dictionaryRepository.loadDictionaries(id).collect() { dictionaries ->
-                    dictionaries.forEach {
-                        if (it.include) {
-                            initNotifications(it)
-                        }
+        sessionRepository.getSession()?.account?.id?.let { id ->
+            dictionaryRepository.loadDictionaries(id).collect() { dictionaries ->
+                dictionaries.forEach {
+                    if (it.include) {
+                        initNotifications(it)
                     }
-                    wordsForNotifications.emit(bufArray.toList())
                 }
+                wordsForNotifications.emit(bufArray.toList())
             }
-//        }
+        }
     }
 
     private suspend fun initNotifications(dictionary: Dictionary) {
@@ -60,112 +56,46 @@ class NotificationAlgorithm @Inject constructor(
             return
         }
         dictionary.wordList.filter { !it.allNotificationsCreated && it.lastDateMention < Date().time }
-            .forEach {
-                if (it.learnStep == 0) {
+            .forEach { word ->
+                if (word.learnStep == 0) {
                     //Добавление интервала между словами на первом шаге, чтобы не появились все в один раз
-                    it.lastDateMention = countFirstNotifications++ * getIntervalBetweenWords()
+                    word.lastDateMention = countFirstNotifications++ * getIntervalBetweenWords()
                 }
-                Log.d(TAG, "Current word: $it")
-                var nextTime = getNewDate(mode, it.learnStep++, it.lastDateMention)
+                Log.d(TAG, "Current word: $word")
+                var nextTime = getNewDate(mode, word.learnStep++, word.lastDateMention)
                 do {
-                    val d = if (nextTime == null) {
-                        it.allNotificationsCreated = true
-                        null
-                    } else {
-                        it.lastDateMention = nextTime
-                        NotificationDto(
-                            it.textFirst,
-                            it.textLast,
-                            nextTime,
-                            it.uniqueId,
-                            it.learnStep
-                        )
-                    }
+                    val notification = createNotificationDto(word, mode, nextTime)
                     nextTime = if (nextTime == null ||
-                        !checkOccurrenceInTimeInterval(nextTime, mode.toMode())
+                        !AlgorithmHelper.checkOccurrenceInTimeInterval(nextTime, mode.toMode())
                     ) {
-                        it.learnStep--
-                        updateWord(it)
+                        word.learnStep--
+                        updateWord(word)
                         null
                     } else {
-                        updateWord(it)
-                        bufArray.add(d)
-                        getNewDate(mode, it.learnStep++, it.lastDateMention)
+                        updateWord(word)
+                        bufArray.add(notification)
+                        getNewDate(mode, word.learnStep++, word.lastDateMention)
                     }
                     Log.d(TAG, "nextTime = $nextTime")
                 } while (nextTime != null && nextTime - Date().time < MAX_WORKER_RESTART_INTERVAL)
             }
     }
 
-    private fun checkOccurrenceInTimeInterval(time: Long, mode: ModeSettingsDto): Boolean {
-        var timeInterval = true
-        if (mode.timeIntervals) {
-            timeInterval = checkMinutes(mode, time)
-        }
-
-        var daysSelected = true
-        if (mode.sampleDays) {
-            val day = SimpleDateFormat("EE").format(Date(time))
-            val str = day[0].uppercase() + day[1]
-            daysSelected = mode.days.contains(str)
-        }
-        return timeInterval && daysSelected
-    }
-
-    private fun checkMinutes(mode: ModeSettingsDto, time: Long): Boolean {
-        val startInterval = mode.workingTimeInterval.first
-        val endInterval = mode.workingTimeInterval.second
-
-        val sIHour = startInterval.substring(0, startInterval.indexOf(':')).toInt()
-        val sIMinutes = startInterval.substring(startInterval.indexOf(':') + 1).toInt()
-
-        val eIHour = endInterval.substring(0, endInterval.indexOf(':')).toInt()
-        val eIMinutes = endInterval.substring(endInterval.indexOf(':') + 1).toInt()
-
-        val c = Calendar.getInstance()
-        c.time = Date(time)
-        val hours = c.get(Calendar.HOUR_OF_DAY)
-        val minutes = c.get(Calendar.MINUTE)
-
-        var timeInterval = true
-        if (sIHour < eIHour) {
-            if (hours < sIHour || hours > eIHour) {
-                timeInterval = false
-            } else if (hours == sIHour && minutes < sIMinutes) {
-                timeInterval = false
-            } else if (hours == eIHour && minutes > eIMinutes) {
-                timeInterval = false
-            }
-        } else if (sIHour > eIHour) {
-            if (hours < sIHour && hours > eIHour) {
-                timeInterval = false
-            } else if (hours == sIHour && minutes < sIMinutes) {
-                timeInterval = false
-            } else if (hours == eIHour && minutes > eIMinutes) {
-                timeInterval = false
-            }
+    private suspend fun createNotificationDto(
+        word: Word,
+        mode: ModeDbEntity,
+        nextTime: Long?
+    ): NotificationDto? {
+        return if (nextTime == null) {
+            word.allNotificationsCreated = true
+            null
         } else {
-            if (hours != sIHour) {
-                timeInterval = false
-            } else if (sIMinutes < eIMinutes) {
-                if (minutes < sIMinutes || minutes > eIMinutes) {
-                    timeInterval = false
-                }
-            } else {
-                if (minutes > sIMinutes || minutes < eIMinutes) {
-                    timeInterval = false
-                }
-            }
+            word.lastDateMention = nextTime
+            val historyItem =
+                NotificationHistoryItem(0, word.idWord, nextTime, mode.idMode, word.learnStep)
+            dictionaryRepository.saveNotificationHistoryItem(historyItem)
+            NotificationDto(word.textFirst, word.textLast, nextTime, word.uniqueId, word.learnStep)
         }
-        val dateTime = dateFormat.format(Date(time))
-        Log.d(
-            "CoroutineWorker:",
-            "CHECK_TIME: time = $dateTime, " +
-                    "timeInterval = $timeInterval, " +
-                    "startInterval = $startInterval, " +
-                    "endInterval = $endInterval"
-        )
-        return timeInterval
     }
 
     private fun getNewDate(mode: ModeDbEntity, step: Int, lastDate: Long): Long? {

@@ -13,13 +13,20 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.nagel.wordnotification.R
+import com.nagel.wordnotification.data.dictionaries.entities.NotificationHistoryItem
 import com.nagel.wordnotification.data.dictionaries.entities.Word
+import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import com.nagel.wordnotification.databinding.WordDetailsDialogBinding
+import com.nagel.wordnotification.presentation.addingwords.worddetails.widget.model.ShowStepsWordDto
 import com.nagel.wordnotification.presentation.base.ErrorResult
 import com.nagel.wordnotification.presentation.base.PendingResult
 import com.nagel.wordnotification.presentation.base.SuccessResult
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class WordDetailsDialog(val word: Word) : DialogFragment() {
@@ -53,7 +60,7 @@ class WordDetailsDialog(val word: Word) : DialogFragment() {
             okButton.setOnClickListener {
                 dismiss()
             }
-            viewModel.liveResult.observe(viewLifecycleOwner) { status ->
+            viewModel.loadModeStatus.observe(viewLifecycleOwner) { status ->
                 when (status) {
                     is PendingResult -> {
                         progressBar.isVisible = true
@@ -68,8 +75,7 @@ class WordDetailsDialog(val word: Word) : DialogFragment() {
 
                     is SuccessResult -> {
                         if (status.data != null) {
-                            val data = word.toShowStepsWordDto(status.data)
-                            showSteps.setData(data)
+                            initDate(status.data)
                             progressBar.isVisible = false
                             showSteps.isVisible = true
                         } else {
@@ -77,6 +83,31 @@ class WordDetailsDialog(val word: Word) : DialogFragment() {
                             dismiss()
                         }
                     }
+                }
+            }
+        }
+    }
+
+    private fun initDate(mode: ModeSettingsDto) {
+        val data: ShowStepsWordDto = word.toShowStepsWordDto(mode)
+        var algorithmName = requireContext().getString(R.string.algorithm)
+        if (data.mode.selectedMode != null) {
+            algorithmName += " " + data.mode.selectedMode.getName(requireContext())
+            binding.algorithmName.text = algorithmName
+        }
+        val flow = viewModel.loadNotificationHistory(word.idWord, mode.idMode)
+        initShowSteps(data, flow)
+    }
+
+    private fun initShowSteps(
+        data: ShowStepsWordDto,
+        historyFlow: Flow<List<NotificationHistoryItem>?>
+    ) {
+        lifecycleScope.launch {
+            historyFlow.collect() { historyList ->
+                historyList?.let {
+                    data.historyList = historyList
+                    binding.showSteps.setData(data)
                 }
             }
         }

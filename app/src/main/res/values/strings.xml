@@ -6,6 +6,7 @@
     <string name="add">Добавить</string>
     <string name="cancel">Отмена</string>
     <string name="input_name_dictionary">Введите название словаря</string>
+    <string name="editing">Редактирование</string>
     <string name="default_name_dictionary">Первый словать</string>
     <string name="create_dictionary">Создание словаря</string>
     <string name="move">Переместить</string>
@@ -28,7 +29,7 @@
     <string name="brief_description_curve">Уведомления отображаются в определённые моменты времени. Эти моменты времени были получены в результате исследований учёными, метод применяется если у вас есть в запасе 2 дня</string>
     <string name="brief_description_curve_long">Если вы не ограничены во времени, применяйте долгосрочный метод изучения</string>
     <string name="plateau_effect_description">Ее разработали Хью Томпсон и Боб Салливан. Запоминание состоит из 11 этапов</string>
-    <string name="forgetfulness_curve">Кривая Эбингауза короткая</string>
+    <string name="forgetfulness_curve">Кривая Эббингауза короткая</string>
     <string name="frequency_reminders">Интервальные\nповторения</string>
     <string name="h">ч</string>
     <string name="m">м</string>
@@ -65,4 +66,7 @@
     <string name="saving">Сохранение...</string>
     <string name="error_saving_mode">Ошибка сохранения режима</string>
     <string name="first_set_up_mode">Сначла настройте режим</string>
+    <string name="algorithm">Алгоритм:</string>
+    <string name="step">Шаг</string>
+    <string name="add_an_association">Добавить ассоциацию</string>
 </resources>

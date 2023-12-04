@@ -1,10 +1,11 @@
 package com.nagel.wordnotification.data.dictionaries.room
 
-import android.util.Log
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
+import com.nagel.wordnotification.data.dictionaries.entities.NotificationHistoryItem
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.dictionaries.room.entities.DictionaryDbEntity
+import com.nagel.wordnotification.data.dictionaries.room.entities.NotificationHistoryDbEntity
 import com.nagel.wordnotification.data.dictionaries.room.entities.WordDbEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -96,6 +97,20 @@ class RoomDictionaryRepository @Inject constructor(
 
     override suspend fun updateIncludeDictionary(include: Boolean, idDictionary: Long) {
         dictionaryDao.setInclude(idDictionary, include)
+    }
+
+    override suspend fun saveNotificationHistoryItem(notification: NotificationHistoryItem) {
+        val data = NotificationHistoryDbEntity.createNotificationHistoryDbEntity(notification)
+        dictionaryDao.saveNotificationHistoryItem(data)
+    }
+
+    override fun loadHistoryNotification(
+        idWord: Long,
+        idMode: Long
+    ): Flow<List<NotificationHistoryItem>?> {
+        return dictionaryDao.getNotificationHistory(idWord, idMode).map { flow ->
+            flow?.map { it.toNotificationHistoryItem() }
+        }
     }
 
     override fun createDictionary(

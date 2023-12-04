@@ -15,7 +15,7 @@ import com.nagel.wordnotification.core.services.Utils
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.databinding.FragmentChoosingDictionaryBinding
-import com.nagel.wordnotification.presentation.addingwords.MenuSelectingActions
+import com.nagel.wordnotification.presentation.addingwords.actions.MenuSelectingActions
 import com.nagel.wordnotification.presentation.base.BaseFragment
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import com.nagel.wordnotification.presentation.navigator.MainNavigator.Companion.ARG_SCREEN

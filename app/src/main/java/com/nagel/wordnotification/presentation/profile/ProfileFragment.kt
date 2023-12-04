@@ -40,7 +40,7 @@ class ProfileFragment : BaseFragment() {
                 requireContext().openUrl("https://ok.ru/group/70000004748309")
             }
             telegramButton.setOnClickListener {
-                requireContext().openUrl("https://t.me/+iiziqMIl-fQzYzYy")
+                requireContext().openUrl("https://t.me/notifier2023")
             }
         }
         lifecycleScope.launch {

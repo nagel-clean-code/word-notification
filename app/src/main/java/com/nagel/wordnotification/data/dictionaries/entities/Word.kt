@@ -8,8 +8,8 @@ import java.util.Date
 
 data class Word(
     val idDictionary: Long,
-    val textFirst: String,
-    val textLast: String,
+    var textFirst: String,
+    var textLast: String,
     var allNotificationsCreated: Boolean = false,
     var learnStep: Int = 0,
     var lastDateMention: Long = 0,

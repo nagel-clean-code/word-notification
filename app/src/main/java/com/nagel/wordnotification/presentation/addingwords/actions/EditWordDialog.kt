@@ -1,41 +1,49 @@
-package com.nagel.wordnotification.presentation.choosingdictionary
+package com.nagel.wordnotification.presentation.addingwords.actions
 
 import android.content.Context.INPUT_METHOD_SERVICE
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.view.inputmethod.InputMethodManager
+import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
-import com.nagel.wordnotification.R
-import com.nagel.wordnotification.databinding.PopupEditDictionaryBinding
+import androidx.lifecycle.lifecycleScope
+import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
+import com.nagel.wordnotification.data.dictionaries.entities.Word
+import com.nagel.wordnotification.databinding.PopupEditWordBinding
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 
-class DictionaryEditorAppDialog(
-    private val name: String? = null,
-    private val returnName: (String) -> Unit
+@AndroidEntryPoint
+class EditWordDialog(
+    private val word: Word,
+    private val success: () -> Unit
 ) : DialogFragment() {
 
-    private lateinit var binding: PopupEditDictionaryBinding
+    private lateinit var binding: PopupEditWordBinding
+
+    @Inject
+    lateinit var dictionaryRepository: DictionaryRepository
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = PopupEditDictionaryBinding.inflate(inflater, container, false)
+        binding = PopupEditWordBinding.inflate(inflater, container, false)
         setupTransparent()
-        setupPositionFragmentDialog()
 
         binding.apply {
-            name?.let {
-                dictionaryName.setText(it)
-                saveButton.text = requireContext().getString(R.string.save)
-            }
+            firstWord.setText(word.textFirst)
+            lastWord.setText(word.textLast)
         }
         binding.root.postDelayed({
             focusInputAndAppearanceKeyboard()
@@ -47,16 +55,23 @@ class DictionaryEditorAppDialog(
         super.onViewCreated(view, savedInstanceState)
         binding.apply {
             saveButton.setOnClickListener {
-                val name = dictionaryName.text.toString().trim()
-                returnName.invoke(name)
-                dismiss()
+                word.textFirst = binding.firstWord.text.toString()
+                word.textLast = binding.lastWord.text.toString()
+                progressBar.isVisible = true
+                lifecycleScope.launch(Dispatchers.IO) {
+                    dictionaryRepository.updateWord(word)
+                    withContext(Dispatchers.Main) {
+                        success.invoke()
+                        dismiss()
+                    }
+                }
             }
         }
     }
 
     /** Фокусировка на ввод текста и автоматическое появление клавиатуры для ввода */
     private fun focusInputAndAppearanceKeyboard() {
-        binding.dictionaryName.apply {
+        binding.firstWord.apply {
             requestFocus()
             val inputMethodManager =
                 requireContext().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
@@ -71,15 +86,7 @@ class DictionaryEditorAppDialog(
         setStyle(STYLE_NO_FRAME, android.R.style.Theme)
     }
 
-    private fun setupPositionFragmentDialog() {
-        dialog?.window?.setGravity(Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM)
-        val layoutParams = dialog?.window?.attributes
-        layoutParams?.width = ViewGroup.LayoutParams.MATCH_PARENT
-        layoutParams?.y = 50
-        dialog?.window?.attributes = layoutParams
-    }
-
     companion object {
-        const val TAG = "DictionaryEditorAppDialog"
+        const val TAG = "EditWordDialog"
     }
 }
