@@ -49,11 +49,31 @@
         android:textSize="18sp"
         tools:text="14/20" />
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/isActive"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
-        android:layout_marginEnd="5dp" />
+        android:layout_marginEnd="5dp">
+
+        <ImageView
+            android:id="@+id/notificationIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/baseline_notifications_active_24" />
+
+        <ImageView
+            android:id="@+id/notificationIconActive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:src="@drawable/baseline_notifications_active_24_teal" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/isActive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
 </FrameLayout>

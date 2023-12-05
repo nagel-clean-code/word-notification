@@ -2,7 +2,6 @@ package com.nagel.wordnotification.presentation.addingwords.worddetails.widget
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.util.AttributeSet
@@ -38,12 +37,14 @@ class ShowAlgorithmSteps(
     private lateinit var paintText: Paint
     private lateinit var paintTextSelected: Paint
     private lateinit var linePaint: Paint
+    private lateinit var linePaintLast: Paint
     private lateinit var paintCircle: Paint
     private lateinit var paintCircleSelected: Paint
     private lateinit var paintCircleUnselected: Paint
     private var dataForRendering: ShowStepsWordDto? = null
     private val mTextSize = 14f
     private val linesWidth = 5
+    private val linesWidthSelected = 7
     private val linesHeight = 100f
     private val radiusCircle = 15f
     private val marginTop = radiusCircle * 2
@@ -51,6 +52,7 @@ class ShowAlgorithmSteps(
     private val marginTextLeft = 20f
     private var currentIx = -1
     private lateinit var textList: List<String>
+    private val dateTemplate = SimpleDateFormat("(yyyy.MM.dd, HH:mm:ss)")
 
     init {
         initPaint()
@@ -75,7 +77,14 @@ class ShowAlgorithmSteps(
         linePaint.strokeWidth =
             TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2f, resources.displayMetrics)
         linePaint.style = Paint.Style.FILL
-        linePaint.color = Color.parseColor("#dddddd")
+        linePaint.color = context.getColor(R.color.gray_0)
+
+        linePaintLast = Paint()
+        linePaintLast.isAntiAlias = true
+        linePaintLast.strokeWidth =
+            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2f, resources.displayMetrics)
+        linePaintLast.style = Paint.Style.FILL
+        linePaintLast.color = context.getColor(R.color.purple)
 
         paintText = initPaintText(R.color.gray_3)
         paintTextSelected = initPaintText(R.color.carrot)
@@ -97,7 +106,6 @@ class ShowAlgorithmSteps(
         requestLayout()
     }
 
-    private val dateTemplate = SimpleDateFormat("(yyyy.MM.dd, HH:mm:ss)")
     private fun generationText(): List<String> {
         val historyList = dataForRendering!!.historyList
         val steps = dataForRendering!!.mode.selectedMode?.getCountSteps() ?: return listOf()
@@ -138,23 +146,34 @@ class ShowAlgorithmSteps(
                         currentIx = lastStep - 2
                     }
                 } else {
-                    resultList.add("Функционал в разработке")
+                    lastDate = AlgorithmHelper.nextAvailableDate(lastDate, dataForRendering!!.mode)
+                    var text = context.getString(R.string.step)
+                    text += " №${lastStep}   "
+                    text += dateTemplate.format(lastDate)
+                    resultList.add(text)
+                    if (currentIx == -1 && currentTime < lastDate) {
+                        currentIx = lastStep - 2
+                    }
                 }
             }
         }
-
         return resultList
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         dataForRendering?.mode?.selectedMode?.let { algorithm ->
-            rect.left = marginLeft.toInt() - linesWidth / 2
-            rect.right = rect.left + linesWidth
             for (i in 0 until algorithm.getCountSteps() - 1) {
                 rect.top = i * linesHeight.toInt() + marginTop.toInt()
                 rect.bottom = (i + 1) * linesHeight.toInt() + marginTop.toInt()
-                canvas.drawRect(rect, linePaint)
+                val currentLinesWidth = if (currentIx < i) {
+                    linesWidth
+                } else {
+                    linesWidthSelected
+                }
+                rect.left = marginLeft.toInt() - currentLinesWidth / 2
+                rect.right = rect.left + currentLinesWidth
+                canvas.drawRect(rect, getPaintLine(i))
             }
             for (i in 0 until algorithm.getCountSteps()) {
                 val cy = i * linesHeight + marginTop
@@ -187,6 +206,14 @@ class ShowAlgorithmSteps(
         }
     }
 
+    private fun getPaintLine(i: Int): Paint {
+        return if (currentIx > i) {
+            linePaintLast
+        } else {
+            linePaint
+        }
+    }
+
     private fun getPaintCircle(i: Int): Paint {
         return if (currentIx < i) {
             paintCircleUnselected
@@ -198,7 +225,8 @@ class ShowAlgorithmSteps(
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val minimumWidth = suggestedMinimumWidth + paddingLeft + paddingRight
+        val minimumWidth =
+            suggestedMinimumWidth + paddingLeft + paddingRight + (mTextSize * 60).toInt()
         val minimumHeight = suggestedMinimumHeight + paddingTop + paddingBottom
 
         val newHeight = (dataForRendering?.mode?.selectedMode?.getCountSteps()

@@ -12,7 +12,9 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface DictionaryDao {
     @Query("SELECT * FROM dictionaries WHERE id_author = :accountId")   //TODO JOIN
-    fun getMyDictionaries(accountId: Long): Flow<List<DictionaryDbEntity>?>
+    fun getMyDictionariesFlow(accountId: Long): Flow<List<DictionaryDbEntity>?>
+    @Query("SELECT * FROM dictionaries WHERE id_author = :accountId")   //TODO JOIN
+    suspend fun getMyDictionaries(accountId: Long): List<DictionaryDbEntity>?
 //
 //    @Update(entity = DictionaryDbEntity::class)
 //    suspend fun updateUsername(account: AccountUpdateUsernameTuple)

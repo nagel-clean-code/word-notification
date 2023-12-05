@@ -13,10 +13,6 @@ import com.nagel.wordnotification.app.App
 import com.nagel.wordnotification.core.algorithms.NotificationAlgorithm
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 
 @HiltWorker
@@ -26,22 +22,15 @@ class AlgorithmAdjustmentWork @AssistedInject constructor(
     private var algorithm: NotificationAlgorithm
 ) : CoroutineWorker(appContext, workerParams) {
 
-    init {
-        CoroutineScope(Dispatchers.Main).launch {
-            algorithm.wordsForNotifications.collect() { words ->
-                Log.d("CoroutineWorker:", "words -> ${words?.size}")
-                words?.forEach { word ->
-                    word?.let {
-                        startAlarm(it)
-                    }
-                }
+    override suspend fun doWork(): Result { //TODO может ли CoroutineWorker выбросить ANR???
+        Log.d("CoroutineWorker:doWork:", "start")
+        val words = algorithm.getWords()
+        Log.d("CoroutineWorker:", "words -> ${words.size}")
+        words.forEach { word ->
+            word?.let {
+                startAlarm(it)
             }
         }
-    }
-
-    override suspend fun doWork(): Result {
-        Log.d("CoroutineWorker:doWork:", "start")
-        algorithm.start()
         return Result.success()
     }
 

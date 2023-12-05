@@ -32,7 +32,7 @@ class RandomizingVM @Inject constructor(
         viewModelScope.launch {
             val session = sessionRepository.getSession()
             session?.account?.id?.let { id ->
-                dictionaryRepository.loadDictionaries(id).collect() { dictionaries ->
+                dictionaryRepository.loadDictionariesFlow(id).collect() { dictionaries ->
                     dictionaries.forEach {
                         selectedDictionarySet.add(it.name)
                     }

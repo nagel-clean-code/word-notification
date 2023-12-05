@@ -78,13 +78,16 @@ class ModeSettingsFragment : BaseFragment() {
                 }
             }
         }
+        binding.infoButton.setOnClickListener {
+            InformationDialog().show(childFragmentManager, InformationDialog.TAG)
+        }
         initListenerLiveResult()
         initData()
     }
 
     private fun initListenerLiveResult() {
         binding.loadFrame.apply {
-        viewModel.liveResult.observe(viewLifecycleOwner) { status ->
+            viewModel.liveResult.observe(viewLifecycleOwner) { status ->
                 when (status) {
                     is PendingResult -> {
                         root.isVisible = true
@@ -250,7 +253,7 @@ class ModeSettingsFragment : BaseFragment() {
                     resetSteps(words)
                 }
             }
-        } else if(goBack) {
+        } else if (goBack) {
             navigator().goBack()
         }
     }

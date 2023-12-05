@@ -41,7 +41,7 @@ class ProfileVM @Inject constructor(
                 } else {
                     return@let
                 }
-                dictionaryRepository.loadDictionaries(id).collect() { dictionaries ->
+                dictionaryRepository.loadDictionariesFlow(id).collect() { dictionaries ->
                     startingAnalysis(dictionaries)
                 }
             }

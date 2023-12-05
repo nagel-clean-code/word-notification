@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
@@ -116,23 +115,20 @@ class MainActivity : AppCompatActivity(), Navigator {
     private fun startAlgorithm() {
         val workManager = WorkManager.getInstance(App.get())
         val info = workManager.getWorkInfosByTag("AlgorithmWork")
-        if (info.get().isEmpty() || info.isCancelled) {
-            //TODO отменять все созданные алерты если они были (в бд поменять флаг lesson)
-            val logs = mapOf(
-                "Work" to "start",
-                "info.get()" to info.get()
-            )
-            Analytic.logEvent("CoroutineWorker", logs, false)
-            val worker = PeriodicWorkRequestBuilder<AlgorithmAdjustmentWork>(
-                WORK_REPEAT_INTERVAL,
-                TimeUnit.MINUTES
-            ).addTag(TAG_WORK).build()
-            workManager.enqueueUniquePeriodicWork(
-                TAG_WORK,
-                ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
-                worker
-            )
-        }
+        val logs = mapOf(
+            "Work" to "start",
+            "info.get()" to info.get()
+        )
+        Analytic.logEvent("CoroutineWorker", logs, false)
+        val worker = PeriodicWorkRequestBuilder<AlgorithmAdjustmentWork>(
+            WORK_REPEAT_INTERVAL,
+            TimeUnit.MINUTES
+        ).addTag(TAG_WORK).build()
+        workManager.enqueueUniquePeriodicWork(
+            TAG_WORK,
+            ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+            worker
+        )
     }
 
     private fun checkPermissions() {
@@ -149,14 +145,6 @@ class MainActivity : AppCompatActivity(), Navigator {
                 )
             }
         }
-    }
-
-    private fun launchFragment(fragment: Fragment) {
-        supportFragmentManager
-            .beginTransaction()
-            .addToBackStack(null)
-            .replace(R.id.fragment_container, fragment)
-            .commit()
     }
 
     override fun showAddingWordsFragment() {

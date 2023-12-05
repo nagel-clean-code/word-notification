@@ -22,14 +22,22 @@ class RoomDictionaryRepository @Inject constructor(
     private val dictionaryDao: DictionaryDao,
 ) : DictionaryRepository {
 
-    override fun loadDictionaries(accountId: Long): Flow<List<Dictionary>> {
-        return dictionaryDao.getMyDictionaries(accountId).map { itFlow ->
+    override fun loadDictionariesFlow(accountId: Long): Flow<List<Dictionary>> {
+        return dictionaryDao.getMyDictionariesFlow(accountId).map { itFlow ->
             itFlow?.map {
                 val result = it.toDictionary()
                 result.wordList = getWordsByIdDictionary(result.idDictionary).toMutableList()
                 result
             } ?: listOf()
         }
+    }
+
+    override suspend fun loadDictionaries(accountId: Long): List<Dictionary> {
+        return dictionaryDao.getMyDictionaries(accountId)?.map { dictionary ->
+            val result = dictionary.toDictionary()
+            result.wordList = getWordsByIdDictionary(result.idDictionary).toMutableList()
+            result
+        } ?: listOf()
     }
 
     override fun loadDictionaryByName(

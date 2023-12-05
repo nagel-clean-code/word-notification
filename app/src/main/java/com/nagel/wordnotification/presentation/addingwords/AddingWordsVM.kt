@@ -75,7 +75,7 @@ class AddingWordsVM @Inject constructor(
 
     private fun createDictionary(idAccount: Long) {
         Log.d(TAG, "Создаю словарь")
-        dictionaryRepository.createDictionary(defaultNameDictionary, idAccount, include = true) {
+        dictionaryRepository.createDictionary(defaultNameDictionary, idAccount) {
             dictionary = it
             loadedDictionaryFlow.value = true
             Log.d(TAG, "Словарь создан")

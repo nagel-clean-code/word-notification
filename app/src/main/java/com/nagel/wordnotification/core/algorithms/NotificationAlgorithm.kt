@@ -8,11 +8,8 @@ import com.nagel.wordnotification.data.dictionaries.entities.NotificationHistory
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.data.settings.SettingsRepository
-import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import com.nagel.wordnotification.data.settings.room.entities.ModeDbEntity
-import kotlinx.coroutines.flow.MutableStateFlow
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -25,28 +22,21 @@ class NotificationAlgorithm @Inject constructor(
     var dictionaryRepository: DictionaryRepository,
 ) {
 
-    val wordsForNotifications = MutableStateFlow<List<NotificationDto?>?>(null)
     private lateinit var bufArray: ArrayList<NotificationDto?>
     private var countFirstNotifications = 0
 
-    suspend fun start() {
-        wordsForNotifications.emit(null)
+    suspend fun getWords(): List<NotificationDto?> {
         bufArray = arrayListOf()
         countFirstNotifications = 0
-        loadWords()
-    }
-
-    private suspend fun loadWords() {
         sessionRepository.getSession()?.account?.id?.let { id ->
-            dictionaryRepository.loadDictionaries(id).collect() { dictionaries ->
-                dictionaries.forEach {
-                    if (it.include) {
-                        initNotifications(it)
-                    }
+            val dictionaries = dictionaryRepository.loadDictionaries(id)
+            dictionaries.forEach {
+                if (it.include) {
+                    initNotifications(it)
                 }
-                wordsForNotifications.emit(bufArray.toList())
             }
         }
+        return bufArray.toList()
     }
 
     private suspend fun initNotifications(dictionary: Dictionary) {
@@ -76,7 +66,6 @@ class NotificationAlgorithm @Inject constructor(
                         bufArray.add(notification)
                         getNewDate(mode, word.learnStep++, word.lastDateMention)
                     }
-                    Log.d(TAG, "nextTime = $nextTime")
                 } while (nextTime != null && nextTime - Date().time < MAX_WORKER_RESTART_INTERVAL)
             }
     }
@@ -101,17 +90,14 @@ class NotificationAlgorithm @Inject constructor(
     private fun getNewDate(mode: ModeDbEntity, step: Int, lastDate: Long): Long? {
         val time = when (mode.selectedMode) {
             PlateauEffect::class.simpleName -> {
-                Log.d("CoroutineWorker:", "AlgorithmPlateauEffect")
                 PlateauEffect.getNewDate(step, lastDate)
             }
 
             ForgetfulnessCurveLong::class.simpleName -> {
-                Log.d("CoroutineWorker:", "AlgorithmForgetfulnessCurveLong")
                 ForgetfulnessCurveLong.getNewDate(step, lastDate)
             }
 
             ForgetfulnessCurveShort::class.simpleName -> {
-                Log.d("CoroutineWorker:", "ForgetfulnessCurveShort")
                 ForgetfulnessCurveShort.getNewDate(step, lastDate)
             }
 
@@ -119,10 +105,6 @@ class NotificationAlgorithm @Inject constructor(
                 null
             }
         }
-        Log.d(
-            "CoroutineWorker:",
-            "nextTime = ${time?.let { dateFormat.format(Date(time)) }}"
-        )
         return time
     }
 

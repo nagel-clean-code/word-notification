@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import com.nagel.wordnotification.R
@@ -34,7 +35,7 @@ class DictionariesListAdapter(
     private val openModeSettings: (idDictionary: Long) -> Unit
 ) : RecyclerView.Adapter<DictionariesListAdapter.Holder>() {
 
-    var dictionaries: Flow<List<Dictionary>> = dictionaryRepository.loadDictionaries(idAccount)
+    var dictionaries: Flow<List<Dictionary>> = dictionaryRepository.loadDictionariesFlow(idAccount)
     private var size: Int = 0
     private var dataList = listOf<Dictionary>()
 
@@ -85,8 +86,12 @@ class DictionariesListAdapter(
                 true
             }
             isActive.isChecked = currentDictionary.include
+            notificationIcon.isVisible = !isActive.isChecked
+            notificationIconActive.isVisible = isActive.isChecked
 
             isActive.setOnClickListener {
+                notificationIcon.isVisible = !isActive.isChecked
+                notificationIconActive.isVisible = isActive.isChecked
                 setActive.invoke(currentDictionary, isActive.isChecked)
                 CoroutineScope(Dispatchers.IO).launch {
                     val mode = settingsRepository.getModeSettings(currentDictionary.idDictionary)
@@ -95,7 +100,6 @@ class DictionariesListAdapter(
                     }
                 }
             }
-
         }
     }
 
