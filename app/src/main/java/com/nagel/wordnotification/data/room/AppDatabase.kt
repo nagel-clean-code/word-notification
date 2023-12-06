@@ -13,7 +13,7 @@ import com.nagel.wordnotification.data.settings.room.ModeDao
 import com.nagel.wordnotification.data.settings.room.entities.ModeDbEntity
 
 @Database(
-    version = 2,
+    version = 3,
     entities = [
         DictionaryDbEntity::class,
         AccountDbEntity::class,
@@ -23,8 +23,8 @@ import com.nagel.wordnotification.data.settings.room.entities.ModeDbEntity
     ],
     exportSchema = true,
     autoMigrations = [
-        AutoMigration(from = 1, to = 2)
-        //,AutoMigration (from = 2, to = 3)
+        AutoMigration(from = 1, to = 2),
+        AutoMigration(from = 2, to = 3)
     ]
 )
 abstract class AppDatabase : RoomDatabase() {

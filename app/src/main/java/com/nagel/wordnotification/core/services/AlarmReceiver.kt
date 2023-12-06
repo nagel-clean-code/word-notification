@@ -31,8 +31,8 @@ class AlarmReceiver : BroadcastReceiver() {
             Log.d("CoroutineWorker", "Сработал ${notificationDto.text}")
             newNotification(context, notificationDto)
         } ?: kotlin.run {
-            Log.d("CoroutineWorker", "Не удалось сериализовать")
-            Toast.makeText(context, "Не удалось сериализовать", Toast.LENGTH_LONG).show()
+            Log.d("CoroutineWorker", "Не удалось сериализовать: " + intent)
+            Toast.makeText(context, "Уведомление не сработало", Toast.LENGTH_LONG).show()
         }
     }
 

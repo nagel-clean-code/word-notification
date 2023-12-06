@@ -73,13 +73,13 @@ class RandomizingVM @Inject constructor(
     }
 
     fun notRemember() {
-        if (!isFinish()) {
+        if (!isFinish() || countRemember + countNotRemember < listWord.size) {
             ++countNotRemember
         }
     }
 
     fun remember() {
-        if (!isFinish()) {
+        if (!isFinish() || countRemember + countNotRemember < listWord.size) {
             ++countRemember
         }
     }

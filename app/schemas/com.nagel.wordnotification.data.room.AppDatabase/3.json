@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 2,
-    "identityHash": "3bedbd43a1230336dca384d74acb933b",
+    "version": 3,
+    "identityHash": "89c40dc970ca091f76d899130ff1d230",
     "entities": [
       {
         "tableName": "dictionaries",
@@ -57,7 +57,17 @@
             "id"
           ]
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_dictionaries_name",
+            "unique": false,
+            "columnNames": [
+              "name"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_dictionaries_name` ON `${TABLE_NAME}` (`name`)"
+          }
+        ],
         "foreignKeys": [
           {
             "table": "accounts",
@@ -333,7 +343,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3bedbd43a1230336dca384d74acb933b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '89c40dc970ca091f76d899130ff1d230')"
     ]
   }
 }

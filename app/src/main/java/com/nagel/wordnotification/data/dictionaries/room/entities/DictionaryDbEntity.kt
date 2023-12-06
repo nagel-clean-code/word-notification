@@ -24,7 +24,7 @@ FOREIGN KEY("id_folder") REFERENCES "folders"("id_folder")
 @Entity(
     tableName = "dictionaries",
     indices = [
-        Index("name", unique = true),
+        Index("name", unique = false),
     ],
     foreignKeys = [
         ForeignKey(

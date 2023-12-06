@@ -6,5 +6,5 @@ import com.nagel.wordnotification.data.session.entities.SessionDataEntity
 interface SessionRepository {
     suspend fun saveAccount(account: Account)
     suspend fun saveSession(data: SessionDataEntity)
-    suspend fun getSession(): SessionDataEntity?
+    fun getSession(): SessionDataEntity?
 }

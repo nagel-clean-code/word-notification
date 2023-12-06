@@ -9,7 +9,6 @@ import com.nagel.wordnotification.data.dictionaries.room.entities.NotificationHi
 import com.nagel.wordnotification.data.dictionaries.room.entities.WordDbEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -87,20 +86,17 @@ class RoomDictionaryRepository @Inject constructor(
         dictionaryDao.updateDictionaryName(name, idDictionary)
     }
 
-    override fun addWord(wordDto: Word, success: (Long) -> Unit) {
+    override suspend fun addWord(wordDto: Word): Long {
         val word = WordDbEntity.createWordDbEntity(wordDto)
-        GlobalScope.launch {
-            withContext(Dispatchers.IO) {
-                val id = dictionaryDao.addWord(word)
-                withContext(Dispatchers.Main) {
-                    success.invoke(id)
-                }
-            }
-        }
+        return dictionaryDao.addWord(word)
     }
 
     override suspend fun updateWord(word: Word) {
         dictionaryDao.updateWord(WordDbEntity.createWordDbEntity(word))
+    }
+
+    override suspend fun updateText(word: Word) {
+        dictionaryDao.updateTextInWord(word.idWord, word.textFirst, word.textLast, word.uniqueId)
     }
 
     override suspend fun updateIncludeDictionary(include: Boolean, idDictionary: Long) {
@@ -121,29 +117,22 @@ class RoomDictionaryRepository @Inject constructor(
         }
     }
 
-    override fun createDictionary(
+    override suspend fun createDictionary(
         name: String,
         idAccount: Long,
         include: Boolean,
-        success: (dictionary: Dictionary) -> Unit,
-    ) {
-        GlobalScope.launch {
-            val dictionaryDbEntity =
-                DictionaryDbEntity.createDictionary(
-                    name,
-                    idFolder = 0,
-                    idAuthor = idAccount,
-                    included = include
-                )
-            withContext(Dispatchers.IO) {
-                val id = dictionaryDao.saveDictionary(dictionaryDbEntity)
-                val currentDictionary = dictionaryDbEntity.toDictionary()
-                currentDictionary.idDictionary = id
-                withContext(Dispatchers.Main) {
-                    success.invoke(currentDictionary)
-                }
-            }
-        }
+    ): Dictionary {
+        val dictionaryDbEntity =
+            DictionaryDbEntity.createDictionary(
+                name,
+                idFolder = 0,
+                idAuthor = idAccount,
+                included = include
+            )
+        val id = dictionaryDao.saveDictionary(dictionaryDbEntity)
+        val currentDictionary = dictionaryDbEntity.toDictionary()
+        currentDictionary.idDictionary = id
+        return currentDictionary
     }
 
 }

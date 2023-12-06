@@ -14,8 +14,9 @@ interface DictionaryRepository {
     fun loadDictionaryById(idDictionary: Long, success: (Dictionary?) -> Unit)
     suspend fun deleteWordById(idWord: Long): Int
     fun deleteDictionaryById(idDictionary: Long, success: (Boolean) -> Unit)
-    fun addWord(word: Word, success: (Long) -> Unit)
+    suspend fun addWord(word: Word): Long
     suspend fun updateWord(word: Word)
+    suspend fun updateText(word: Word)
     suspend fun updateIncludeDictionary(include: Boolean, idDictionary: Long)
     suspend fun saveNotificationHistoryItem(notification: NotificationHistoryItem)
     fun loadHistoryNotification(
@@ -23,10 +24,9 @@ interface DictionaryRepository {
         idMode: Long
     ): Flow<List<NotificationHistoryItem>?>
 
-    fun createDictionary(
+    suspend fun createDictionary(
         name: String,
         idAccount: Long,
         include: Boolean = false,
-        success: (dictionary: Dictionary) -> Unit = {},
-    )
+    ): Dictionary
 }

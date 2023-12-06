@@ -24,10 +24,9 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class DictionariesListAdapter(
-    private val dictionaryRepository: DictionaryRepository,
+    private var dictionaries: Flow<List<Dictionary>>,
     private var settingsRepository: SettingsRepository,
     private val allWord: List<Word>,
-    private val idAccount: Long,
     private val context: Context,
     private val selectDictionary: (Long) -> Unit,
     private val showMenuActionOnWord: (dictionary: Dictionary, position: Int) -> Unit,
@@ -35,7 +34,6 @@ class DictionariesListAdapter(
     private val openModeSettings: (idDictionary: Long) -> Unit
 ) : RecyclerView.Adapter<DictionariesListAdapter.Holder>() {
 
-    var dictionaries: Flow<List<Dictionary>> = dictionaryRepository.loadDictionariesFlow(idAccount)
     private var size: Int = 0
     private var dataList = listOf<Dictionary>()
 

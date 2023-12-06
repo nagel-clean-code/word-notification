@@ -15,7 +15,6 @@ import com.nagel.wordnotification.core.services.Utils
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.databinding.FragmentChoosingDictionaryBinding
-import com.nagel.wordnotification.presentation.addingwords.actions.MenuSelectingActions
 import com.nagel.wordnotification.presentation.base.BaseFragment
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import com.nagel.wordnotification.presentation.navigator.MainNavigator.Companion.ARG_SCREEN
@@ -32,7 +31,6 @@ class ChoosingDictionaryFragment : BaseFragment() {
     private lateinit var binding: FragmentChoosingDictionaryBinding
     override val viewModel: ChoosingDictionaryVM by viewModels()
     private lateinit var adapter: DictionariesListAdapter
-    private var idAccount = -1L
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,12 +50,11 @@ class ChoosingDictionaryFragment : BaseFragment() {
 
     private fun initAdapter(words: List<Word>) {
         val screen = arguments?.getSerializable(ARG_SCREEN) as Screen
-        idAccount = screen.idAccount
+        viewModel.idAccount = screen.idAccount
         val dictionariesAdapter = DictionariesListAdapter(
-            dictionaryRepository = viewModel.dictionaryRepository,
+            dictionaries = viewModel.dictionaries,
             settingsRepository = viewModel.settingsRepository,
             allWord = words,
-            idAccount = idAccount,
             requireContext(),
             ::openDictionary,
             ::showMenuActionOnWord,
@@ -70,7 +67,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
         binding.dictionariesList.layoutManager = layoutManager
 
         lifecycleScope.launch() {
-            dictionariesAdapter.dictionaries.collect() {
+            viewModel.dictionaries.collect() {
                 binding.countDictionaries.text = it.size.toString()
             }
         }
@@ -86,9 +83,10 @@ class ChoosingDictionaryFragment : BaseFragment() {
     }
 
     private fun showMenuActionOnWord(dictionary: Dictionary, position: Int) {
-        MenuSelectingActions({
-            showEditDictionaryDialog(dictionary)
-        }) {
+        MenuForDictionaryDialog(
+            dictionary,
+            ::showEditDictionaryDialog
+        ) {
             viewModel.deleteWord(dictionary.idDictionary) {
                 adapter.notifyItemRemoved(position)
                 Utils.deleteNotification(dictionary.wordList)
@@ -134,7 +132,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
 
     private fun showAddDictionaryDialog() {
         DictionaryEditorAppDialog() { name ->
-            viewModel.addDictionary(name = name, idAccount)
+            viewModel.addDictionary(name = name, viewModel.idAccount)
             binding.dictionariesList.scrollToPosition(0)
         }.show(childFragmentManager, DictionaryEditorAppDialog.TAG)
     }

@@ -1,12 +1,38 @@
 package com.nagel.wordnotification.core.algorithms
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.util.Log
+import androidx.core.content.ContextCompat
+import com.nagel.wordnotification.app.App
+import com.nagel.wordnotification.core.services.AlarmReceiver
+import com.nagel.wordnotification.core.services.NotificationDto
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 
 object AlgorithmHelper {
+
+    fun createAlarm(word: NotificationDto) {
+        Log.d("CoroutineWorker:startAlarm:", word.toString())
+        val intent = Intent(App.get(), AlarmReceiver::class.java)
+        intent.putExtra("TAKE_AWAY", word)
+        val pendingIntent = PendingIntent.getBroadcast(
+            App.get(),
+            word.uniqueId + word.step,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
+        Log.d(
+            "CoroutineWorker:startAlarm:",
+            "requestCode: ${word.uniqueId + word.step}" + ", Name:${word.text}"
+        )
+        val alarmManager = ContextCompat.getSystemService(App.get(), AlarmManager::class.java)
+        alarmManager!!.setExact(AlarmManager.RTC_WAKEUP, word.date, pendingIntent)
+    }
 
     fun nextAvailableDate(lastTime: Long, mode: ModeSettingsDto): Long {
         var countRepeater = 0

@@ -22,11 +22,12 @@ class NotificationAlgorithm @Inject constructor(
     var dictionaryRepository: DictionaryRepository,
 ) {
 
-    private lateinit var bufArray: ArrayList<NotificationDto?>
+    private var bufArray = mutableListOf<NotificationDto?>()
     private var countFirstNotifications = 0
 
     suspend fun getWords(): List<NotificationDto?> {
-        bufArray = arrayListOf()
+        bufArray.clear()
+        Log.d("CoroutineWorker:", "bufArray после очистки: $bufArray")
         countFirstNotifications = 0
         sessionRepository.getSession()?.account?.id?.let { id ->
             val dictionaries = dictionaryRepository.loadDictionaries(id)
@@ -36,6 +37,7 @@ class NotificationAlgorithm @Inject constructor(
                 }
             }
         }
+        Log.d("CoroutineWorker:", "bufArray результат: $bufArray")
         return bufArray.toList()
     }
 
@@ -45,29 +47,32 @@ class NotificationAlgorithm @Inject constructor(
             Log.d("CoroutineWorker:", "mode == null")
             return
         }
-        dictionary.wordList.filter { !it.allNotificationsCreated && it.lastDateMention < Date().time }
-            .forEach { word ->
-                if (word.learnStep == 0) {
-                    //Добавление интервала между словами на первом шаге, чтобы не появились все в один раз
-                    word.lastDateMention = countFirstNotifications++ * getIntervalBetweenWords()
-                }
-                Log.d(TAG, "Current word: $word")
-                var nextTime = getNewDate(mode, word.learnStep++, word.lastDateMention)
-                do {
-                    val notification = createNotificationDto(word, mode, nextTime)
-                    nextTime = if (nextTime == null ||
-                        !AlgorithmHelper.checkOccurrenceInTimeInterval(nextTime, mode.toMode())
-                    ) {
-                        word.learnStep--
-                        updateWord(word)
-                        null
-                    } else {
-                        updateWord(word)
-                        bufArray.add(notification)
-                        getNewDate(mode, word.learnStep++, word.lastDateMention)
-                    }
-                } while (nextTime != null && nextTime - Date().time < MAX_WORKER_RESTART_INTERVAL)
+        val words = dictionary.wordList.filter {
+            !it.allNotificationsCreated && it.lastDateMention < Date().time
+        }
+        Log.d("CoroutineWorker:", "words: $words")
+
+        words.forEach { word ->
+            if (word.learnStep == 0) {
+                //Добавление интервала между словами на первом шаге, чтобы не появились все в один раз
+                word.lastDateMention = countFirstNotifications++ * getIntervalBetweenWords()
             }
+            var nextTime = getNewDate(mode, word.learnStep++, word.lastDateMention)
+            do {
+                val notification = createNotificationDto(word, mode, nextTime)
+                nextTime = if (nextTime == null ||
+                    !AlgorithmHelper.checkOccurrenceInTimeInterval(nextTime, mode.toMode())
+                ) {
+                    word.learnStep--
+                    updateWord(word)
+                    null
+                } else {
+                    updateWord(word)
+                    bufArray.add(notification)
+                    getNewDate(mode, word.learnStep++, word.lastDateMention)
+                }
+            } while (nextTime != null && nextTime - Date().time < MAX_WORKER_RESTART_INTERVAL)
+        }
     }
 
     private suspend fun createNotificationDto(

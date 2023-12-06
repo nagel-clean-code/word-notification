@@ -31,6 +31,9 @@ interface DictionaryDao {
     @Query("UPDATE dictionaries SET id_mode=:idMode WHERE id = :idDictionary")
     suspend fun setIdModeInDictionary(idMode: Long, idDictionary: Long)
 
+    @Query("UPDATE words SET text_first=:textFirst, text_last=:textLast, unique_id=:uuid WHERE id_word = :idWord")
+    suspend fun updateTextInWord(idWord: Long, textFirst: String, textLast: String, uuid: Int)
+
     @Query("UPDATE dictionaries SET name=:name WHERE id = :idDictionary")
     suspend fun updateDictionaryName(name: String, idDictionary: Long)
 

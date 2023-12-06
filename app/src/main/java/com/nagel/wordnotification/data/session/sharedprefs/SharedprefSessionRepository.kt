@@ -43,7 +43,7 @@ class SharedprefSessionRepository @Inject constructor(
         currentCashSessionDataEntity = data
     }
 
-    override suspend fun getSession(): SessionDataEntity? {
+    override fun getSession(): SessionDataEntity? {
         val json = sharedPreferences.getString(SESSiON_STATE, "")
         currentCashSessionDataEntity = if (json?.isBlank() == true) {
             null

@@ -6,12 +6,14 @@ import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.lifecycleScope
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -32,8 +34,12 @@ import com.nagel.wordnotification.presentation.navigator.MainNavigator
 import com.nagel.wordnotification.presentation.navigator.Navigator
 import com.nagel.wordnotification.presentation.profile.ProfileFragment
 import com.nagel.wordnotification.presentation.randomizer.RandomizingFragment
+import com.nagel.wordnotification.presentation.reader.FileReader
 import com.nagel.wordnotification.presentation.settings.ModeSettingsFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -48,6 +54,9 @@ class MainActivity : AppCompatActivity(), Navigator {
 
     @Inject
     lateinit var realtimeDb: RealtimeDbRepository
+
+    @Inject
+    lateinit var fileReader: FileReader
 
     private val viewModel: MainActivityVM by viewModels()
     private lateinit var commonFirebaseAnalytics: FirebaseAnalytics
@@ -77,6 +86,13 @@ class MainActivity : AppCompatActivity(), Navigator {
         settingKeyboard()
         viewModel.startSession()
         checkPermissions()
+        lifecycleScope.launch(Dispatchers.IO) {
+            fileReader.handleIntent(intent.data) { msgId ->
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@MainActivity, msgId, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
     }
 
     private fun initFirebase() {

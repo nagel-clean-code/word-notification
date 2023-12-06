@@ -12,9 +12,11 @@ import android.view.inputmethod.InputMethodManager
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
+import com.nagel.wordnotification.core.services.Utils
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.databinding.PopupEditWordBinding
+import com.nagel.wordnotification.utils.GlobalFunction
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -55,11 +57,13 @@ class EditWordDialog(
         super.onViewCreated(view, savedInstanceState)
         binding.apply {
             saveButton.setOnClickListener {
+                Utils.deleteNotification(word)
                 word.textFirst = binding.firstWord.text.toString()
                 word.textLast = binding.lastWord.text.toString()
+                word.uniqueId = GlobalFunction.generateUniqueId()
                 progressBar.isVisible = true
                 lifecycleScope.launch(Dispatchers.IO) {
-                    dictionaryRepository.updateWord(word)
+                    dictionaryRepository.updateText(word)
                     withContext(Dispatchers.Main) {
                         success.invoke()
                         dismiss()

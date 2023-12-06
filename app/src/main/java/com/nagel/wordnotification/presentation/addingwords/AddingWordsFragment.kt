@@ -24,7 +24,9 @@ import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import com.nagel.wordnotification.presentation.navigator.navigator
 import com.nagel.wordnotification.utils.SharedPrefsUtils
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 @AndroidEntryPoint
@@ -163,6 +165,7 @@ class AddingWordsFragment : BaseFragment() {
     private fun chowEdit(word: Word) {
         EditWordDialog(word) {   //TODO поменять на flow
             listWordsAdapter?.notifyDataSetChanged()
+            viewModel.repeatNotification(word)
         }.show(parentFragmentManager, EditWordDialog.TAG)
     }
 
@@ -180,15 +183,18 @@ class AddingWordsFragment : BaseFragment() {
                 textFirst = textFirst,
                 textLast = textLast
             )
-            viewModel.dictionaryRepository.addWord(word) { idWord ->
-                word.idWord = idWord
-                viewModel.dictionary?.wordList?.add(word)
-                listWordsAdapter?.notifyItemInserted(0)
-                binding.listWordsRecyclerView.scrollToPosition(0)
+            lifecycleScope.launch(Dispatchers.IO) { //TODO перенести в VM
+                val idWord = viewModel.dictionaryRepository.addWord(word)
+                withContext(Dispatchers.Main) {
+                    word.idWord = idWord
+                    viewModel.dictionary?.wordList?.add(word)
+                    listWordsAdapter?.notifyItemInserted(0)
+                    binding.listWordsRecyclerView.scrollToPosition(0)
+                    binding.editTextTranslation.setText("")
+                    binding.editTextWord.setText("")
+                    binding.editTextWord.requestFocus()
+                }
             }
-            binding.editTextTranslation.setText("")
-            binding.editTextWord.setText("")
-            binding.editTextWord.requestFocus()
         }
     }
 
