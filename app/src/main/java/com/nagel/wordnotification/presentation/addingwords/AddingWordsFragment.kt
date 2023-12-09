@@ -23,6 +23,7 @@ import com.nagel.wordnotification.presentation.base.BaseFragment
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import com.nagel.wordnotification.presentation.navigator.navigator
 import com.nagel.wordnotification.utils.SharedPrefsUtils
+import com.nagel.wordnotification.utils.common.hideKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -68,20 +69,13 @@ class AddingWordsFragment : BaseFragment() {
         loadCurrentDictionary()
 
         lifecycleScope.launch {
-            viewModel.loadedDictionaryFlow.collect() {
+            viewModel.loadedDictionaryFlow.collect() { loaded ->
+                binding.progressBar.isVisible = !loaded
+                if (loaded) {
+                    handleLoadedDictionary()
+                }
                 binding.nameDictionary.text = viewModel.dictionary?.name
                     ?: requireContext().getString(R.string.dictionary_not_selected)
-
-                binding.progressBar.isVisible = !it
-                if (it) {
-                    if (viewModel.dictionary == null) {
-                        val msg = requireContext().getString(R.string.choose_dictionary)
-                        Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
-                        showChoosingDictionary()
-                    } else {
-                        initAdapter()
-                    }
-                }
             }
         }
         lifecycleScope.launch {
@@ -89,6 +83,23 @@ class AddingWordsFragment : BaseFragment() {
                 msg?.let { showMessage(it) }
                 viewModel.showMessage.value = null
             }
+        }
+    }
+
+    private suspend fun handleLoadedDictionary() {
+        if (viewModel.dictionary == null) {
+            val accountId = viewModelActivity.myAccountDbEntity.value?.id
+            val dictionary = viewModel.getFirstDictionary(accountId)
+            if (dictionary == null) {
+                val msg = requireContext().getString(R.string.choose_dictionary)
+                Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
+                showChoosingDictionary()
+            } else {
+                viewModel.dictionary = dictionary
+                initAdapter()
+            }
+        } else {
+            initAdapter()
         }
     }
 
@@ -141,6 +152,10 @@ class AddingWordsFragment : BaseFragment() {
     private fun initAdapter() {
         listWordsAdapter =
             ListWordsAdapter(viewModel.dictionary!!, ::showWordDetails, ::showMenuActionOnWord)
+        binding.scrollView.setOnScrollChangeListener { _, _, _, _, _ ->
+            binding.editTextWord.hideKeyboard()
+            binding.editTextTranslation.hideKeyboard()
+        }
         binding.listWordsRecyclerView.adapter = listWordsAdapter
         val layoutManager = LinearLayoutManager(requireContext())
         binding.listWordsRecyclerView.layoutManager = layoutManager

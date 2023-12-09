@@ -8,8 +8,8 @@ import com.nagel.wordnotification.data.session.entities.SessionDataEntity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -27,7 +27,16 @@ class SharedprefSessionRepository @Inject constructor(
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
-            sessionEntityBuf = getSession() ?: SessionDataEntity()
+            val currentTime = Date().time
+            sessionEntityBuf = getSession() ?: SessionDataEntity(dateAppInstallation = currentTime)
+            sessionEntityBuf!!.apply {
+                dateAppInstallation ?: run {
+                    dateAppInstallation = currentTime
+                    ratedApp = false
+                    stepRatedApp = 0
+                    saveSession(this@apply)
+                }
+            }
         }
     }
 

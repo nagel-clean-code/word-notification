@@ -5,16 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.nagel.wordnotification.data.accounts.entities.Account
 import com.nagel.wordnotification.data.accounts.room.AccountDao
 import com.nagel.wordnotification.data.accounts.room.entities.AccountDbEntity
-import com.nagel.wordnotification.data.dictionaries.entities.Word
-import com.nagel.wordnotification.data.dictionaries.room.DictionaryDao
 import com.nagel.wordnotification.data.session.SessionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,7 +33,6 @@ class MainActivityVM @Inject constructor(
                 val account = accountDao.getAccountById(session.account!!.id)
                 _myAccountDbEntity.value = account?.toAccount()
             }
-//            delay(100)  //TODO проверить
         }
     }
 
@@ -55,4 +52,24 @@ class MainActivityVM @Inject constructor(
         return account
     }
 
+    fun isItPossibleShowRateApp(): Boolean {
+        val session = sessionRepository.getSession()
+        val step = session?.stepRatedApp ?: return false
+        val date = session.dateAppInstallation ?: return false
+        val nextInterval = mapSteps[step] ?: return false
+        return Date().time - date > nextInterval
+    }
+
+    companion object {
+        private const val BEGINNING_OF_SHOW = 3 * 24 * 60 * 60 * 1000L
+
+        private val mapSteps = mapOf(
+            0 to BEGINNING_OF_SHOW,             //3 дня
+            1 to BEGINNING_OF_SHOW * 4,         //12 дней
+            2 to BEGINNING_OF_SHOW * 10,        //1 месяца
+            3 to BEGINNING_OF_SHOW * 10 * 2,    //2 месяца
+            4 to BEGINNING_OF_SHOW * 10 * 4,    //4 месяца
+            5 to BEGINNING_OF_SHOW * 10 * 12,   //1 год
+        )
+    }
 }

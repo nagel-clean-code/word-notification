@@ -22,4 +22,11 @@
     <color name="yellow_2">#FFFB40</color>
     <color name="orange">#FFC741</color>
     <color name="green_2">#70E813</color>
+    <color name="colorGrey">#63666A</color>
+    <color name="colorRed">#FF4848</color>
+
+    <color name="colorGrey900">#292D31</color>
+    <color name="search_medicine_warning_background">#EAF6FF</color>
+    <color name="colorCustomSnackBarGrey">@color/colorGrey</color>
+    <color name="colorCustomSnackBarRed">@color/colorRed</color>
 </resources>

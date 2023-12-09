@@ -6,7 +6,6 @@ import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -33,9 +32,11 @@ import com.nagel.wordnotification.presentation.choosingdictionary.ChoosingDictio
 import com.nagel.wordnotification.presentation.navigator.MainNavigator
 import com.nagel.wordnotification.presentation.navigator.Navigator
 import com.nagel.wordnotification.presentation.profile.ProfileFragment
+import com.nagel.wordnotification.presentation.profile.evalution.EvaluationAppDialog
 import com.nagel.wordnotification.presentation.randomizer.RandomizingFragment
 import com.nagel.wordnotification.presentation.reader.FileReader
 import com.nagel.wordnotification.presentation.settings.ModeSettingsFragment
+import com.nagel.wordnotification.utils.common.MessageUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -89,7 +90,7 @@ class MainActivity : AppCompatActivity(), Navigator {
         lifecycleScope.launch(Dispatchers.IO) {
             fileReader.handleIntent(intent.data) { msgId ->
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@MainActivity, msgId, Toast.LENGTH_LONG).show()
+                    MessageUtils.showToast(msgId, this@MainActivity)
                 }
             }
         }
@@ -126,6 +127,13 @@ class MainActivity : AppCompatActivity(), Navigator {
     override fun onResume() {
         super.onResume()
         navigator.whenActivityActive.mainActivity = this
+        rateApp()
+    }
+
+    private fun rateApp() {
+        if (viewModel.isItPossibleShowRateApp()) {
+            EvaluationAppDialog().show(supportFragmentManager, EvaluationAppDialog.TAG)
+        }
     }
 
     private fun startAlgorithm() {

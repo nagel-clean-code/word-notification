@@ -122,6 +122,16 @@ class AddingWordsVM @Inject constructor(
         }
     }
 
+    suspend fun getFirstDictionary(idAccount: Long?): Dictionary? {
+        if (idAccount == null) return null
+        val dictionaries = dictionaryRepository.loadDictionaries(idAccount)
+        return if (dictionaries.isEmpty()) {
+            null
+        } else {
+            dictionaries.first()
+        }
+    }
+
     companion object {
         private const val TAG = "ADDING_WORDS_VIEW_MODEL"
     }

@@ -1,6 +1,5 @@
 package com.nagel.wordnotification.presentation.choosingdictionary
 
-import android.content.Context.INPUT_METHOD_SERVICE
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -9,10 +8,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.DialogFragment
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.databinding.PopupEditDictionaryBinding
+import com.nagel.wordnotification.utils.common.showKeyboard
 
 
 class DictionaryEditorAppDialog(
@@ -37,9 +36,6 @@ class DictionaryEditorAppDialog(
                 saveButton.text = requireContext().getString(R.string.save)
             }
         }
-        binding.root.postDelayed({
-            focusInputAndAppearanceKeyboard()
-        }, 200)
         return binding.root
     }
 
@@ -51,17 +47,10 @@ class DictionaryEditorAppDialog(
                 returnName.invoke(name)
                 dismiss()
             }
-        }
-    }
-
-    /** Фокусировка на ввод текста и автоматическое появление клавиатуры для ввода */
-    private fun focusInputAndAppearanceKeyboard() {
-        binding.dictionaryName.apply {
-            requestFocus()
-            val inputMethodManager =
-                requireContext().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-            inputMethodManager.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
-            setSelection(length())
+            dictionaryName.apply {
+                showKeyboard()
+                setSelection(length())
+            }
         }
     }
 

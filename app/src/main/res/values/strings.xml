@@ -74,4 +74,12 @@
     <string name="my_dictionaries">Мои словари</string>
     <string name="could_not_open_file">Не удалось прочитать файл</string>
     <string name="export_success">Экспорт успешно завершён</string>
+    <string name="color_hex">#%1$s</string>
+    <string name="email_to_support_chooser_title">Написать в поддержку…</string>
+    <string name="main_msg_NoNetworkConnection">Нет подключения к интернету</string>
+    <string name="error_no_internet_connection">Нет подключения к интернету</string>
+    <string name="evaluation_app">Оцените приложение</string>
+    <string name="how_to_make_app_better">Напишите что нужно исправить или добавить, чтобы сделать приложение лучше</string>
+    <string name="send">Отправить</string>
+    <string name="how_to_make_app_better_short">Напиши...</string>
 </resources>
