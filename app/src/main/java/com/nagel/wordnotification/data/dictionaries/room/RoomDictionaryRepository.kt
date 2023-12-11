@@ -53,12 +53,10 @@ class RoomDictionaryRepository @Inject constructor(
         }
     }
 
-    override fun loadDictionaryById(idDictionary: Long, success: (Dictionary?) -> Unit) {
-        CoroutineScope(Dispatchers.IO).launch() {
-            val currentDictionary = dictionaryDao.getDictionaryById(idDictionary)?.toDictionary()
-            currentDictionary?.wordList = getWords(idDictionary).map { it.toWord() }.toMutableList()
-            success.invoke(currentDictionary)
-        }
+    override suspend fun loadDictionaryById(idDictionary: Long): Dictionary? {
+        val currentDictionary = dictionaryDao.getDictionaryById(idDictionary)?.toDictionary()
+        currentDictionary?.wordList = getWords(idDictionary).map { it.toWord() }.toMutableList()
+        return currentDictionary
     }
 
     override suspend fun deleteWordById(idWord: Long): Int {

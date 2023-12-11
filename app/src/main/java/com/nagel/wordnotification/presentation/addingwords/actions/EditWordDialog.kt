@@ -20,7 +20,6 @@ import com.nagel.wordnotification.utils.GlobalFunction
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -64,7 +63,7 @@ class EditWordDialog(
                 progressBar.isVisible = true
                 lifecycleScope.launch(Dispatchers.IO) {
                     dictionaryRepository.updateText(word)
-                    withContext(Dispatchers.Main) {
+                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
                         success.invoke()
                         dismiss()
                     }

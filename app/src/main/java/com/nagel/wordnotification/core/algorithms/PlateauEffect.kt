@@ -7,16 +7,17 @@ import java.util.Date
 object PlateauEffect : Algorithm {
 
     private val mapDate = mapOf<Int, Long>(
-        1 to 5 * 60,
-        2 to 25,
-        3 to 2 * 60,
-        4 to 10 * 60,
-        5 to 1 * 60 * 60,
-        6 to 5 * 60 * 60,
-        7 to 24 * 60 * 60,
-        8 to 5 * 24 * 60 * 60,
-        9 to 25 * 24 * 60 * 60,
-        10 to 4 * 30 * 24 * 60 * 60,
+        1 to 1 * 60,
+        2 to 5 * 60,
+        3 to 25,
+        4 to 2 * 60,
+        5 to 10 * 60,
+        6 to 1 * 60 * 60,
+        7 to 5 * 60 * 60,
+        8 to 24 * 60 * 60,
+        9 to 5 * 24 * 60 * 60,
+        10 to 25 * 24 * 60 * 60,
+        11 to 4 * 30 * 24 * 60 * 60,
     )
 
     override fun getNewDate(lastStep: Int, lastDate: Long): Long? {

@@ -19,22 +19,23 @@ class RoomModeRepository @Inject constructor(
     private val mutex = Mutex()
     override suspend fun saveModeSettings(data: ModeSettingsDto) {
         Log.d("saveModeSettings", "idDictionary: ${data.idDictionary}")
-        val mode = modeDao.getModeByIdDictionary(data.idDictionary)
         val dto = ModeDbEntity.createMode(data)
+        val mode = modeDao.getMode(data.idDictionary, dto.selectedMode)
         mutex.withLock {
-            if (mode == null) {
-                val idMode = modeDao.saveMode(dto)
-                dictionary.setIdModeInDictionary(idMode, data.idDictionary)
+            val idMode = if (mode == null) {
+                modeDao.saveMode(dto)
             } else {
                 dto.idMode = mode.idMode
                 modeDao.update(dto)
+                dto.idMode
             }
+            dictionary.setIdModeInDictionary(idMode, data.idDictionary)
         }
     }
 
-    override suspend fun getModeSettings(idDictionary: Long): ModeDbEntity? {
+    override suspend fun getModeSettingsById(idMode: Long): ModeDbEntity? {
         mutex.withLock {
-            return modeDao.getModeByIdDictionary(idDictionary)
+            return modeDao.getModeById(idMode)
         }
     }
 

@@ -66,7 +66,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
         val layoutManager = LinearLayoutManager(requireContext())
         binding.dictionariesList.layoutManager = layoutManager
 
-        lifecycleScope.launch() {
+        viewLifecycleOwner.lifecycleScope.launch() {
             viewModel.dictionaries.collect() {
                 binding.countDictionaries.text = it.size.toString()
             }
@@ -113,7 +113,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
                 viewModel.showMessage.value = null
             }
         }
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.loadingWords.collect() {
                 it?.let {
                     binding.progress.isVisible = false

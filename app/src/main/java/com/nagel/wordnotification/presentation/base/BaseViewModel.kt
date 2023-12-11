@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -24,10 +25,11 @@ open class BaseViewModel : ViewModel() {
 
     fun <T> into(
         liveResult: MutableLiveResult<T>,
-        dispatcher: CoroutineDispatcher = Dispatchers.Main,
-        block: suspend () -> T
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        scope: CoroutineScope = viewModelScope,
+        block: suspend () -> T,
     ) =
-        viewModelScope.launch(dispatcher + coroutineExceptionHandler) {
+        scope.launch(dispatcher) {
             liveResult.postValue(PendingResult())
             try {
                 liveResult.postValue(SuccessResult(block()))

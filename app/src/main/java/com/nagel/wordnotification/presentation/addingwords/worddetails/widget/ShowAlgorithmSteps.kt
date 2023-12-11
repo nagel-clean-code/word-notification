@@ -15,6 +15,7 @@ import com.nagel.wordnotification.presentation.addingwords.worddetails.widget.mo
 import java.lang.Float.max
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 class ShowAlgorithmSteps(
     context: Context,
@@ -52,7 +53,7 @@ class ShowAlgorithmSteps(
     private val marginTextLeft = 20f
     private var currentIx = -1
     private lateinit var textList: List<String>
-    private val dateTemplate = SimpleDateFormat("(yyyy.MM.dd, HH:mm:ss)")
+    private val dateTemplate = SimpleDateFormat("(yyyy.MM.dd, HH:mm:ss)", Locale.getDefault())
 
     init {
         initPaint()

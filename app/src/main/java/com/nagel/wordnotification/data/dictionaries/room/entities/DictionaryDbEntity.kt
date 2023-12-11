@@ -42,7 +42,7 @@ class DictionaryDbEntity(
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "date_created") val dateCreated: Long,
     @ColumnInfo(name = "id_folder") val idFolder: Long,
-    @ColumnInfo(name = "id_mode") val mode: Long,
+    @ColumnInfo(name = "id_mode") val idMode: Long,
     @ColumnInfo(name = "included") val included: Boolean,
 ) {
 
@@ -53,7 +53,7 @@ class DictionaryDbEntity(
             name = name,
             dateCreated = dateCreated,
             idFolder = idFolder,
-            mode = mode,
+            idMode = idMode,
             include = included
         )
     }
@@ -67,7 +67,7 @@ class DictionaryDbEntity(
                 dateCreated = System.currentTimeMillis(),
                 name = nameDictionary,
                 idFolder = idFolder,
-                mode = 0L,
+                idMode = 0L,
                 included = included
             )
     }

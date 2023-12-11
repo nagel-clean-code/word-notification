@@ -27,7 +27,6 @@ import com.nagel.wordnotification.utils.common.hideKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 
 @AndroidEntryPoint
@@ -53,6 +52,11 @@ class AddingWordsFragment : BaseFragment() {
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+        loadCurrentDictionary()
+    }
+
     private fun initListeners() {
         binding.selectDictionary.setOnClickListener {
             viewModel.loadedDictionaryFlow.value = false
@@ -66,9 +70,7 @@ class AddingWordsFragment : BaseFragment() {
             }
         }
 
-        loadCurrentDictionary()
-
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.loadedDictionaryFlow.collect() { loaded ->
                 binding.progressBar.isVisible = !loaded
                 if (loaded) {
@@ -78,7 +80,7 @@ class AddingWordsFragment : BaseFragment() {
                     ?: requireContext().getString(R.string.dictionary_not_selected)
             }
         }
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.showMessage.collect() { msg ->
                 msg?.let { showMessage(it) }
                 viewModel.showMessage.value = null
@@ -162,7 +164,7 @@ class AddingWordsFragment : BaseFragment() {
     }
 
     private fun showWordDetails(word: Word) {
-        WordDetailsDialog(word).show(childFragmentManager, WordDetailsDialog.TAG)
+        WordDetailsDialog(word, viewModel.dictionary!!.idMode).show(childFragmentManager, WordDetailsDialog.TAG)
     }
 
     private fun showMenuActionOnWord(word: Word, position: Int) {
@@ -200,7 +202,7 @@ class AddingWordsFragment : BaseFragment() {
             )
             lifecycleScope.launch(Dispatchers.IO) { //TODO перенести в VM
                 val idWord = viewModel.dictionaryRepository.addWord(word)
-                withContext(Dispatchers.Main) {
+                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
                     word.idWord = idWord
                     viewModel.dictionary?.wordList?.add(word)
                     listWordsAdapter?.notifyItemInserted(0)

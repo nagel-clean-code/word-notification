@@ -61,16 +61,15 @@ class AddingWordsVM @Inject constructor(
 
     fun loadDictionaryById(idDictionary: Long) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-            dictionaryRepository.loadDictionaryById(idDictionary) {
-                dictionary = it
-                loadedDictionaryFlow.value = true
-            }
+            val loaded = dictionaryRepository.loadDictionaryById(idDictionary)
+            dictionary = loaded
+            loadedDictionaryFlow.value = true
         }
     }
 
     fun repeatNotification(word: Word) {
         viewModelScope.launch(Dispatchers.IO) {
-            val mode = settingsRepository.getModeSettings(word.idDictionary)
+            val mode = settingsRepository.getModeSettingsById(dictionary!!.idMode)
             mode?.let {
                 dictionaryRepository.loadHistoryNotification(word.idWord, mode.idMode)
                     .collect() { list ->

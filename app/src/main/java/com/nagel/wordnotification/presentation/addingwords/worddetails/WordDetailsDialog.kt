@@ -29,7 +29,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class WordDetailsDialog(val word: Word) : DialogFragment() {
+class WordDetailsDialog(val word: Word, val idMode: Long) : DialogFragment() {
 
     private lateinit var binding: WordDetailsDialogBinding
     private val viewModel: WordDetailsVM by viewModels()
@@ -52,7 +52,7 @@ class WordDetailsDialog(val word: Word) : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initListeners()
-        viewModel.loadMode(word.idDictionary)
+        viewModel.loadMode(idMode)
     }
 
     private fun initListeners() {
@@ -103,7 +103,7 @@ class WordDetailsDialog(val word: Word) : DialogFragment() {
         data: ShowStepsWordDto,
         historyFlow: Flow<List<NotificationHistoryItem>?>
     ) {
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             historyFlow.collect() { historyList ->
                 historyList?.let {
                     data.historyList = historyList

@@ -6,7 +6,7 @@ data class Dictionary(
     val name: String,
     val dateCreated: Long,
     val idFolder: Long,
-    val mode: Long,
+    val idMode: Long,
     var wordList: MutableList<Word> = mutableListOf(),
     var include: Boolean
 )

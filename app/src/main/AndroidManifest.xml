@@ -57,14 +57,22 @@
                 <data android:mimeType="*/*" />
                 <data android:host="*" />
 
-                <data android:pathPattern=".*\\.fire" />
-                <data android:pathPattern=".*\\..*\\.fire" />
-                <data android:pathPattern=".*\\..*\\..*\\.fire" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\.fire" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.fire" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.fire" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.fire" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.fire" />
+                <!--                Проблема нерешаема: https://stackoverflow.com/questions/3760276/android-intent-filter-associate-app-with-file-extension-->
+                <!--                <data android:pathPattern=".*\\.fire" />-->
+                <!--                <data android:pathPattern=".*\\..*\\.fire" />-->
+                <!--                <data android:pathPattern=".*\\..*\\..*\\.fire" />-->
+                <!--                <data android:pathPattern=".*\\..*\\..*\\..*\\.fire" />-->
+                <!--                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.fire" />-->
+                <!--                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.fire" />-->
+                <!--                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.fire" />-->
+                <!--                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.fire" />-->
+                <!--                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.fire" />-->
+                <!--                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.fire" />-->
+                <!--                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.fire" />-->
+                <!--                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.fire" />-->
+                <!--                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.fire" />-->
+                <!--                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.fire" />-->
+                <!--                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.fire" />-->
             </intent-filter>
 
         </activity>

@@ -9,7 +9,6 @@ import com.nagel.wordnotification.presentation.base.BaseViewModel
 import com.nagel.wordnotification.presentation.base.MutableLiveResult
 import com.nagel.wordnotification.presentation.navigator.NavigatorV2
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -21,12 +20,10 @@ class WordDetailsVM @Inject constructor(
 ) : BaseViewModel() {
 
     val loadModeStatus: MutableLiveResult<ModeSettingsDto?> = MutableLiveData()
-    val loadHistoryStatus: MutableLiveResult<NotificationHistoryItem?> = MutableLiveData()
 
-
-    fun loadMode(idDictionary: Long) {
-        into(loadModeStatus, Dispatchers.IO) {
-            val mode = settingsRepository.getModeSettings(idDictionary)
+    fun loadMode(idMode: Long) {
+        into(loadModeStatus) {
+            val mode = settingsRepository.getModeSettingsById(idMode)
             return@into mode?.toMode()
         }
     }

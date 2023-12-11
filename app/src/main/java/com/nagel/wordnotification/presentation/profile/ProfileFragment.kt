@@ -43,7 +43,7 @@ class ProfileFragment : BaseFragment() {
                 requireContext().openUrl("https://t.me/notifier2023")
             }
         }
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.showData.collect() {
                 if (it != null) {
                     val percent = if (viewModel.numbersWords != 0) {

@@ -89,7 +89,7 @@ class RandomizingFragment : BaseFragment() {
                 }
             }
         }
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.currentDictionary.collect() {
                 if (it?.isBlank() == true) {
                     val msg = requireContext().getString(R.string.dictionary_not_selected)
@@ -99,14 +99,14 @@ class RandomizingFragment : BaseFragment() {
                 }
             }
         }
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.currentWord.collect() {
                 binding.word.text = it?.textFirst
                 binding.translation.text = EMPTY_WORD
                 showDataCounter()
             }
         }
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.loadingDictionaries.collect() {
                 it?.let {
                     initDictionaries()
@@ -114,7 +114,7 @@ class RandomizingFragment : BaseFragment() {
                 }
             }
         }
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.showResult.collect() {
                 it?.let {
                     ResultRandomizingFragmentDialog(

@@ -48,8 +48,10 @@ class ModeSettingsFragment : BaseFragment() {
         val screen = arguments?.getSerializable(MainNavigator.ARG_SCREEN) as Screen
         val idDictionary = screen.idDictionary
         viewModel.idDictionary = idDictionary
-        viewModel.loadWords(idDictionary)
-        viewModel.loadCurrentSettings()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.loadDictionary(idDictionary)
+            viewModel.loadCurrentSettings()
+        }
         return binding.root
     }
 
@@ -99,6 +101,7 @@ class ModeSettingsFragment : BaseFragment() {
                     is ErrorResult -> {
                         loadingLayout.isVisible = true
                         errorLayout.isVisible = false
+                        showMsg(R.string.error_saving_mode)
                     }
 
                     is SuccessResult -> {
@@ -129,7 +132,7 @@ class ModeSettingsFragment : BaseFragment() {
     }
 
     private fun initData() {
-        lifecycleScope.launch() {
+        viewLifecycleOwner.lifecycleScope.launch() {
             viewModel.loadingMode.collect() { mode ->
                 if (mode == null) {
                     binding.plateauEffect.isChecked = true
@@ -244,13 +247,13 @@ class ModeSettingsFragment : BaseFragment() {
 
     private fun saveMode(goBack: Boolean = false) {
         val prevMode = viewModel.loadingMode.value
-        val newMode = makeModeSettingsDto()
+        val newMode = buildModeSettingsDto()
         if (newMode != prevMode) {
             viewModel.saveSettings(newMode)
-            viewModel.words?.let { words ->
-                Utils.deleteNotification(words)
+            viewModel.dictionary?.wordList?.let { list ->
+                Utils.deleteNotification(list)
                 if (newMode.selectedMode != prevMode?.selectedMode) {
-                    resetSteps(words)
+                    resetSteps(list)
                 }
             }
         } else if (goBack) {
@@ -271,7 +274,7 @@ class ModeSettingsFragment : BaseFragment() {
         }
     }
 
-    private fun makeModeSettingsDto(): ModeSettingsDto {
+    private fun buildModeSettingsDto(): ModeSettingsDto {
         val prevMode = viewModel.loadingMode.value
         return ModeSettingsDto(
             idMode = prevMode?.idMode ?: 0,

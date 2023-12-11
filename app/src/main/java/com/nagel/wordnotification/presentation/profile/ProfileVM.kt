@@ -52,7 +52,7 @@ class ProfileVM @Inject constructor(
         val listWords = mutableListOf<Word>()
         var maxTime = 0L
         dictionaries.forEach() lit@{ dictionary ->
-            val mode = modes.find { it.idMode == dictionary.mode }?.selectedMode ?: return@lit
+            val mode = modes.find { it.idMode == dictionary.idMode }?.selectedMode ?: return@lit
 
             val modeNumbersSteps = mode.getCountSteps()
 

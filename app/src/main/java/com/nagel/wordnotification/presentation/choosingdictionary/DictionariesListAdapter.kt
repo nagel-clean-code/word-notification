@@ -10,7 +10,6 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import com.nagel.wordnotification.R
-import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.settings.SettingsRepository
@@ -92,7 +91,7 @@ class DictionariesListAdapter(
                 notificationIconActive.isVisible = isActive.isChecked
                 setActive.invoke(currentDictionary, isActive.isChecked)
                 CoroutineScope(Dispatchers.IO).launch {
-                    val mode = settingsRepository.getModeSettings(currentDictionary.idDictionary)
+                    val mode = settingsRepository.getModeSettingsById(currentDictionary.idMode)
                     if (mode == null) {
                         openModeSettings.invoke(currentDictionary.idDictionary)
                     }

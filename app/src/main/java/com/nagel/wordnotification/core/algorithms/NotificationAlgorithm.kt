@@ -42,7 +42,7 @@ class NotificationAlgorithm @Inject constructor(
     }
 
     private suspend fun initNotifications(dictionary: Dictionary) {
-        val mode = settingsRepository.getModeSettings(dictionary.idDictionary)
+        val mode = settingsRepository.getModeSettingsById(dictionary.idMode)
         if (mode == null) {
             Log.d("CoroutineWorker:", "mode == null")
             return

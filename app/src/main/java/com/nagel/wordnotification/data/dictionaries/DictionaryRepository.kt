@@ -11,7 +11,7 @@ interface DictionaryRepository {
     suspend fun getWordsByIdDictionary(idDictionary: Long): List<Word>
     suspend fun updateNameDictionary(idDictionary: Long, name: String)
     fun loadDictionaryByName(name: String, idAuthor: Long, success: (Dictionary?) -> Unit)
-    fun loadDictionaryById(idDictionary: Long, success: (Dictionary?) -> Unit)
+    suspend fun loadDictionaryById(idDictionary: Long): Dictionary?
     suspend fun deleteWordById(idWord: Long): Int
     fun deleteDictionaryById(idDictionary: Long, success: (Boolean) -> Unit)
     suspend fun addWord(word: Word): Long
