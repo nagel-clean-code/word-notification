@@ -2,10 +2,10 @@ package com.nagel.wordnotification.core.algorithms
 
 import android.app.AlarmManager
 import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.core.content.ContextCompat
+import com.google.gson.Gson
 import com.nagel.wordnotification.app.App
 import com.nagel.wordnotification.core.services.AlarmReceiver
 import com.nagel.wordnotification.core.services.NotificationDto
@@ -19,7 +19,8 @@ object AlgorithmHelper {
     fun createAlarm(word: NotificationDto) {
         Log.d("CoroutineWorker:startAlarm:", word.toString())
         val intent = Intent(App.get(), AlarmReceiver::class.java)
-        intent.putExtra("TAKE_AWAY", word)
+        val json = Gson().toJson(word)
+        intent.putExtra("TAKE_AWAY", json)
         val pendingIntent = PendingIntent.getBroadcast(
             App.get(),
             word.uniqueId + word.step,

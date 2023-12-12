@@ -17,15 +17,17 @@ class AlgorithmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         Log.d("CoroutineWorker:", "AlgorithmReceiver: start")
         val type = intent.getIntExtra(TYPE, 0)
-        val notificationDto = intent.getParcelableExtra<NotificationDto>(TAKE_AWAY)
+        val json = intent.getStringExtra(TAKE_AWAY)
+        val notificationDto = Utils.getDtoFromJson(context, intent)
         if (notificationDto != null) {
             if (type == TYPE_ANSWER) {
                 val newIntent = Intent(context, AlarmReceiver::class.java)
-                newIntent.putExtra(TAKE_AWAY, notificationDto)
+                newIntent.putExtra(TAKE_AWAY, json)
                 newIntent.putExtra(TYPE, TYPE_QUEST)
-                context.sendBroadcast(newIntent);
+                context.sendBroadcast(newIntent)
             }
-            Log.d("CoroutineWorker:", "notificationDto: ${notificationDto}")
+
+            Log.d("CoroutineWorker:", "notificationDto: $notificationDto")
             val manager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager?
             manager?.cancel(notificationDto.uniqueId + notificationDto.step)
         }

@@ -37,7 +37,7 @@
     <string name="remember">Запомнил</string>
     <string name="show_answer">Показать ответ</string>
     <string name="ok">Ок</string>
-    <string name="forgetfulness_curve_long">Каривая Эббингауза долгая</string>
+    <string name="forgetfulness_curve_long">Кривая Эббингауза долгая</string>
     <string name="plateau_effect">«Эффект плато»</string>
     <string name="save">Сохранить</string>
     <string name="translation">Перевод</string>

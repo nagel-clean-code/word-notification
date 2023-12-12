@@ -9,8 +9,8 @@ import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
 import android.os.Build
 import android.util.Log
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import com.google.gson.Gson
 import com.nagel.wordnotification.Constants.NOTIFICATION_CHANNEL_ID
 import com.nagel.wordnotification.Constants.TAKE_AWAY
 import com.nagel.wordnotification.Constants.TYPE
@@ -25,14 +25,13 @@ class AlarmReceiver : BroadcastReceiver() {
     private var currentType = 1
 
     override fun onReceive(context: Context, intent: Intent) {
-        val notificationDto = intent.getParcelableExtra<NotificationDto>(TAKE_AWAY)
+        val notificationDto = Utils.getDtoFromJson(context, intent)
         currentType = intent.getIntExtra(TYPE, TYPE_ANSWER)
         notificationDto?.let {
             Log.d("CoroutineWorker", "Сработал ${notificationDto.text}")
             newNotification(context, notificationDto)
         } ?: kotlin.run {
-            Log.d("CoroutineWorker", "Не удалось сериализовать: " + intent)
-            Toast.makeText(context, "Уведомление не сработало", Toast.LENGTH_LONG).show()
+            Utils.showError(context, intent)
         }
     }
 
@@ -85,8 +84,9 @@ class AlarmReceiver : BroadcastReceiver() {
         word: NotificationDto,
         type: Int
     ): PendingIntent {
+        val json = Gson().toJson(word)
         val snoozeIntent = Intent(context, AlgorithmReceiver::class.java).apply {
-            putExtra(TAKE_AWAY, word)
+            putExtra(TAKE_AWAY, json)
             putExtra(TYPE, type)
         }
 
