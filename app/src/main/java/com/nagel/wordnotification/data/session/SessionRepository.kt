@@ -4,7 +4,9 @@ import com.nagel.wordnotification.data.accounts.entities.Account
 import com.nagel.wordnotification.data.session.entities.SessionDataEntity
 
 interface SessionRepository {
-    suspend fun saveAccount(account: Account)
-    suspend fun saveSession(data: SessionDataEntity)
-    fun getSession(): SessionDataEntity?
+    fun saveAccount(account: Account)
+    fun saveSession(data: SessionDataEntity)
+    fun saveCurrentIdDictionary(idDictionary: Long)
+    fun getSession(): SessionDataEntity
+    fun getAccountId(): Long?
 }

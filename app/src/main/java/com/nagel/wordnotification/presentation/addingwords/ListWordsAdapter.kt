@@ -8,17 +8,29 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import com.nagel.wordnotification.R
-import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.dictionaries.entities.Word
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 
 class ListWordsAdapter(
-    dictionary: Dictionary,
+    private val wordListFlow: Flow<List<Word>>,
     private val showWordDetails: (word: Word) -> Unit,
-    private val showActionMenuWithView: (Word, position: Int) -> Unit
+    private val showActionMenuWithView: (Word) -> Unit
 ) : RecyclerView.Adapter<ListWordsAdapter.Holder>() {
 
-    private val wordList = dictionary.wordList
+    private var size: Int = 0
+    private var wordList = listOf<Word>()
+
+    init {
+        wordListFlow.onEach {
+            size = it.size
+            wordList = it
+            notifyDataSetChanged()
+        }.launchIn(MainScope())
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val idLayout = when (viewType) {
@@ -47,7 +59,7 @@ class ListWordsAdapter(
         }
         holder.view.setOnLongClickListener {
             val actualWord = wordList.find { currentWord.hashCode() == it.hashCode() }
-            actualWord?.let { showActionMenuWithView.invoke(it, holder.adapterPosition) }
+            actualWord?.let { showActionMenuWithView.invoke(it) }
             true
         }
     }

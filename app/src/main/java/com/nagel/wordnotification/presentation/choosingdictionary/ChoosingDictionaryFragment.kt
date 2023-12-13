@@ -10,28 +10,30 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.nagel.wordnotification.Constants
 import com.nagel.wordnotification.core.services.Utils
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.dictionaries.entities.Word
+import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.databinding.FragmentChoosingDictionaryBinding
 import com.nagel.wordnotification.presentation.base.BaseFragment
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import com.nagel.wordnotification.presentation.navigator.MainNavigator.Companion.ARG_SCREEN
 import com.nagel.wordnotification.presentation.navigator.navigator
-import com.nagel.wordnotification.utils.SharedPrefsUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class ChoosingDictionaryFragment : BaseFragment() {
-    data class Screen(val idAccount: Long) : BaseScreen
+    class Screen() : BaseScreen
 
     private lateinit var binding: FragmentChoosingDictionaryBinding
     override val viewModel: ChoosingDictionaryVM by viewModels()
     private lateinit var adapter: DictionariesListAdapter
 
+    @Inject
+    lateinit var sessionRepository: SessionRepository
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -49,8 +51,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
     }
 
     private fun initAdapter(words: List<Word>) {
-        val screen = arguments?.getSerializable(ARG_SCREEN) as Screen
-        viewModel.idAccount = screen.idAccount
+        viewModel.idAccount = sessionRepository.getSession()!!.account!!.id
         val dictionariesAdapter = DictionariesListAdapter(
             dictionaries = viewModel.dictionaries,
             settingsRepository = viewModel.settingsRepository,
@@ -95,11 +96,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
     }
 
     private fun openDictionary(idDictionary: Long) {
-        SharedPrefsUtils.setLongPreference(
-            requireContext(),
-            Constants.DICTIONARY_ID_KEY,
-            idDictionary
-        )
+        sessionRepository.saveCurrentIdDictionary(idDictionary)
         navigator().showAddingWordsFragment()
     }
 

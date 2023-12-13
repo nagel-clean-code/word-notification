@@ -1,24 +1,28 @@
 package com.nagel.wordnotification.presentation.addingwords
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.algorithms.AlgorithmHelper
 import com.nagel.wordnotification.core.services.NotificationDto
+import com.nagel.wordnotification.data.accounts.entities.Account
+import com.nagel.wordnotification.data.accounts.room.AccountDao
+import com.nagel.wordnotification.data.accounts.room.entities.AccountDbEntity
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.dictionaries.entities.NotificationHistoryItem
 import com.nagel.wordnotification.data.dictionaries.entities.Word
+import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.data.settings.SettingsRepository
 import com.nagel.wordnotification.presentation.base.BaseViewModel
 import com.nagel.wordnotification.presentation.navigator.NavigatorV2
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -29,47 +33,95 @@ import javax.inject.Inject
 class AddingWordsVM @Inject constructor(
     val dictionaryRepository: DictionaryRepository,
     private val settingsRepository: SettingsRepository,
-    @ApplicationContext val context: Context,
-    val navigator: NavigatorV2
+    val navigator: NavigatorV2,
+    private val accountDao: AccountDao,
+    private var sessionRepository: SessionRepository
 ) : BaseViewModel() {
-    private val defaultNameDictionary =
-        context.resources.getString(R.string.default_name_dictionary)
-    val loadedDictionaryFlow = MutableStateFlow(false)
-    val showMessage = MutableStateFlow<String?>(null)
-
-    var currentDictionaryName = defaultNameDictionary
     private val coroutineExceptionHandler = CoroutineExceptionHandler() { _, ex ->
         ex.printStackTrace()
     }
+    private val defaultNameDictionary = navigator.getString(R.string.default_name_dictionary)
 
-    var dictionary: Dictionary? = null
+    private val _loadedDictionaryFlow = MutableStateFlow<Dictionary?>(null)
+    val loadedDictionaryFlow: StateFlow<Dictionary?> = _loadedDictionaryFlow
 
-    fun loadDictionaryByName(name: String = currentDictionaryName, idAccount: Long) {
-        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-            dictionaryRepository.loadDictionaryByName(name, idAccount) {
-                if (it == null) {
-                    Log.d(TAG, "Словаря нет")
-                    createDictionary(idAccount)
-                } else {
-                    Log.d(TAG, "Словарь загружен")
-                    dictionary = it
-                    loadedDictionaryFlow.value = true
-                }
+    fun start() {
+        viewModelScope.launch {
+            startSession()
+            loadCurrentDictionary()
+        }
+    }
+
+    private suspend fun startSession() {
+        withContext(Dispatchers.IO) {
+            val currentSession = sessionRepository.getSession()
+            if (currentSession.account == null) {
+                createNewUser()
             }
         }
     }
 
-    fun loadDictionaryById(idDictionary: Long) {
-        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-            val loaded = dictionaryRepository.loadDictionaryById(idDictionary)
-            dictionary = loaded
-            loadedDictionaryFlow.value = true
+    private suspend fun loadCurrentDictionary() {
+        val idDictionary = sessionRepository.getSession().currentDictionaryId
+        if (idDictionary != -1L && idDictionary != null) {
+            loadDictionaryById(idDictionary)
+        } else {
+            getFirstOrCreateDictionary()
         }
+    }
+
+    private suspend fun getFirstOrCreateDictionary() {
+        val dictionary = getFirstDictionary(getAccountId())
+        if (dictionary != null) {
+            sessionRepository.saveCurrentIdDictionary(dictionary.idDictionary)
+            _loadedDictionaryFlow.emit(dictionary)
+        } else {
+            createBeginDictionary()
+        }
+    }
+
+    private suspend fun createBeginDictionary() {
+        Log.d(TAG, "Создаю словарь")
+        withContext(Dispatchers.IO + coroutineExceptionHandler) {
+            val accountId = sessionRepository.getAccountId()!!
+            val dictionary = dictionaryRepository.createDictionary(defaultNameDictionary, accountId)
+            _loadedDictionaryFlow.emit(dictionary)
+            Log.d(TAG, "Словарь создан")
+        }
+    }
+
+    private suspend fun createNewUser() {
+        val account = createAndSaveAccountInDb()
+        sessionRepository.saveAccount(account)
+    }
+
+    private suspend fun createAndSaveAccountInDb(): Account {
+        val accountDbEntity = AccountDbEntity.createAccount()
+        val id = accountDao.addAccount(accountDbEntity)
+        val account = accountDbEntity.toAccount()
+        account.id = id
+        return account
+    }
+
+    private suspend fun loadDictionaryById(idDictionary: Long) {
+        withContext(Dispatchers.IO + coroutineExceptionHandler) {
+            val result = dictionaryRepository.loadDictionaryById(idDictionary)
+            if (result != null) {
+                _loadedDictionaryFlow.emit(result)
+            } else {
+                getFirstOrCreateDictionary()
+            }
+        }
+    }
+
+    fun loadWords(): Flow<List<Word>> {
+        val id = _loadedDictionaryFlow.value!!.idDictionary
+        return dictionaryRepository.loadWordsByIdDictionaryFlow(id)
     }
 
     fun repeatNotification(word: Word) {
         viewModelScope.launch(Dispatchers.IO) {
-            val mode = settingsRepository.getModeSettingsById(dictionary!!.idMode)
+            val mode = settingsRepository.getModeSettingsById(_loadedDictionaryFlow.value!!.idMode)
             mode?.let {
                 dictionaryRepository.loadHistoryNotification(word.idWord, mode.idMode)
                     .collect() { list ->
@@ -104,24 +156,12 @@ class AddingWordsVM @Inject constructor(
                     success.invoke()
                 }
             } else {
-                showMessage.value = navigator.getString(R.string.couldnt_delete_word)
+                navigator.toast(R.string.couldnt_delete_word)
             }
         }
     }
 
-    private fun createDictionary(idAccount: Long) {
-        Log.d(TAG, "Создаю словарь")
-        viewModelScope.launch(Dispatchers.IO) {
-            val result = dictionaryRepository.createDictionary(defaultNameDictionary, idAccount)
-            withContext(Dispatchers.Main) {
-                dictionary = result
-                loadedDictionaryFlow.value = true
-                Log.d(TAG, "Словарь создан")
-            }
-        }
-    }
-
-    suspend fun getFirstDictionary(idAccount: Long?): Dictionary? {
+    private suspend fun getFirstDictionary(idAccount: Long?): Dictionary? {
         if (idAccount == null) return null
         val dictionaries = dictionaryRepository.loadDictionaries(idAccount)
         return if (dictionaries.isEmpty()) {
@@ -130,6 +170,8 @@ class AddingWordsVM @Inject constructor(
             dictionaries.first()
         }
     }
+
+    private fun getAccountId() = sessionRepository.getSession().account?.id
 
     companion object {
         private const val TAG = "ADDING_WORDS_VIEW_MODEL"

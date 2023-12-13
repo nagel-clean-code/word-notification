@@ -14,13 +14,11 @@ import com.nagel.wordnotification.data.dictionaries.entities.Word
 
 object Utils {
 
-    private const val MAX_COUNT_NOTIFICATIONS_AT_TIME = 4
-
     fun deleteNotification(word: Word) {
         val context = App.get()
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager?
         val myIntent = Intent(context, AlarmReceiver::class.java)
-        for (i in (1..MAX_COUNT_NOTIFICATIONS_AT_TIME)) {  //FIXME После переписывания потока words на flow вернуть word.learnStep
+        for (i in (1..word.learnStep)) {
             val pendingIntent = PendingIntent.getBroadcast(
                 context,
                 word.uniqueId + i,

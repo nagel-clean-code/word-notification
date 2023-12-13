@@ -10,9 +10,10 @@ interface Navigator {
     fun showAddingWordsFragment()
     fun showRandomizingFragment()
     fun showModeSettingsFragment(idDictionary: Long)
-    fun showChoosingDictionaryFragment(idAccount: Long)
+    fun showChoosingDictionaryFragment()
     fun showProfileFragment()
     fun clearBackStack()
     fun blackoutBottomNavigationView(show: Boolean)
+    fun startAlgorithm(postDelay: Long? = null)
     fun goBack()
 }

@@ -65,7 +65,7 @@
     <string name="dictionary_number_one">Словарь №1</string>
     <string name="saving">Сохранение...</string>
     <string name="error_saving_mode">Ошибка сохранения режима</string>
-    <string name="first_set_up_mode">Сначла настройте режим</string>
+    <string name="first_set_up_mode">Сначала настройте режим</string>
     <string name="algorithm">Алгоритм:</string>
     <string name="step">Шаг</string>
     <string name="add_an_association">Добавить ассоциацию</string>
@@ -82,4 +82,5 @@
     <string name="how_to_make_app_better">Напишите что нужно исправить или добавить, чтобы сделать приложение лучше</string>
     <string name="send">Отправить</string>
     <string name="how_to_make_app_better_short">Напиши...</string>
+    <string name="dictionary_could_not_be_loaded">Не удалось загрузить словарь</string>
 </resources>

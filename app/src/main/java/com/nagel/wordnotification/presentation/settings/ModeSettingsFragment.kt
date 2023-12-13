@@ -253,6 +253,7 @@ class ModeSettingsFragment : BaseFragment() {
             viewModel.dictionary?.wordList?.let { list ->
                 Utils.deleteNotification(list)
                 if (newMode.selectedMode != prevMode?.selectedMode) {
+                    navigator().startAlgorithm(2000)
                     resetSteps(list)
                 }
             }

@@ -65,9 +65,7 @@ class EvaluationAppDialog() : DialogFragment() {
 
     override fun onPause() {
         super.onPause()
-        runBlocking {
-            sessionRepository.saveSession(session)
-        }
+        sessionRepository.saveSession(session)
     }
 
     companion object {

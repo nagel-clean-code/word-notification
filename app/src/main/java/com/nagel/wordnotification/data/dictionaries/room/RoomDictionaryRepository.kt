@@ -31,6 +31,12 @@ class RoomDictionaryRepository @Inject constructor(
         }
     }
 
+    override fun loadWordsByIdDictionaryFlow(idDictionary: Long): Flow<List<Word>> {
+        return dictionaryDao.getWordsFlow(idDictionary).map { itFlow ->
+            itFlow?.map { it.toWord() } ?: listOf()
+        }
+    }
+
     override suspend fun loadDictionaries(accountId: Long): List<Dictionary> {
         return dictionaryDao.getMyDictionaries(accountId)?.map { dictionary ->
             val result = dictionary.toDictionary()
@@ -39,18 +45,15 @@ class RoomDictionaryRepository @Inject constructor(
         } ?: listOf()
     }
 
-    override fun loadDictionaryByName(
+    override suspend fun loadDictionaryByName(
         name: String,
-        idAuthor: Long,
-        success: (Dictionary?) -> Unit
-    ) {
-        CoroutineScope(Dispatchers.IO).launch() {
-            val dictionaryDbEntity = dictionaryDao.getDictionaryByName(name, idAuthor)
-            val currentDictionary = dictionaryDbEntity?.toDictionary()
-            currentDictionary?.wordList =
-                getWords(currentDictionary!!.idDictionary).map { it.toWord() }.toMutableList()
-            success.invoke(currentDictionary)
-        }
+        idAuthor: Long
+    ): Dictionary? {
+        val dictionaryDbEntity = dictionaryDao.getDictionaryByName(name, idAuthor)
+        val currentDictionary = dictionaryDbEntity?.toDictionary()
+        currentDictionary?.wordList =
+            getWords(currentDictionary!!.idDictionary).map { it.toWord() }.toMutableList()
+        return currentDictionary
     }
 
     override suspend fun loadDictionaryById(idDictionary: Long): Dictionary? {

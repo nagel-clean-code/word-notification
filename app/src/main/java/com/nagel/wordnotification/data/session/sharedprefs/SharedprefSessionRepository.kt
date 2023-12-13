@@ -19,47 +19,48 @@ class SharedprefSessionRepository @Inject constructor(
     @ApplicationContext val context: Context
 ) : SessionRepository {
 
-    private var sessionEntityBuf: SessionDataEntity? = null
     private val sharedPreferences =
         context.getSharedPreferences(SHARED_PREFS_SESSION, Context.MODE_PRIVATE)
 
-    private var currentCashSessionDataEntity: SessionDataEntity? = null
-
-    init {
-        CoroutineScope(Dispatchers.IO).launch {
-            val currentTime = Date().time
-            sessionEntityBuf = getSession() ?: SessionDataEntity(dateAppInstallation = currentTime)
-            sessionEntityBuf!!.apply {
-                dateAppInstallation ?: run {
-                    dateAppInstallation = currentTime
-                    ratedApp = false
-                    stepRatedApp = 0
-                    saveSession(this@apply)
-                }
-            }
-        }
+    override fun saveAccount(account: Account) {
+        val currentSession = getSession()
+        currentSession.account = account
+        currentSession.let { saveSession(it) }
     }
 
-    override suspend fun saveAccount(account: Account) {
-        sessionEntityBuf!!.account = account
-        saveSession(sessionEntityBuf!!)
-    }
-
-
-    override suspend fun saveSession(data: SessionDataEntity) {
+    override fun saveSession(data: SessionDataEntity) {
         val json = Gson().toJson(data)
         sharedPreferences.edit().putString(SESSiON_STATE, json).apply()
-        currentCashSessionDataEntity = data
     }
 
-    override fun getSession(): SessionDataEntity? {
+    override fun saveCurrentIdDictionary(idDictionary: Long) {
+        val currentSession = getSession()
+        currentSession.currentDictionaryId = idDictionary
+        saveSession(currentSession)
+    }
+
+    override fun getSession(): SessionDataEntity {
         val json = sharedPreferences.getString(SESSiON_STATE, "")
-        currentCashSessionDataEntity = if (json?.isBlank() == true) {
-            null
+        return if (json?.isBlank() == true) {
+            createSession()
         } else {
             Gson().fromJson(json, SessionDataEntity::class.java)
         }
-        return currentCashSessionDataEntity
+    }
+
+    override fun getAccountId(): Long? = getSession().account?.id
+
+    private fun createSession(): SessionDataEntity {
+        val currentTime = Date().time
+        val loadSession = SessionDataEntity(dateAppInstallation = currentTime)
+        return loadSession.apply {
+            dateAppInstallation ?: run {
+                dateAppInstallation = currentTime
+                ratedApp = false
+                stepRatedApp = 0
+                saveSession(this@apply)
+            }
+        }
     }
 
     companion object {

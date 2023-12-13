@@ -7,10 +7,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface DictionaryRepository {
     fun loadDictionariesFlow(accountId: Long): Flow<List<Dictionary>>
+    fun loadWordsByIdDictionaryFlow(idDictionary: Long): Flow<List<Word>>
     suspend fun loadDictionaries(accountId: Long): List<Dictionary>
     suspend fun getWordsByIdDictionary(idDictionary: Long): List<Word>
     suspend fun updateNameDictionary(idDictionary: Long, name: String)
-    fun loadDictionaryByName(name: String, idAuthor: Long, success: (Dictionary?) -> Unit)
+    suspend fun loadDictionaryByName(name: String, idAuthor: Long): Dictionary?
     suspend fun loadDictionaryById(idDictionary: Long): Dictionary?
     suspend fun deleteWordById(idWord: Long): Int
     fun deleteDictionaryById(idDictionary: Long, success: (Boolean) -> Unit)

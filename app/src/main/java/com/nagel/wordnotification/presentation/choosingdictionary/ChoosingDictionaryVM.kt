@@ -6,6 +6,7 @@ import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.dictionaries.room.DictionaryDao
+import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.data.settings.SettingsRepository
 import com.nagel.wordnotification.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -61,9 +62,10 @@ class ChoosingDictionaryVM @Inject constructor(
         if (name.isBlank()) {
             return
         }
-        dictionaryRepository.loadDictionaryByName(name, idAccount) { dictionary ->
+        viewModelScope.launch(Dispatchers.IO) {
+            val dictionary = dictionaryRepository.loadDictionaryByName(name, idAccount)
             if (dictionary != null) {
-                showMessage.value = R.string.such_dictionary_already_exists
+                showMessage.emit(R.string.such_dictionary_already_exists)
             } else {
                 createDictionary(name, idAccount)
             }

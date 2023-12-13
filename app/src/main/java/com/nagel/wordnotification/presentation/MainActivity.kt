@@ -2,7 +2,6 @@ package com.nagel.wordnotification.presentation
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -72,9 +71,7 @@ class MainActivity : AppCompatActivity(), Navigator {
             val screen = when (it.itemId) {
                 R.id.add_in_dictionaries -> AddingWordsFragment.Screen()
 
-                R.id.dictionaries -> ChoosingDictionaryFragment.Screen(
-                    viewModel.myAccountDbEntity.value?.id ?: -1
-                )
+                R.id.dictionaries -> ChoosingDictionaryFragment.Screen()
 
                 R.id.randomizing -> RandomizingFragment.Screen()
                 R.id.profile -> ProfileFragment.Screen()
@@ -84,8 +81,6 @@ class MainActivity : AppCompatActivity(), Navigator {
             navigator.launchFragment(this, screen, false)
             true
         }
-        settingKeyboard()
-        viewModel.startSession()
         checkPermissions()
         lifecycleScope.launch(Dispatchers.IO) {
             fileReader.handleIntent(intent.data) { msgId ->
@@ -136,7 +131,13 @@ class MainActivity : AppCompatActivity(), Navigator {
         }
     }
 
-    private fun startAlgorithm() {
+    override fun startAlgorithm(postDelay: Long?) {
+        postDelay?.let {
+            binding.root.postDelayed({
+                startAlgorithm()
+            }, it)
+            return
+        }
         val workManager = WorkManager.getInstance(App.get())
         val info = workManager.getWorkInfosByTag("AlgorithmWork")
         val logs = mapOf(
@@ -183,8 +184,8 @@ class MainActivity : AppCompatActivity(), Navigator {
         navigator.launchFragment(this, ModeSettingsFragment.Screen(idDictionary))
     }
 
-    override fun showChoosingDictionaryFragment(idAccount: Long) {
-        navigator.launchFragment(this, ChoosingDictionaryFragment.Screen(idAccount))
+    override fun showChoosingDictionaryFragment() {
+        navigator.launchFragment(this, ChoosingDictionaryFragment.Screen())
     }
 
     override fun showProfileFragment() {
@@ -202,19 +203,6 @@ class MainActivity : AppCompatActivity(), Navigator {
     override fun goBack() {
         if (supportFragmentManager.backStackEntryCount != 0) {
             onBackPressed()
-        }
-    }
-
-    /** Скрытие поднятого меню над клавиатурой при вводе текста */
-    private fun settingKeyboard() {
-        binding.bottomNavigationView.viewTreeObserver.addOnGlobalLayoutListener {
-            val r = Rect()
-            binding.root.getWindowVisibleDisplayFrame(r)
-            if (binding.root.rootView.height - (r.bottom - r.top) > 500) {
-                binding.bottomNavigationView.visibility = View.GONE
-            } else {
-                binding.bottomNavigationView.visibility = View.VISIBLE
-            }
         }
     }
 
