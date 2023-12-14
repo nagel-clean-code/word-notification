@@ -20,10 +20,13 @@ interface DictionaryRepository {
     suspend fun updateText(word: Word)
     suspend fun updateIncludeDictionary(include: Boolean, idDictionary: Long)
     suspend fun saveNotificationHistoryItem(notification: NotificationHistoryItem)
-    fun loadHistoryNotification(
+    suspend fun deleteNotificationHistoryItem(notification: NotificationHistoryItem): Int
+    fun loadHistoryNotificationFlow(
         idWord: Long,
         idMode: Long
     ): Flow<List<NotificationHistoryItem>?>
+
+    suspend fun loadHistoryNotification(idWord: Long, idMode: Long): List<NotificationHistoryItem>?
 
     suspend fun createDictionary(
         name: String,

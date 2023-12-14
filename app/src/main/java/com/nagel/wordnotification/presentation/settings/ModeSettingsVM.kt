@@ -17,6 +17,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,15 +32,6 @@ class ModeSettingsVM @Inject constructor(
     var dictionary: Dictionary? = null
     val liveResult: MutableLiveResult<Unit> = MutableLiveData()
 
-    fun resettingAlgorithm(word: Word) {
-        viewModelScope.launch(Dispatchers.IO) {
-            word.learnStep = 0
-            word.allNotificationsCreated = false
-            word.lastDateMention = 0
-            dictionaryRepository.updateWord(word)
-        }
-    }
-
     suspend fun loadDictionary(idDictionary: Long) {
         withContext(Dispatchers.IO) {
             dictionary = dictionaryRepository.loadDictionaryById(idDictionary)
@@ -48,14 +40,50 @@ class ModeSettingsVM @Inject constructor(
 
     fun loadCurrentSettings() {
         viewModelScope.launch(Dispatchers.IO) {
-            loadingMode.value = settingsRepository.getModeSettingsById(dictionary!!.idMode)?.toMode()
+            loadingMode.value =
+                settingsRepository.getModeSettingsById(dictionary!!.idMode)?.toMode()
         }
     }
 
-    fun saveSettings(settings: ModeSettingsDto) {
+    private suspend fun deleteUnfulfilledNotifications(words: List<Word>?) {
+        val currentDate = Date().time
+        val prevMode = loadingMode.value
+        prevMode?.let {
+            words?.forEach { word ->
+                val history =
+                    dictionaryRepository.loadHistoryNotification(word.idWord, prevMode.idMode)
+                history?.forEach {
+                    if (it.dateMention > currentDate) {
+                        dictionaryRepository.deleteNotificationHistoryItem(it)
+                    }
+                }
+            }
+        }
+    }
+
+    fun saveNewSettings(settings: ModeSettingsDto, resetSteps: Boolean) {
+        val words = dictionary?.wordList?.map { it.copy() }
         into(liveResult, scope = MainScope()) {
-            settingsRepository.saveModeSettings(settings)
+            deleteUnfulfilledNotifications(words)
             dictionaryRepository.updateIncludeDictionary(true, idDictionary)
+            val idMode = settingsRepository.saveModeSettings(settings)
+            settings.idMode = idMode
+            if (resetSteps) {
+                resettingAlgorithm(words, settings)
+            }
+        }
+    }
+
+    private suspend fun resettingAlgorithm(words: List<Word>?, mode: ModeSettingsDto) {
+        words?.forEach { word ->
+            val history = dictionaryRepository.loadHistoryNotification(word.idWord, mode.idMode)
+            val steps = history?.size ?: 0
+            val all = (mode.selectedMode?.getCountSteps() ?: Integer.MAX_VALUE) >= steps
+            val lastDate = history?.maxByOrNull { it.dateMention }?.dateMention ?: 0L
+            word.learnStep = steps
+            word.allNotificationsCreated = all
+            word.lastDateMention = lastDate
+            dictionaryRepository.updateWord(word)
         }
     }
 }

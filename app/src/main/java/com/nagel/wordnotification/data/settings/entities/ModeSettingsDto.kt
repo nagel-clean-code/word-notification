@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import com.nagel.wordnotification.core.algorithms.Algorithm
 
 data class ModeSettingsDto(
-    val idMode: Long = 0,
+    var idMode: Long = 0,
     val idDictionary: Long,
     val selectedMode: Algorithm?,
     val sampleDays: Boolean,

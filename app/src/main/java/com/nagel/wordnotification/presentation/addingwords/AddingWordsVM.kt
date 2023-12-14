@@ -123,7 +123,7 @@ class AddingWordsVM @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val mode = settingsRepository.getModeSettingsById(_loadedDictionaryFlow.value!!.idMode)
             mode?.let {
-                dictionaryRepository.loadHistoryNotification(word.idWord, mode.idMode)
+                dictionaryRepository.loadHistoryNotificationFlow(word.idWord, mode.idMode)
                     .collect() { list ->
                         withContext(Dispatchers.Main) {
                             createOldNotification(list, word)

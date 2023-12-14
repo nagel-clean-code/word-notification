@@ -34,6 +34,7 @@ open class BaseViewModel : ViewModel() {
             try {
                 liveResult.postValue(SuccessResult(block()))
             } catch (e: Exception) {
+                e.printStackTrace()
                 liveResult.postValue(ErrorResult(e))
             }
         }

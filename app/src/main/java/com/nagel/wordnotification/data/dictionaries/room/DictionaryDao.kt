@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.Flow
 interface DictionaryDao {
     @Query("SELECT * FROM dictionaries WHERE id_author = :accountId")   //TODO JOIN
     fun getMyDictionariesFlow(accountId: Long): Flow<List<DictionaryDbEntity>?>
+
     @Query("SELECT * FROM dictionaries WHERE id_author = :accountId")   //TODO JOIN
     suspend fun getMyDictionaries(accountId: Long): List<DictionaryDbEntity>?
 //
@@ -43,8 +44,20 @@ interface DictionaryDao {
     @Insert(entity = NotificationHistoryDbEntity::class)
     suspend fun saveNotificationHistoryItem(notification: NotificationHistoryDbEntity): Long
 
+    @Query("DELETE FROM notification_history_items WHERE id_notification =:idHistory")
+    suspend fun deleteNotificationHistoryItem(idHistory: Long): Int
+
     @Query("SELECT * FROM notification_history_items WHERE id_word = :idWord AND id_mode = :idMode")
-    fun getNotificationHistory(idWord: Long, idMode: Long): Flow<List<NotificationHistoryDbEntity>?>
+    fun getNotificationHistoryFlow(
+        idWord: Long,
+        idMode: Long
+    ): Flow<List<NotificationHistoryDbEntity>?>
+
+    @Query("SELECT * FROM notification_history_items WHERE id_word = :idWord AND id_mode = :idMode")
+    suspend fun getNotificationHistory(
+        idWord: Long,
+        idMode: Long
+    ): List<NotificationHistoryDbEntity>?
 
     @Update(entity = WordDbEntity::class)
     suspend fun updateWord(wordDbEntity: WordDbEntity)

@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.constraintlayout.helper.widget.Flow
 import androidx.core.view.children
 import androidx.core.view.isVisible
@@ -18,7 +17,6 @@ import com.nagel.wordnotification.core.algorithms.ForgetfulnessCurveLong
 import com.nagel.wordnotification.core.algorithms.ForgetfulnessCurveShort
 import com.nagel.wordnotification.core.algorithms.PlateauEffect
 import com.nagel.wordnotification.core.services.Utils
-import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import com.nagel.wordnotification.databinding.FragmentModeSettingsBinding
 import com.nagel.wordnotification.presentation.base.BaseFragment
@@ -28,6 +26,7 @@ import com.nagel.wordnotification.presentation.base.SuccessResult
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import com.nagel.wordnotification.presentation.navigator.MainNavigator
 import com.nagel.wordnotification.presentation.navigator.navigator
+import com.nagel.wordnotification.utils.common.showToast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -101,12 +100,13 @@ class ModeSettingsFragment : BaseFragment() {
                     is ErrorResult -> {
                         loadingLayout.isVisible = true
                         errorLayout.isVisible = false
-                        showMsg(R.string.error_saving_mode)
+                        requireActivity().showToast(R.string.error_saving_mode)
+                        navigator().goBack()
                     }
 
                     is SuccessResult -> {
                         navigator().blackoutBottomNavigationView(false)
-                        showMsg(R.string.changes_saved)
+                        requireActivity().showToast(R.string.changes_saved)
                         navigator().goBack()
                     }
                 }
@@ -249,29 +249,16 @@ class ModeSettingsFragment : BaseFragment() {
         val prevMode = viewModel.loadingMode.value
         val newMode = buildModeSettingsDto()
         if (newMode != prevMode) {
-            viewModel.saveSettings(newMode)
-            viewModel.dictionary?.wordList?.let { list ->
-                Utils.deleteNotification(list)
-                if (newMode.selectedMode != prevMode?.selectedMode) {
+            val resetSteps = newMode.selectedMode != prevMode?.selectedMode
+            viewModel.saveNewSettings(newMode, resetSteps)
+            if (resetSteps) {
+                viewModel.dictionary?.wordList?.let { list ->
+                    Utils.deleteNotification(list)
                     navigator().startAlgorithm(2000)
-                    resetSteps(list)
                 }
             }
         } else if (goBack) {
             navigator().goBack()
-        }
-    }
-
-    private fun showMsg(idMsg: Int) {
-        val msg = requireContext().getString(idMsg)
-        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
-    }
-
-    private fun resetSteps(words: List<Word>) {
-        words.forEach { word ->
-            if (word.learnStep > 0) {
-                viewModel.resettingAlgorithm(word)
-            }
         }
     }
 

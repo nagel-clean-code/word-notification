@@ -109,12 +109,25 @@ class RoomDictionaryRepository @Inject constructor(
         dictionaryDao.saveNotificationHistoryItem(data)
     }
 
-    override fun loadHistoryNotification(
+    override suspend fun deleteNotificationHistoryItem(notification: NotificationHistoryItem): Int {
+        return dictionaryDao.deleteNotificationHistoryItem(notification.idNotification)
+    }
+
+    override fun loadHistoryNotificationFlow(
         idWord: Long,
         idMode: Long
     ): Flow<List<NotificationHistoryItem>?> {
-        return dictionaryDao.getNotificationHistory(idWord, idMode).map { flow ->
+        return dictionaryDao.getNotificationHistoryFlow(idWord, idMode).map { flow ->
             flow?.map { it.toNotificationHistoryItem() }
+        }
+    }
+
+    override suspend fun loadHistoryNotification(
+        idWord: Long,
+        idMode: Long
+    ): List<NotificationHistoryItem>? {
+        return dictionaryDao.getNotificationHistory(idWord, idMode)?.map {
+            it.toNotificationHistoryItem()
         }
     }
 

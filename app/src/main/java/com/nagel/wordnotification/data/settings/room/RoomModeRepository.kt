@@ -17,7 +17,7 @@ class RoomModeRepository @Inject constructor(
 ) : SettingsRepository {
 
     private val mutex = Mutex()
-    override suspend fun saveModeSettings(data: ModeSettingsDto) {
+    override suspend fun saveModeSettings(data: ModeSettingsDto): Long {
         Log.d("saveModeSettings", "idDictionary: ${data.idDictionary}")
         val dto = ModeDbEntity.createMode(data)
         val mode = modeDao.getMode(data.idDictionary, dto.selectedMode)
@@ -30,6 +30,7 @@ class RoomModeRepository @Inject constructor(
                 dto.idMode
             }
             dictionary.setIdModeInDictionary(idMode, data.idDictionary)
+            return idMode
         }
     }
 

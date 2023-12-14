@@ -29,6 +29,6 @@ class WordDetailsVM @Inject constructor(
     }
 
     fun loadNotificationHistory(idWord: Long, idMode: Long): Flow<List<NotificationHistoryItem>?> {
-        return dictionaryRepository.loadHistoryNotification(idWord, idMode)
+        return dictionaryRepository.loadHistoryNotificationFlow(idWord, idMode)
     }
 }

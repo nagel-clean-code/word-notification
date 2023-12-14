@@ -72,6 +72,7 @@ class AddingWordsFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
         viewModel.start()
+        navigator().startAlgorithm(2000)
     }
 
     private fun showChoosingDictionary() {
