@@ -1,5 +1,6 @@
 package com.nagel.wordnotification.core.services
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -7,6 +8,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
+import android.media.AudioAttributes
+import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -48,20 +51,33 @@ class AlarmReceiver : BroadcastReceiver() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val nc = NotificationChannel(
                 NOTIFICATION_CHANNEL_ID,
-                "default",
+                context.resources.getString(R.string.app_name),
                 NotificationManager.IMPORTANCE_HIGH
             )
+            val customSoundUri =
+                Uri.parse("android.resource://${context.packageName}/${R.raw.custom_sound}")
+            val attributes = AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                .build()
+            nc.setSound(customSoundUri, attributes)
             notificationManager.createNotificationChannel(nc)
         }
+
+
         val customNotification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.arrow)
             .setContentTitle("Шаг запоминания:" + dto.step)
             .setContentIntent(pendingIntent)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setVibrate(longArrayOf(1000L, 1000L, 1000L, 1000L, 1000L))
+            .setDefaults(Notification.DEFAULT_VIBRATE)
+            .setCategory(NotificationCompat.CATEGORY_RECOMMENDATION)
+
         if (currentType == TYPE_ANSWER) {
             customNotification
                 .setContentText(dto.text)
                 .addAction(
-                    R.drawable.baseline_casino_24,
+                    0,
                     context.getString(R.string.show_answer),
                     getAction(context, dto, TYPE_ANSWER)
                 )
@@ -70,7 +86,7 @@ class AlarmReceiver : BroadcastReceiver() {
             customNotification
                 .setContentText("${dto.text} - ${dto.translation}")
                 .addAction(
-                    R.drawable.baseline_casino_24,
+                    0,
                     context.getString(R.string.ok),
                     getAction(context, dto, TYPE_QUEST)
                 )

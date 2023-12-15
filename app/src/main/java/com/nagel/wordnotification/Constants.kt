@@ -6,5 +6,5 @@ object Constants {
     const val TYPE_ANSWER = 0
     const val TAKE_AWAY = "TAKE_AWAY"
     const val TYPE_QUEST = 1
-    const val NOTIFICATION_CHANNEL_ID = "NOTIFICATION_CHANNEL_ID"
+    const val NOTIFICATION_CHANNEL_ID = "NotiFire_chanel_01"
 }

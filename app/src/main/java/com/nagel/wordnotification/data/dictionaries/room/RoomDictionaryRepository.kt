@@ -87,8 +87,8 @@ class RoomDictionaryRepository @Inject constructor(
         dictionaryDao.updateDictionaryName(name, idDictionary)
     }
 
-    override suspend fun addWord(wordDto: Word): Long {
-        val word = WordDbEntity.createWordDbEntity(wordDto)
+    override suspend fun addWord(word: Word): Long {
+        val word = WordDbEntity.createWordDbEntity(word)
         return dictionaryDao.addWord(word)
     }
 

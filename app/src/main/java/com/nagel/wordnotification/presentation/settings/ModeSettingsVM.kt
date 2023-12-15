@@ -78,7 +78,7 @@ class ModeSettingsVM @Inject constructor(
         words?.forEach { word ->
             val history = dictionaryRepository.loadHistoryNotification(word.idWord, mode.idMode)
             val steps = history?.size ?: 0
-            val all = (mode.selectedMode?.getCountSteps() ?: Integer.MAX_VALUE) >= steps
+            val all = (mode.selectedMode?.getCountSteps() ?: Integer.MAX_VALUE) <= steps
             val lastDate = history?.maxByOrNull { it.dateMention }?.dateMention ?: 0L
             word.learnStep = steps
             word.allNotificationsCreated = all

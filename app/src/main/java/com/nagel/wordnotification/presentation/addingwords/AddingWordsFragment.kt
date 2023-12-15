@@ -48,7 +48,9 @@ class AddingWordsFragment : BaseFragment() {
     }
 
     private fun initListeners() {
+//        val test = Test(requireContext())
         binding.selectDictionary.setOnClickListener {
+//            test.launch()
             showChoosingDictionary()
         }
 

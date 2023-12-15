@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import com.nagel.wordnotification.R
@@ -16,7 +17,7 @@ import kotlinx.coroutines.flow.onEach
 
 
 class ListWordsAdapter(
-    private val wordListFlow: Flow<List<Word>>,
+    wordListFlow: Flow<List<Word>>,
     private val showWordDetails: (word: Word) -> Unit,
     private val showActionMenuWithView: (Word) -> Unit
 ) : RecyclerView.Adapter<ListWordsAdapter.Holder>() {
@@ -25,10 +26,12 @@ class ListWordsAdapter(
     private var wordList = listOf<Word>()
 
     init {
-        wordListFlow.onEach {
-            size = it.size
-            wordList = it
-            notifyDataSetChanged()
+        wordListFlow.onEach { list ->
+            size = list.size
+            val diffCallback = ArticleDiffItemCallback(wordList, list)
+            val diffResult = DiffUtil.calculateDiff(diffCallback)
+            wordList = ArrayList(list)
+            diffResult.dispatchUpdatesTo(this)
         }.launchIn(MainScope())
     }
 
@@ -55,11 +58,11 @@ class ListWordsAdapter(
         holder.view.tag = currentWord
         holder.view.setOnClickListener {
             val actualWord = wordList.find { currentWord.hashCode() == it.hashCode() }
-            actualWord?.let { showWordDetails.invoke(it) }
+            actualWord?.let { showWordDetails.invoke(it.fullCopyWord()) }
         }
         holder.view.setOnLongClickListener {
             val actualWord = wordList.find { currentWord.hashCode() == it.hashCode() }
-            actualWord?.let { showActionMenuWithView.invoke(it) }
+            actualWord?.let { showActionMenuWithView.invoke(it.fullCopyWord()) }
             true
         }
     }
@@ -104,11 +107,28 @@ class ListWordsAdapter(
         }
     }
 
+    private class ArticleDiffItemCallback(
+        val oldList: List<Word>,
+        val newList: List<Word>
+    ) : DiffUtil.Callback() {
+
+        override fun getOldListSize(): Int = oldList.size
+        override fun getNewListSize(): Int = newList.size
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldList.size - oldItemPosition - 1].idWord ==
+                    newList[newList.size - newItemPosition - 1].idWord
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldList.size - oldItemPosition - 1] ==
+                    newList[newList.size - newItemPosition - 1]
+        }
+    }
+
     companion object {
         private const val WORD_TYPE_1 = 1
         private const val WORD_TYPE_2 = 2
         private const val WORD_TYPE_3 = 3
-
-        private const val COUNT_LINE_LETTER = 18
     }
 }

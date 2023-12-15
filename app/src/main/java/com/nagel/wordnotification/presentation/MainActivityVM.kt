@@ -13,7 +13,7 @@ class MainActivityVM @Inject constructor(
 
     fun isItPossibleShowRateApp(): Boolean {
         val session = sessionRepository.getSession()
-        val step = session?.stepRatedApp ?: return false
+        val step = session.stepRatedApp ?: return false
         val date = session.dateAppInstallation ?: return false
         val nextInterval = mapSteps[step] ?: return false
         return Date().time - date > nextInterval

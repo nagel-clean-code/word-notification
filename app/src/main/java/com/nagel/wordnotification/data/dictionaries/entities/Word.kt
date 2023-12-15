@@ -27,4 +27,10 @@ data class Word(
             lastDateMention
         )
     }
+
+    fun fullCopyWord(): Word {
+        val newWord = this.copy()
+        newWord.idWord = this.idWord
+        return newWord
+    }
 }
