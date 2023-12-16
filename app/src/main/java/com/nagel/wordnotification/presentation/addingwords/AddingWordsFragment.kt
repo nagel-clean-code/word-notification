@@ -1,5 +1,6 @@
 package com.nagel.wordnotification.presentation.addingwords
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.databinding.FragmentAddingWordsBinding
 import com.nagel.wordnotification.presentation.addingwords.actions.EditWordDialog
 import com.nagel.wordnotification.presentation.addingwords.actions.MenuSelectingActions
+import com.nagel.wordnotification.presentation.addingwords.onboard.OnboardingActivity
 import com.nagel.wordnotification.presentation.addingwords.worddetails.WordDetailsDialog
 import com.nagel.wordnotification.presentation.base.BaseFragment
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
@@ -75,6 +77,16 @@ class AddingWordsFragment : BaseFragment() {
         super.onResume()
         viewModel.start()
         navigator().startAlgorithm(2000)
+        showOnBoard()
+    }
+
+    private fun showOnBoard() {
+        if (viewModel.getPermissionShowPreview()) {
+            viewLifecycleOwner.lifecycleScope.launch {
+                val intent = Intent(requireContext(), OnboardingActivity::class.java)
+                startActivity(intent)
+            }
+        }
     }
 
     private fun showChoosingDictionary() {

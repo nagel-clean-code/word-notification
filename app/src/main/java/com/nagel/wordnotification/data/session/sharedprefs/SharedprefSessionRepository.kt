@@ -50,6 +50,13 @@ class SharedprefSessionRepository @Inject constructor(
 
     override fun getAccountId(): Long? = getSession().account?.id
 
+    override fun getPreviewFlag(screenCode: String): Boolean {
+        val permissionShow = sharedPreferences.getBoolean(screenCode, true)
+        if(!permissionShow) return false
+        sharedPreferences.edit().putBoolean(screenCode, false).apply()
+        return true
+    }
+
     private fun createSession(): SessionDataEntity {
         val currentTime = Date().time
         val loadSession = SessionDataEntity(dateAppInstallation = currentTime)

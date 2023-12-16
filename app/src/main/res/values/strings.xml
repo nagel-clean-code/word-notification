@@ -83,4 +83,7 @@
     <string name="send">Отправить</string>
     <string name="how_to_make_app_better_short">Напиши...</string>
     <string name="dictionary_could_not_be_loaded">Не удалось загрузить словарь</string>
+    <string name="onboard_button_continue">Продолжить</string>
+    <string name="onboard_button_skip">Пропустить</string>
+    <string name="begin">Начать</string>
 </resources>

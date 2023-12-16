@@ -9,4 +9,5 @@ interface SessionRepository {
     fun saveCurrentIdDictionary(idDictionary: Long)
     fun getSession(): SessionDataEntity
     fun getAccountId(): Long?
+    fun getPreviewFlag(screenCode: String): Boolean
 }

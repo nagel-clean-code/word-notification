@@ -18,6 +18,9 @@
         <item name="materialButtonStyle">@style/MyButtonStyle</item>
     </style>
 
+    <style name="OnBoardTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:windowFullscreen">true</item>
+    </style>
 
     <style name="MyButtonStyle" parent="Widget.Material3.Button">
         <item name="cornerRadius">25dp</item>

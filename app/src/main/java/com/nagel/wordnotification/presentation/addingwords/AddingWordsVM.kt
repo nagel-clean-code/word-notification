@@ -44,6 +44,16 @@ class AddingWordsVM @Inject constructor(
 
     private val _loadedDictionaryFlow = MutableStateFlow<Dictionary?>(null)
     val loadedDictionaryFlow: StateFlow<Dictionary?> = _loadedDictionaryFlow
+    private var permissionShowPreview = sessionRepository.getPreviewFlag(SCREE_CODE)
+
+    fun getPermissionShowPreview(): Boolean{
+        return if(permissionShowPreview) {
+            permissionShowPreview = false
+            true
+        }else{
+            false
+        }
+    }
 
     fun start() {
         viewModelScope.launch {
@@ -175,5 +185,6 @@ class AddingWordsVM @Inject constructor(
 
     companion object {
         private const val TAG = "ADDING_WORDS_VIEW_MODEL"
+        const val SCREE_CODE = "AddingWordsFragment"
     }
 }
