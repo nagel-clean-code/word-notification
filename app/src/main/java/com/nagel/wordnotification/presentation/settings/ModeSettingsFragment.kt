@@ -1,11 +1,18 @@
 package com.nagel.wordnotification.presentation.settings
 
+import android.Manifest.permission.POST_NOTIFICATIONS
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.helper.widget.Flow
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -58,6 +65,38 @@ class ModeSettingsFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         initWeekday()
         initListeners()
+        checkPermissions()
+        initOnBackPressed()
+    }
+
+    private fun initOnBackPressed() {
+        requireActivity()
+            .onBackPressedDispatcher
+            .addCallback(requireActivity(), object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (isEnabled) {
+                        isEnabled = false
+                        saveMode(true)
+                    }
+                }
+            }
+            )
+    }
+
+    private fun checkPermissions() {
+        if (Build.VERSION.SDK_INT >= 33) {
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    requireActivity(),
+                    arrayOf(POST_NOTIFICATIONS),
+                    101
+                )
+            }
+        }   //TODO реализовать объяснение зачем требуются уведомления
     }
 
     private fun initListeners() {
@@ -94,20 +133,20 @@ class ModeSettingsFragment : BaseFragment() {
                         root.isVisible = true
                         loadingLayout.isVisible = true
                         errorLayout.isVisible = false
-                        navigator().blackoutBottomNavigationView(true)
+                        navigator()?.blackoutBottomNavigationView(true)
                     }
 
                     is ErrorResult -> {
                         loadingLayout.isVisible = true
                         errorLayout.isVisible = false
                         requireActivity().showToast(R.string.error_saving_mode)
-                        navigator().goBack()
+                        navigator()?.goBack()
                     }
 
                     is SuccessResult -> {
-                        navigator().blackoutBottomNavigationView(false)
+                        navigator()?.blackoutBottomNavigationView(false)
                         requireActivity().showToast(R.string.changes_saved)
-                        navigator().goBack()
+                        navigator()?.goBack()
                     }
                 }
             }
@@ -240,25 +279,25 @@ class ModeSettingsFragment : BaseFragment() {
         textView.tag = false
     }
 
-    override fun onPause() {
-        super.onPause()
-        saveMode()
-    }
-
     private fun saveMode(goBack: Boolean = false) {
         val prevMode = viewModel.loadingMode.value
         val newMode = buildModeSettingsDto()
+        Log.d("dd", "prevMode:" + prevMode)
+        Log.d("dd", "newMode: " + newMode)
+        Log.d("dd", "prevMode:" + prevMode.hashCode())
+        Log.d("dd", "newMode: " + newMode.hashCode())
+
         if (newMode != prevMode) {
             val resetSteps = newMode.selectedMode != prevMode?.selectedMode
             viewModel.saveNewSettings(newMode, resetSteps)
             if (resetSteps) {
                 viewModel.dictionary?.wordList?.let { list ->
                     Utils.deleteNotification(list)
-                    navigator().startAlgorithm(2000)
+                    navigator()?.startAlgorithm(2000)
                 }
             }
         } else if (goBack) {
-            navigator().goBack()
+            navigator()?.goBack()
         }
     }
 
@@ -281,8 +320,8 @@ class ModeSettingsFragment : BaseFragment() {
     private fun selectedDays(): List<String> {
         val listDays = arrayListOf<String>()
         binding.chainDaysWeek.children.forEach() { view: View ->
-            if (view !is Flow && view.tag == false) {
-                listDays.add((view as TextView).text.toString())
+            if (view is TextView && view.tag == false) {
+                listDays.add(view.text.toString())
             }
         }
         return listDays
@@ -290,7 +329,7 @@ class ModeSettingsFragment : BaseFragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        navigator().blackoutBottomNavigationView(false)
+        navigator()?.blackoutBottomNavigationView(false)
     }
 
     companion object {

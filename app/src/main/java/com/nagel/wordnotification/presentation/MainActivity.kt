@@ -81,7 +81,6 @@ class MainActivity : AppCompatActivity(), Navigator {
             navigator.launchFragment(this, screen, false)
             true
         }
-        checkPermissions()
         lifecycleScope.launch(Dispatchers.IO) {
             fileReader.handleIntent(intent.data) { msgId ->
                 withContext(Dispatchers.Main) {
@@ -154,22 +153,6 @@ class MainActivity : AppCompatActivity(), Navigator {
             ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
             worker
         )
-    }
-
-    private fun checkPermissions() {
-        if (Build.VERSION.SDK_INT >= 33) {
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                    101
-                )
-            }
-        }
     }
 
     override fun showAddingWordsFragment() {

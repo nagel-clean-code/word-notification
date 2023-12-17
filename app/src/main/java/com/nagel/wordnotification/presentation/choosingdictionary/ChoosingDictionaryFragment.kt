@@ -69,6 +69,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
 
         viewLifecycleOwner.lifecycleScope.launch() {
             viewModel.dictionaries.collect() {
+                viewModel.listDictionary = it
                 binding.countDictionaries.text = it.size.toString()
             }
         }
@@ -80,7 +81,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
     }
 
     private fun openModeSettings(idDictionary: Long) {
-        navigator().showModeSettingsFragment(idDictionary)
+        navigator()?.showModeSettingsFragment(idDictionary)
     }
 
     private fun showMenuActionOnWord(dictionary: Dictionary, position: Int) {
@@ -97,7 +98,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
 
     private fun openDictionary(idDictionary: Long) {
         sessionRepository.saveCurrentIdDictionary(idDictionary)
-        navigator().showAddingWordsFragment()
+        navigator()?.showAddingWordsFragment()
     }
 
     private fun initListeners() {

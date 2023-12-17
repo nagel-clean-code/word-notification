@@ -58,7 +58,7 @@ class AddingWordsFragment : BaseFragment() {
 
         binding.modeSettings.setOnClickListener {
             viewModel.loadedDictionaryFlow.value?.let {
-                navigator().showModeSettingsFragment(it.idDictionary)
+                navigator()?.showModeSettingsFragment(it.idDictionary)
             }
         }
 
@@ -76,7 +76,7 @@ class AddingWordsFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
         viewModel.start()
-        navigator().startAlgorithm(2000)
+        navigator()?.startAlgorithm(2000)
         showOnBoard()
     }
 
@@ -90,7 +90,7 @@ class AddingWordsFragment : BaseFragment() {
     }
 
     private fun showChoosingDictionary() {
-        navigator().showChoosingDictionaryFragment()
+        navigator()?.showChoosingDictionaryFragment()
     }
 
     /**

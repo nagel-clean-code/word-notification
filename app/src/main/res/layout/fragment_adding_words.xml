@@ -140,7 +140,7 @@
                     android:backgroundTint="@color/green"
                     android:stateListAnimator="@animator/button_elevation"
                     android:text="@string/add"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/editTextTranslation" />
@@ -154,23 +154,56 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/addWordButton">
 
-                    <ImageView
-                        android:id="@+id/selectDictionary"
-                        android:layout_width="130dp"
-                        android:layout_height="130dp"
-                        android:layout_marginEnd="3dp"
-                        android:background="@drawable/img_select_dictionary_button"
-                        app:layout_constraintStart_toStartOf="@+id/addWordButton"
-                        app:layout_constraintTop_toBottomOf="@+id/addWordButton" />
+                    <FrameLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
 
-                    <ImageView
-                        android:id="@+id/modeSettings"
-                        android:layout_width="130dp"
-                        android:layout_height="130dp"
-                        android:layout_marginStart="3dp"
-                        android:background="@drawable/img_mode_settings_button"
-                        app:layout_constraintStart_toEndOf="@+id/imageView5"
-                        app:layout_constraintTop_toBottomOf="@+id/addWordButton" />
+                        <ImageView
+                            android:id="@+id/selectDictionary"
+                            android:layout_width="130dp"
+                            android:layout_height="130dp"
+                            android:layout_marginEnd="3dp"
+                            android:background="@drawable/img_select_dictionary_button"
+                            app:layout_constraintStart_toStartOf="@+id/addWordButton"
+                            app:layout_constraintTop_toBottomOf="@+id/addWordButton" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="20dp"
+                            android:gravity="center"
+                            android:text="@string/selected_dictionary"
+                            android:textColor="@color/white"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+
+                        <ImageView
+                            android:id="@+id/modeSettings"
+                            android:layout_width="130dp"
+                            android:layout_height="130dp"
+                            android:layout_marginStart="3dp"
+                            android:background="@drawable/img_mode_settings_button"
+                            app:layout_constraintStart_toEndOf="@+id/imageView5"
+                            app:layout_constraintTop_toBottomOf="@+id/addWordButton" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="20dp"
+                            android:gravity="center"
+                            android:text="@string/mode_settings_1"
+                            android:textColor="@color/white"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+                    </FrameLayout>
                 </LinearLayout>
 
                 <ProgressBar

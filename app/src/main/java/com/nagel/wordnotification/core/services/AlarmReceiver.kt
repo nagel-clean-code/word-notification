@@ -63,15 +63,12 @@ class AlarmReceiver : BroadcastReceiver() {
             notificationManager.createNotificationChannel(nc)
         }
 
-
+        val title = context.getString(R.string.memorization_step)
         val customNotification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.arrow)
-            .setContentTitle("Шаг запоминания:" + dto.step)
+            .setContentTitle(title + dto.step)
             .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setVibrate(longArrayOf(1000L, 1000L, 1000L, 1000L, 1000L))
-            .setDefaults(Notification.DEFAULT_VIBRATE)
-            .setCategory(NotificationCompat.CATEGORY_RECOMMENDATION)
 
         if (currentType == TYPE_ANSWER) {
             customNotification

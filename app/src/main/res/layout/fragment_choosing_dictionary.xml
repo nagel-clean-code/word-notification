@@ -20,10 +20,10 @@
             android:orientation="horizontal"
             android:paddingVertical="17.5dp">
 
-            <FrameLayout
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_marginStart="55dp"
+                android:gravity="center"
                 android:layout_weight="1">
 
                 <TextView
@@ -32,18 +32,12 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="end|center_vertical"
                     android:fontFamily="@font/montserrat_bold"
-                    android:text="Словари"
+                    android:text="@string/dictionaries"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     app:layout_constraintEnd_toEndOf="@+id/imageView"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
-            </FrameLayout>
-
-            <FrameLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1">
 
                 <TextView
                     android:id="@+id/countDictionaries"
@@ -54,21 +48,21 @@
                     android:background="@drawable/ellipse_count_book"
                     android:fontFamily="@font/montserrat_bold"
                     android:gravity="center"
-                    android:text="1"
                     android:textColor="@color/green"
-                    android:textSize="14sp" />
-            </FrameLayout>
+                    android:textSize="14sp"
+                    tools:text="1" />
+            </LinearLayout>
 
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/dictionaries_list"
-            android:layout_height="match_parent"
             style="@style/width_match_parent_max_600"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:layout_marginHorizontal="15dp"
             android:nestedScrollingEnabled="false"
             android:paddingHorizontal="20dp"
-            android:layout_gravity="center"
             tools:itemCount="20"
             tools:listitem="@layout/item_card_dictionary" />
     </LinearLayout>
