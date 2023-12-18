@@ -32,10 +32,12 @@ import com.nagel.wordnotification.presentation.base.PendingResult
 import com.nagel.wordnotification.presentation.base.SuccessResult
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import com.nagel.wordnotification.presentation.navigator.MainNavigator
+import com.nagel.wordnotification.presentation.navigator.NavigatorV2
 import com.nagel.wordnotification.presentation.navigator.navigator
 import com.nagel.wordnotification.utils.common.showToast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -45,6 +47,9 @@ class ModeSettingsFragment : BaseFragment() {
 
     private lateinit var binding: FragmentModeSettingsBinding
     override val viewModel: ModeSettingsVM by viewModels()
+
+    @Inject
+    lateinit var navigatorV2: NavigatorV2
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -133,20 +138,28 @@ class ModeSettingsFragment : BaseFragment() {
                         root.isVisible = true
                         loadingLayout.isVisible = true
                         errorLayout.isVisible = false
-                        navigator()?.blackoutBottomNavigationView(true)
+                        navigatorV2.whenActivityActive {
+                            it.blackoutBottomNavigationView(true)
+                        }
                     }
 
                     is ErrorResult -> {
                         loadingLayout.isVisible = true
                         errorLayout.isVisible = false
-                        requireActivity().showToast(R.string.error_saving_mode)
-                        navigator()?.goBack()
+                        if (isAdded) {
+                            navigatorV2.whenActivityActive {
+                                it.showToast(R.string.error_saving_mode)
+                                it.goBack()
+                            }
+                        }
                     }
 
                     is SuccessResult -> {
-                        navigator()?.blackoutBottomNavigationView(false)
-                        requireActivity().showToast(R.string.changes_saved)
-                        navigator()?.goBack()
+                        navigatorV2.whenActivityActive {
+                            it.blackoutBottomNavigationView(false)
+                            it.showToast(R.string.changes_saved)
+                            it.goBack()
+                        }
                     }
                 }
             }
@@ -293,11 +306,15 @@ class ModeSettingsFragment : BaseFragment() {
             if (resetSteps) {
                 viewModel.dictionary?.wordList?.let { list ->
                     Utils.deleteNotification(list)
-                    navigator()?.startAlgorithm(2000)
+                    navigatorV2.whenActivityActive {
+                        it.startAlgorithm(2000)
+                    }
                 }
             }
         } else if (goBack) {
-            navigator()?.goBack()
+            navigatorV2.whenActivityActive {
+                it.goBack()
+            }
         }
     }
 
@@ -329,7 +346,9 @@ class ModeSettingsFragment : BaseFragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        navigator()?.blackoutBottomNavigationView(false)
+        navigatorV2.whenActivityActive {
+            it.blackoutBottomNavigationView(false)
+        }
     }
 
     companion object {

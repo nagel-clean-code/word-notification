@@ -16,7 +16,7 @@ import javax.inject.Singleton
 @Singleton
 class MainNavigator @Inject constructor() : AndroidViewModel(App.get()), NavigatorV2 {
 
-    val whenActivityActive = MainActivityActions()
+    override val whenActivityActive = MainActivityActions()
     private val _result = MutableLiveData<Any>()
     val result: LiveData<Any> = _result
 

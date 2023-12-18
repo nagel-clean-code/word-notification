@@ -5,6 +5,8 @@ import java.io.Serializable
 
 
 interface NavigatorV2 {
+    val whenActivityActive: MainActivityActions
+
     fun launch(screen: BaseScreen)
     fun toast(messageId: Int)
     fun getString(@StringRes messageRes: Int): String
