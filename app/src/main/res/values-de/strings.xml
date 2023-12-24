@@ -90,4 +90,6 @@
     <string name="mode_settings_1">Modus\nEinstellungen</string>
     <string name="recommendation_list">1. Wenn Sie ein Wörterbuch teilen oder eine Sicherungskopie erstellen möchten, halten Sie das Wörterbuch drei Sekunden lang gedrückt.\n\n2. Geben Sie in den Einstellungen des Modus die Uhrzeit an, zu der Sie die Benachrichtigungen verwenden möchten, damit die App nicht von wichtigen Dingen ablenkt. \ n \ n3. Ich empfehle, den Algorithmus «Plateau-Effekt» zu verwenden, um sich effektiv zu erinnern</string>
     <string name="memorization_step">Speicherschritt:</string>
+    <string name="current_language">Aktuelle Sprache: %s</string>
+    <string name="automatic_translation">Automatische Übersetzung</string>
 </resources>

@@ -4,11 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nagel.wordnotification.core.services.Utils
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
@@ -17,7 +18,6 @@ import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.databinding.FragmentChoosingDictionaryBinding
 import com.nagel.wordnotification.presentation.base.BaseFragment
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
-import com.nagel.wordnotification.presentation.navigator.MainNavigator.Companion.ARG_SCREEN
 import com.nagel.wordnotification.presentation.navigator.navigator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -34,6 +34,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
 
     @Inject
     lateinit var sessionRepository: SessionRepository
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -51,7 +52,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
     }
 
     private fun initAdapter(words: List<Word>) {
-        viewModel.idAccount = sessionRepository.getSession()!!.account!!.id
+        viewModel.idAccount = sessionRepository.getSession().account!!.id
         val dictionariesAdapter = DictionariesListAdapter(
             dictionaries = viewModel.dictionaries,
             settingsRepository = viewModel.settingsRepository,
@@ -68,9 +69,11 @@ class ChoosingDictionaryFragment : BaseFragment() {
         binding.dictionariesList.layoutManager = layoutManager
 
         viewLifecycleOwner.lifecycleScope.launch() {
-            viewModel.dictionaries.collect() {
-                viewModel.listDictionary = it
-                binding.countDictionaries.text = it.size.toString()
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.dictionaries.collect() {
+                    viewModel.listDictionary = it
+                    binding.countDictionaries.text = it.size.toString()
+                }
             }
         }
     }
@@ -105,17 +108,13 @@ class ChoosingDictionaryFragment : BaseFragment() {
         binding.addButton.setOnClickListener {
             showAddDictionaryDialog()
         }
-        lifecycleScope.launch {
-            viewModel.showMessage.collect() { msg ->
-                msg?.let { showMessage(it) }
-                viewModel.showMessage.value = null
-            }
-        }
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.loadingWords.collect() {
-                it?.let {
-                    binding.progress.isVisible = false
-                    initAdapter(it)
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.loadingWords.collect() {
+                    it?.let {
+                        binding.progress.isVisible = false
+                        initAdapter(it)
+                    }
                 }
             }
         }
@@ -133,11 +132,6 @@ class ChoosingDictionaryFragment : BaseFragment() {
             viewModel.addDictionary(name = name, viewModel.idAccount)
             binding.dictionariesList.scrollToPosition(0)
         }.show(childFragmentManager, DictionaryEditorAppDialog.TAG)
-    }
-
-    private fun showMessage(msgId: Int) {
-        val msg = requireContext().getString(msgId)
-        Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
     }
 
     companion object {

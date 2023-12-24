@@ -16,7 +16,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.nagel.wordnotification.R
@@ -33,7 +35,6 @@ import com.nagel.wordnotification.presentation.base.SuccessResult
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import com.nagel.wordnotification.presentation.navigator.MainNavigator
 import com.nagel.wordnotification.presentation.navigator.NavigatorV2
-import com.nagel.wordnotification.presentation.navigator.navigator
 import com.nagel.wordnotification.utils.common.showToast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -185,21 +186,23 @@ class ModeSettingsFragment : BaseFragment() {
 
     private fun initData() {
         viewLifecycleOwner.lifecycleScope.launch() {
-            viewModel.loadingMode.collect() { mode ->
-                if (mode == null) {
-                    binding.plateauEffect.isChecked = true
-                    return@collect
-                }
-                binding.plateauEffect.isChecked = false
-                initSelectedMode(mode)
-                if (mode.sampleDays) {
-                    binding.sampleDays.isChecked = true
-                    initSelectedDays(mode)
-                }
-                if (mode.timeIntervals) {
-                    binding.timeIntervals.isChecked = true
-                    binding.time1.text = mode.workingTimeInterval.first
-                    binding.time2.text = mode.workingTimeInterval.second
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.loadingMode.collect() { mode ->
+                    if (mode == null) {
+                        binding.plateauEffect.isChecked = true
+                        return@collect
+                    }
+                    binding.plateauEffect.isChecked = false
+                    initSelectedMode(mode)
+                    if (mode.sampleDays) {
+                        binding.sampleDays.isChecked = true
+                        initSelectedDays(mode)
+                    }
+                    if (mode.timeIntervals) {
+                        binding.timeIntervals.isChecked = true
+                        binding.time1.text = mode.workingTimeInterval.first
+                        binding.time2.text = mode.workingTimeInterval.second
+                    }
                 }
             }
         }

@@ -6,9 +6,6 @@ import com.nagel.wordnotification.data.accounts.entities.Account
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.data.session.entities.SessionDataEntity
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -52,9 +49,25 @@ class SharedprefSessionRepository @Inject constructor(
 
     override fun getPreviewFlag(screenCode: String): Boolean {
         val permissionShow = sharedPreferences.getBoolean(screenCode, true)
-        if(!permissionShow) return false
+        if (!permissionShow) return false
         sharedPreferences.edit().putBoolean(screenCode, false).apply()
         return true
+    }
+
+    override fun getTranslationLanguage(): String {
+        return sharedPreferences.getString(TRANSLATION_LANGUAGE, "en") ?: "en"
+    }
+
+    override fun saveTranslationLanguage(lang: String) {
+        sharedPreferences.edit().putString(TRANSLATION_LANGUAGE, lang).apply()
+    }
+
+    override fun getAutoTranslation(): Boolean {
+        return sharedPreferences.getBoolean(AUTO_TRANSLATION, true)
+    }
+
+    override fun saveAutoTranslation(isAuto: Boolean) {
+        sharedPreferences.edit().putBoolean(AUTO_TRANSLATION, isAuto).apply()
     }
 
     private fun createSession(): SessionDataEntity {
@@ -71,6 +84,8 @@ class SharedprefSessionRepository @Inject constructor(
     }
 
     companion object {
+        private const val TRANSLATION_LANGUAGE = "TRANSLATION_LANGUAGE"
+        private const val AUTO_TRANSLATION = "AUTO_TRANSLATION"
         private const val SESSiON_STATE = "SESSiON_STATE"
         private const val SHARED_PREFS_SESSION = "SHARED_PREFS_SESSION"
     }

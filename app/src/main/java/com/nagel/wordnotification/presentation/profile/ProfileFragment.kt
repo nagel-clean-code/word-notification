@@ -5,7 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.databinding.FragmentProfileBinding
 import com.nagel.wordnotification.presentation.base.BaseFragment
@@ -44,22 +46,24 @@ class ProfileFragment : BaseFragment() {
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.showData.collect() {
-                if (it != null) {
-                    val percent = if (viewModel.numbersWords != 0) {
-                        viewModel.learnedWords * 100 / viewModel.numbersWords
-                    } else {
-                        0
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.showData.collect() {
+                    if (it != null) {
+                        val percent = if (viewModel.numbersWords != 0) {
+                            viewModel.learnedWords * 100 / viewModel.numbersWords
+                        } else {
+                            0
+                        }
+                        val text = requireContext().getString(
+                            R.string.text_statistic,
+                            viewModel.learnedWords,
+                            viewModel.numbersWords,
+                            percent,
+                            viewModel.learnedDictionaries,
+                            viewModel.countDictionaries
+                        )
+                        binding.textView1.text = text
                     }
-                    val text = requireContext().getString(
-                        R.string.text_statistic,
-                        viewModel.learnedWords,
-                        viewModel.numbersWords,
-                        percent,
-                        viewModel.learnedDictionaries,
-                        viewModel.countDictionaries
-                    )
-                    binding.textView1.text = text
                 }
             }
         }

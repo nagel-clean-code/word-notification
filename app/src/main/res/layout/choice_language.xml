@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/rounded_background_settings"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingHorizontal="40dp"
+    android:paddingVertical="25dp">
+
+    <TextView
+        android:id="@+id/currentLanguage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="@string/current_language" />
+
+    <ListView
+        android:id="@+id/listLanguages"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:layout_marginTop="10dp" />
+
+    <CheckBox
+        android:id="@+id/autoTranslation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_marginTop="5dp"
+        android:checked="true"
+        android:text="@string/automatic_translation"
+        android:textColor="@color/gray_3"
+        android:textSize="16sp"
+        app:buttonTint="@color/purple" />
+
+    <Button
+        android:id="@+id/cancelButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/ok"
+        android:textSize="16sp" />
+
+</LinearLayout>

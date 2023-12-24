@@ -80,7 +80,7 @@ class EvaluationAppDialog() : DialogFragment() {
                 }
             } else {
                 NavigationUtils.openGooglePlayStore(requireContext())
-                @ReviewErrorCode val reviewErrorCode = (task.exception as ReviewException).errorCode
+                @ReviewErrorCode val reviewErrorCode = (task.exception as? ReviewException)?.errorCode
                 Log.d("CoroutineWorker", "reviewErrorCode:$reviewErrorCode")
                 dismiss()
             }

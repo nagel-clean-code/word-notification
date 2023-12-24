@@ -8,7 +8,9 @@ import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.databinding.FragmentRandomizerBinding
 import com.nagel.wordnotification.presentation.base.BaseFragment
@@ -90,39 +92,47 @@ class RandomizingFragment : BaseFragment() {
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.currentDictionary.collect() {
-                if (it?.isBlank() == true) {
-                    val msg = requireContext().getString(R.string.dictionary_not_selected)
-                    binding.head.text = msg
-                } else {
-                    binding.head.text = it
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.currentDictionary.collect() {
+                    if (it?.isBlank() == true) {
+                        val msg = requireContext().getString(R.string.dictionary_not_selected)
+                        binding.head.text = msg
+                    } else {
+                        binding.head.text = it
+                    }
                 }
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.currentWord.collect() {
-                binding.word.text = it?.textFirst
-                binding.translation.text = EMPTY_WORD
-                showDataCounter()
-            }
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.loadingDictionaries.collect() {
-                it?.let {
-                    initDictionaries()
-                    binding.progressBar.isVisible = false
-                }
-            }
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.showResult.collect() {
-                it?.let {
-                    ResultRandomizingFragmentDialog(
-                        it.first,
-                        it.second
-                    ).show(parentFragmentManager, null)
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.currentWord.collect() {
+                    binding.word.text = it?.textFirst
                     binding.translation.text = EMPTY_WORD
                     showDataCounter()
+                }
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.loadingDictionaries.collect() {
+                    it?.let {
+                        initDictionaries()
+                        binding.progressBar.isVisible = false
+                    }
+                }
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.showResult.collect() {
+                    it?.let {
+                        ResultRandomizingFragmentDialog(
+                            it.first,
+                            it.second
+                        ).show(parentFragmentManager, null)
+                        binding.translation.text = EMPTY_WORD
+                        showDataCounter()
+                    }
                 }
             }
         }

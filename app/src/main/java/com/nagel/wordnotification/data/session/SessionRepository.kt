@@ -10,4 +10,8 @@ interface SessionRepository {
     fun getSession(): SessionDataEntity
     fun getAccountId(): Long?
     fun getPreviewFlag(screenCode: String): Boolean
+    fun getTranslationLanguage(): String
+    fun saveTranslationLanguage(lang: String)
+    fun getAutoTranslation(): Boolean
+    fun saveAutoTranslation(isAuto: Boolean)
 }

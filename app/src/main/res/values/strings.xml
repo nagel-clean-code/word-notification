@@ -90,4 +90,6 @@
     <string name="mode_settings_1">Mode\nSettings</string>
     <string name="recommendation_list">1. If you want to share a dictionary or make a backup copy, hold down the dictionary for three seconds\n\n2. In the mode settings, specify the time of operation of notifications that is convenient for you, so that the application does not distract from important things \n\n3. For effective memorization, I recommend using the “Plateau Effect” algorithm</string>
     <string name="memorization_step">The memorization step:</string>
+    <string name="current_language">Current language: %s</string>
+    <string name="automatic_translation">Automatic translation</string>
 </resources>

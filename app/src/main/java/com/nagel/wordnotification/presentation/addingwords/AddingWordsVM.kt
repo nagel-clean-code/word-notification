@@ -20,12 +20,17 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import me.bush.translator.Language
+import me.bush.translator.Translator
+import me.bush.translator.languageOf
 import java.util.Date
 import javax.inject.Inject
 
@@ -45,12 +50,43 @@ class AddingWordsVM @Inject constructor(
     private val _loadedDictionaryFlow = MutableStateFlow<Dictionary?>(null)
     val loadedDictionaryFlow: StateFlow<Dictionary?> = _loadedDictionaryFlow
     private var permissionShowPreview = sessionRepository.getPreviewFlag(SCREE_CODE)
+    private var isAutoTranslation = sessionRepository.getAutoTranslation()
+    private var jobTranslation: Job? = null
+    private val translator = Translator()
+    private lateinit var language: Language
+    val showTranslate = MutableStateFlow<String?>(null)
 
-    fun getPermissionShowPreview(): Boolean{
-        return if(permissionShowPreview) {
+
+    init {
+        setTranslateLang(sessionRepository.getTranslationLanguage())
+    }
+
+
+    fun requestTranslation(text: String) {
+        if (!isAutoTranslation) return
+        jobTranslation?.cancel()
+        jobTranslation = viewModelScope.launch(coroutineExceptionHandler) {
+            delay(500)
+            val translation = translator.translate(text, language, Language.AUTO)
+            if (translation.translatedText.isNotBlank()) {
+                showTranslate.emit(translation.translatedText)
+            }
+        }
+    }
+
+    fun setTranslateLang(lang: String) {
+        language = languageOf(lang) ?: Language.ENGLISH
+    }
+
+    fun setAutoTranslation(isAuto: Boolean) {
+        isAutoTranslation = isAuto
+    }
+
+    fun getPermissionShowPreview(): Boolean {
+        return if (permissionShowPreview) {
             permissionShowPreview = false
             true
-        }else{
+        } else {
             false
         }
     }

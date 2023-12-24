@@ -14,8 +14,8 @@ android {
         applicationId "com.nagel.wordnotification"
         minSdk 24
         targetSdk 34
-        versionCode 230
-        versionName "1.3.0"
+        versionCode 313
+        versionName "1.3.1"
 
         kapt {
             arguments {
@@ -62,8 +62,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore-ktx'
 
     implementation 'com.firebaseui:firebase-ui-storage:8.0.1'
-    implementation 'com.google.firebase:firebase-auth-ktx'
-
+    implementation('com.google.firebase:firebase-auth-ktx') {
+        exclude module: "play-services-safetynet"
+    }
 
     def lifecycle_version = "2.6.2"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
@@ -97,4 +98,5 @@ dependencies {
     implementation 'com.google.android.play:feature-delivery-ktx:2.1.0'
     implementation 'com.google.android.play:review-ktx:2.0.1'
     implementation 'com.google.android.play:app-update-ktx:2.1.0'
+    implementation 'com.github.therealbush:translator:1.0.2'
 }

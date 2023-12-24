@@ -2,12 +2,16 @@ package com.nagel.wordnotification.presentation.addingwords
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.services.Utils
@@ -15,6 +19,7 @@ import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.databinding.FragmentAddingWordsBinding
 import com.nagel.wordnotification.presentation.addingwords.actions.EditWordDialog
 import com.nagel.wordnotification.presentation.addingwords.actions.MenuSelectingActions
+import com.nagel.wordnotification.presentation.addingwords.choicelanguage.ChoiceLanguageDialog
 import com.nagel.wordnotification.presentation.addingwords.onboard.OnboardingActivity
 import com.nagel.wordnotification.presentation.addingwords.worddetails.WordDetailsDialog
 import com.nagel.wordnotification.presentation.base.BaseFragment
@@ -50,9 +55,7 @@ class AddingWordsFragment : BaseFragment() {
     }
 
     private fun initListeners() {
-//        val test = Test(requireContext())
         binding.selectDictionary.setOnClickListener {
-//            test.launch()
             showChoosingDictionary()
         }
 
@@ -63,14 +66,39 @@ class AddingWordsFragment : BaseFragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.loadedDictionaryFlow.collect() { loaded ->
-                binding.progressBar.isVisible = loaded == null
-                loaded?.let {
-                    initAdapter()
-                    binding.nameDictionary.text = loaded.name
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.loadedDictionaryFlow.collect() { loaded ->
+                    binding.progressBar.isVisible = loaded == null
+                    loaded?.let {
+                        initAdapter()
+                        binding.nameDictionary.text = loaded.name
+                    }
                 }
             }
         }
+        viewLifecycleOwner.lifecycleScope.launch() {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.showTranslate.collect() {
+                    it?.let {
+                        binding.editTextTranslation.setText(it)
+                    }
+                }
+            }
+        }
+        binding.choiceLanguage.setOnClickListener {
+            ChoiceLanguageDialog { lang, isAutoTranslation ->
+                viewModel.setAutoTranslation(isAutoTranslation)
+                lang?.let { viewModel.setTranslateLang(lang) }
+                viewModel.requestTranslation(binding.editTextWord.text.toString())
+            }.show(childFragmentManager, ChoiceLanguageDialog.TAG)
+        }
+        binding.editTextWord.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable) {}
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                viewModel.requestTranslation(s.toString())
+            }
+        })
     }
 
     override fun onResume() {
@@ -82,10 +110,8 @@ class AddingWordsFragment : BaseFragment() {
 
     private fun showOnBoard() {
         if (viewModel.getPermissionShowPreview()) {
-            viewLifecycleOwner.lifecycleScope.launch {
-                val intent = Intent(requireContext(), OnboardingActivity::class.java)
-                startActivity(intent)
-            }
+            val intent = Intent(requireContext(), OnboardingActivity::class.java)
+            startActivity(intent)
         }
     }
 
