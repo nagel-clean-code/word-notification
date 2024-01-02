@@ -48,7 +48,7 @@ class RoomDictionaryRepository @Inject constructor(
     override suspend fun loadDictionaryByName(
         name: String,
         idAuthor: Long
-    ): Dictionary? {
+    ): Dictionary {
         val dictionaryDbEntity = dictionaryDao.getDictionaryByName(name, idAuthor)
         val currentDictionary = dictionaryDbEntity?.toDictionary()
         currentDictionary?.wordList =
@@ -129,6 +129,12 @@ class RoomDictionaryRepository @Inject constructor(
         return dictionaryDao.getNotificationHistory(idWord, idMode)?.map {
             it.toNotificationHistoryItem()
         }
+    }
+
+    override suspend fun saveDictionary(dto: Dictionary): Long {
+        val dictionary = dto.toDbEntity()
+        dictionary.id = 0
+        return dictionaryDao.saveDictionary(dictionary)
     }
 
     override suspend fun createDictionary(

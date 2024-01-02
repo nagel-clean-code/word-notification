@@ -9,7 +9,9 @@ import android.view.ViewGroup
 import android.view.Window
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
+import com.nagel.wordnotification.R
 import com.nagel.wordnotification.databinding.MenuSelectingActionsOnWordBinding
+import com.nagel.wordnotification.utils.common.showToast
 
 class MenuSelectingActions(
     private val edit: (() -> Unit)? = null,
@@ -33,12 +35,12 @@ class MenuSelectingActions(
         }
         binding.edit.setOnClickListener {
             edit?.invoke() ?: run {
-                Toast.makeText(requireContext(), "В процессе реализации", Toast.LENGTH_LONG).show()
+                showToast(R.string.in_process_implementation)
             }
             dismiss()
         }
         binding.move.setOnClickListener {
-            Toast.makeText(requireContext(), "В процессе реализации", Toast.LENGTH_LONG).show()
+            showToast(R.string.in_process_implementation)
         }
         return binding.root
     }

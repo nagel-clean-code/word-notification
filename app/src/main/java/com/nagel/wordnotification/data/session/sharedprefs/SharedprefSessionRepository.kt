@@ -55,7 +55,7 @@ class SharedprefSessionRepository @Inject constructor(
     }
 
     override fun getTranslationLanguage(): String {
-        return sharedPreferences.getString(TRANSLATION_LANGUAGE, "en") ?: "en"
+        return sharedPreferences.getString(TRANSLATION_LANGUAGE, "ENGLISH") ?: "ENGLISH"
     }
 
     override fun saveTranslationLanguage(lang: String) {

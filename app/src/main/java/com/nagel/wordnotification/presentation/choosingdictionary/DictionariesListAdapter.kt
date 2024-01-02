@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import com.nagel.wordnotification.R
@@ -14,6 +15,7 @@ import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.settings.SettingsRepository
 import com.nagel.wordnotification.databinding.ItemCardDictionaryBinding
+import com.nagel.wordnotification.presentation.addingwords.ListWordsAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -37,10 +39,12 @@ class DictionariesListAdapter(
     private var dataList = listOf<Dictionary>()
 
     init {
-        dictionaries.onEach {
-            size = it.size
-            dataList = it
-            notifyDataSetChanged()
+        dictionaries.onEach { list ->
+            size = list.size
+            val diffCallback = ArticleDiffItemCallback(dataList, list)
+            val diffResult = DiffUtil.calculateDiff(diffCallback)
+            dataList = ArrayList(list)
+            diffResult.dispatchUpdatesTo(this)
         }.launchIn(MainScope())
     }
 
@@ -122,6 +126,24 @@ class DictionariesListAdapter(
             if (parent.getChildAdapterPosition(view) == parent.adapter!!.itemCount - 1) {
                 outRect.bottom = verticalSpaceHeight
             }
+        }
+    }
+    private class ArticleDiffItemCallback(
+        val oldList: List<Dictionary>,
+        val newList: List<Dictionary>
+    ) : DiffUtil.Callback() {
+
+        override fun getOldListSize(): Int = oldList.size
+        override fun getNewListSize(): Int = newList.size
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldList.size - oldItemPosition - 1].idDictionary ==
+                    newList[newList.size - newItemPosition - 1].idDictionary
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldList.size - oldItemPosition - 1] ==
+                    newList[newList.size - newItemPosition - 1]
         }
     }
 }

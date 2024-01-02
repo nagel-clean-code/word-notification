@@ -5,7 +5,7 @@ import com.nagel.wordnotification.data.dictionaries.entities.NotificationHistory
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import kotlinx.coroutines.flow.Flow
 
-interface DictionaryRepository {
+interface DictionaryRepository : IFormationOfDictionaries {
     fun loadDictionariesFlow(accountId: Long): Flow<List<Dictionary>>
     fun loadWordsByIdDictionaryFlow(idDictionary: Long): Flow<List<Word>>
     suspend fun loadDictionaries(accountId: Long): List<Dictionary>
@@ -15,7 +15,6 @@ interface DictionaryRepository {
     suspend fun loadDictionaryById(idDictionary: Long): Dictionary?
     suspend fun deleteWordById(idWord: Long): Int
     fun deleteDictionaryById(idDictionary: Long, success: (Boolean) -> Unit)
-    suspend fun addWord(word: Word): Long
     suspend fun updateWord(word: Word)
     suspend fun updateText(word: Word)
     suspend fun updateIncludeDictionary(include: Boolean, idDictionary: Long)
@@ -27,10 +26,15 @@ interface DictionaryRepository {
     ): Flow<List<NotificationHistoryItem>?>
 
     suspend fun loadHistoryNotification(idWord: Long, idMode: Long): List<NotificationHistoryItem>?
+    suspend fun saveDictionary(dto: Dictionary): Long
+}
 
+interface IFormationOfDictionaries {
     suspend fun createDictionary(
         name: String,
         idAccount: Long,
         include: Boolean = false,
     ): Dictionary
+
+    suspend fun addWord(word: Word): Long
 }

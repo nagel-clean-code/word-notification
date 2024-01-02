@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="20dp"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/rounded_background_library_item"
+        android:orientation="horizontal"
+        android:paddingVertical="5dp">
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/isCheckedGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:focusable="false"
+            android:fontFamily="@font/montserrat_bold"
+            android:textColor="@color/gray_3"
+            android:textSize="16sp"
+            app:buttonTint="@color/purple" />
+
+        <TextView
+            android:id="@+id/nameGroup"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/montserrat_bold"
+            android:textColor="@color/gray_3"
+            android:textSize="16sp"
+            app:buttonTint="@color/purple"
+            tools:text="Стандартный словарь" />
+
+        <ImageView
+            android:id="@+id/arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="20dp"
+            android:src="@drawable/baseline_arrow_drop_up_24" />
+    </LinearLayout>
+
+</FrameLayout>

@@ -1,14 +1,9 @@
 package com.nagel.wordnotification.presentation
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
@@ -28,12 +23,13 @@ import com.nagel.wordnotification.data.firbase.RealtimeDbRepository
 import com.nagel.wordnotification.databinding.ActivityMainBinding
 import com.nagel.wordnotification.presentation.addingwords.AddingWordsFragment
 import com.nagel.wordnotification.presentation.choosingdictionary.ChoosingDictionaryFragment
+import com.nagel.wordnotification.presentation.choosingdictionary.library.LibraryDictionariesFragment
 import com.nagel.wordnotification.presentation.navigator.MainNavigator
 import com.nagel.wordnotification.presentation.navigator.Navigator
 import com.nagel.wordnotification.presentation.profile.ProfileFragment
 import com.nagel.wordnotification.presentation.profile.evalution.EvaluationAppDialog
 import com.nagel.wordnotification.presentation.randomizer.RandomizingFragment
-import com.nagel.wordnotification.presentation.reader.FileReader
+import com.nagel.wordnotification.presentation.reader.ImportInDb
 import com.nagel.wordnotification.presentation.settings.ModeSettingsFragment
 import com.nagel.wordnotification.utils.common.MessageUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -56,7 +52,7 @@ class MainActivity : AppCompatActivity(), Navigator {
     lateinit var realtimeDb: RealtimeDbRepository
 
     @Inject
-    lateinit var fileReader: FileReader
+    lateinit var fileReader: ImportInDb
 
     private val viewModel: MainActivityVM by viewModels()
     private lateinit var commonFirebaseAnalytics: FirebaseAnalytics
@@ -161,6 +157,10 @@ class MainActivity : AppCompatActivity(), Navigator {
 
     override fun showRandomizingFragment() {
         navigator.launchFragment(this, RandomizingFragment.Screen())
+    }
+
+    override fun showLibraryDictionariesFragment() {
+        navigator.launchFragment(this, LibraryDictionariesFragment.Screen())
     }
 
     override fun showModeSettingsFragment(idDictionary: Long) {

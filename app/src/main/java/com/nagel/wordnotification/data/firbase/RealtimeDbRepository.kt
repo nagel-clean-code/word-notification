@@ -12,7 +12,11 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import com.nagel.wordnotification.BuildConfig
+import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.presentation.navigator.MainNavigator
+import com.nagel.wordnotification.presentation.reader.ImportInCash
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -26,6 +30,9 @@ class RealtimeDbRepository @Inject constructor(
             .getInstance("https://notifire-7d04d-default-rtdb.europe-west1.firebasedatabase.app/")
             .reference
     }
+    private var testing = false
+    private var _state = MutableStateFlow(DictionariesLibraryState())
+    var state = _state.asStateFlow()
 
     private val observerForCurrentVersion = object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -46,10 +53,34 @@ class RealtimeDbRepository @Inject constructor(
         }
     }
 
-    init{
+    init {
+        requestGetDictionaries()
         realtimeDatabase
             .child("current_version")
             .addValueEventListener(observerForCurrentVersion)
+    }
+
+    fun requestGetDictionaries() {
+        _state.value = _state.value.copy(isLoading = true)
+        fireStore.collection("dictionaries")
+            .document("all")
+            .get()
+            .addOnSuccessListener { documentSnapshot ->
+                try {
+                    val result = documentSnapshot.toObject<DictionariesLibrary>()!!
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        dictionariesList = result
+                    )
+                } catch (e: Exception) {
+                    Log.w(ContentValues.TAG, "Error getting documents: ", e)
+                    _state.value = _state.value.copy(isError = true)
+                    return@addOnSuccessListener
+                }
+            }.addOnFailureListener { exception ->
+                _state.value = _state.value.copy(isError = true)
+                Log.w(ContentValues.TAG, "Error getting documents: ", exception)
+            }
     }
 
     private fun showUpdateAppDialog() {
@@ -71,10 +102,29 @@ class RealtimeDbRepository @Inject constructor(
             }
     }
 
+    fun isTesting() = testing
+
     internal data class CurrentVersionData(
         val link: String,
         val mandatory: Boolean
     ) {
         constructor() : this("", false)
     }
+
+    data class DictionariesLibrary(
+        val contents: String
+    ) {
+        constructor() : this("")
+
+        suspend fun getDictionaries(dataReader: ImportInCash): List<Dictionary> {
+            dataReader.readStringAndCreateDictionaries(contents)
+            return dataReader.dictionaryRepository.getDictionaries()
+        }
+    }
+
+    data class DictionariesLibraryState(
+        var isLoading: Boolean = true,
+        var dictionariesList: DictionariesLibrary? = null,
+        val isError: Boolean = false
+    )
 }

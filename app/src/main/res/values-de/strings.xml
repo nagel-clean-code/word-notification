@@ -73,7 +73,7 @@
     <string name="export_all">Alles senden</string>
     <string name="my_dictionaries">Meine Wörterbücher</string>
     <string name="could_not_open_file">Die Datei konnte nicht gelesen werden</string>
-    <string name="export_success">Export erfolgreich abgeschlossen</string>
+    <string name="import_success">Import erfolgreich abgeschlossen</string>
     <string name="color_hex">#%1$s</string>
     <string name="email_to_support_chooser_title">Zur Unterstützung schreiben...</string>
     <string name="main_msg_NoNetworkConnection">Keine Internetverbindung</string>
@@ -92,4 +92,11 @@
     <string name="memorization_step">Speicherschritt:</string>
     <string name="current_language">Aktuelle Sprache: %s</string>
     <string name="automatic_translation">Automatische Übersetzung</string>
+    <string name="apply">Löschen</string>
+    <string name="import_s">Importieren</string>
+    <string name="dictionary">Wörterbuch</string>
+    <string name="library">Bibliotheken</string>
+    <string name="in_process_implementation">In der Vorverarbeitung</string>
+    <string name="error_loading_dictionaries">Fehler beim Laden von Wörterbüchernn\nversuchen Sie es später erneut</string>
+    <string name="add_to_yourself">Selbst hinzufügen</string>
 </resources>

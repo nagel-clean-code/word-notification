@@ -73,7 +73,7 @@
     <string name="export_all">Отправить все</string>
     <string name="my_dictionaries">Мои словари</string>
     <string name="could_not_open_file">Не удалось прочитать файл</string>
-    <string name="export_success">Экспорт успешно завершён</string>
+    <string name="import_success">Импорт успешно завершён</string>
     <string name="color_hex">#%1$s</string>
     <string name="email_to_support_chooser_title">Написать в поддержку…</string>
     <string name="main_msg_NoNetworkConnection">Нет подключения к интернету</string>
@@ -92,4 +92,11 @@
     <string name="memorization_step">Шаг запоминания:</string>
     <string name="current_language">Текущий язык: %s</string>
     <string name="automatic_translation">Автоперевод</string>
+    <string name="apply">Применить</string>
+    <string name="import_s">Импортировать</string>
+    <string name="dictionary">Словарь</string>
+    <string name="library">Библиотека</string>
+    <string name="in_process_implementation">В процессе реализации</string>
+    <string name="error_loading_dictionaries">Ошибка загрузки словарей\nповторите попытку позже</string>
+    <string name="add_to_yourself">Добавить себе</string>
 </resources>

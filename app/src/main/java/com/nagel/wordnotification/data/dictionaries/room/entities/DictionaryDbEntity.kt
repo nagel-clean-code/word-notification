@@ -37,7 +37,7 @@ FOREIGN KEY("id_folder") REFERENCES "folders"("id_folder")
     ]
 )
 class DictionaryDbEntity(
-    @ColumnInfo(name = "id") @PrimaryKey(autoGenerate = true) val idDictionaries: Long,
+    @ColumnInfo(name = "id") @PrimaryKey(autoGenerate = true) var id: Long,
     @ColumnInfo(name = "id_author") val idAuthor: Long,
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "date_created") val dateCreated: Long,
@@ -48,7 +48,7 @@ class DictionaryDbEntity(
 
     fun toDictionary(): Dictionary {
         return Dictionary(
-            idDictionary = idDictionaries,
+            idDictionary = id,
             idAuthor = idAuthor,
             name = name,
             dateCreated = dateCreated,
@@ -62,7 +62,7 @@ class DictionaryDbEntity(
 
         fun createDictionary(nameDictionary: String, idFolder: Long, idAuthor: Long, included: Boolean) =
             DictionaryDbEntity(
-                idDictionaries = 0,
+                id = 0,
                 idAuthor = idAuthor,
                 dateCreated = System.currentTimeMillis(),
                 name = nameDictionary,

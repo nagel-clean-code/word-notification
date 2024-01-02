@@ -2,9 +2,8 @@ package com.nagel.wordnotification.presentation.reader
 
 import android.content.Context
 import android.net.Uri
-import android.widget.Toast
 import com.nagel.wordnotification.R
-import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
+import com.nagel.wordnotification.data.dictionaries.IFormationOfDictionaries
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.session.SessionRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -18,13 +17,18 @@ import javax.inject.Singleton
 
 
 @Singleton
-class FileReader @Inject constructor(
-    @ApplicationContext val context: Context,
-    private val dictionaryRepository: DictionaryRepository,
-    sessionRepository: SessionRepository
+open class FileReader(
+    private val dictionaryRepository: IFormationOfDictionaries,
 ) {
 
-    private val myIdAccount: Long? by lazy { sessionRepository.getSession()?.account?.id }
+    @Inject
+    lateinit var sessionRepository: SessionRepository
+
+    @Inject
+    @ApplicationContext
+    lateinit var context: Context
+
+    private val myIdAccount: Long? by lazy { sessionRepository.getSession().account?.id }
     private var pos = 0
 
     suspend fun handleIntent(uri: Uri?, showResult: suspend (Int) -> Unit) {
@@ -35,12 +39,13 @@ class FileReader @Inject constructor(
             val inputStream = context.contentResolver.openInputStream(uri)
             text = getStringFromInputStream(inputStream)
             readStringAndCreateDictionaries(text)
-            showResult(R.string.export_success)
+            showResult(R.string.import_success)
         } catch (e: FileNotFoundException) {
             e.printStackTrace()
         } catch (e: IOException) {
             e.printStackTrace()
         } catch (e: Exception) {
+            e.printStackTrace()
             showResult(R.string.could_not_open_file)
         }
         if (text == null) {
@@ -49,7 +54,7 @@ class FileReader @Inject constructor(
         }
     }
 
-    private suspend fun readStringAndCreateDictionaries(str: String) {
+    suspend fun readStringAndCreateDictionaries(str: String) {
         if (myIdAccount == null) return
         try {
             while (true) {
@@ -62,13 +67,13 @@ class FileReader @Inject constructor(
                 }
                 if (pos >= str.length - 1) return
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
         }
     }
 
     private fun readWords(str: String, idDictionary: Long): List<Word> {
         val words = mutableListOf<Word>()
-        while (str[pos++] == '\n' && pos < str.length && str[pos] != '{') {
+        while ((str[pos++] == '~' || str[pos++] == '\n') && pos < str.length && str[pos] != '{') {
             val uuid = readWord(str).toInt()
             val textFirst = readWord(str)
             val textLast = readWord(str)

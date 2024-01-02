@@ -16,6 +16,7 @@ import com.nagel.wordnotification.R
 import com.nagel.wordnotification.app.App
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
+import com.nagel.wordnotification.data.firbase.RealtimeDbRepository
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.databinding.MenuForDictionaryBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,10 +34,15 @@ class MenuForDictionaryDialog(
 ) : DialogFragment() {
 
     private lateinit var binding: MenuForDictionaryBinding
+
     @Inject
     lateinit var repository: DictionaryRepository
+
     @Inject
     lateinit var sessionRepository: SessionRepository
+
+    @Inject
+    lateinit var realtimeDb: RealtimeDbRepository
 
     private var idAuthorUUID: String? = null
     private var accountId: Long? = null
@@ -71,9 +77,11 @@ class MenuForDictionaryDialog(
             dismiss()
         }
         binding.exportDictionary.setOnClickListener {
+            if (realtimeDb.isTesting()) return@setOnClickListener
             exportDictionary()
         }
         binding.exportAll.setOnClickListener {
+            if (realtimeDb.isTesting()) return@setOnClickListener
             exportAll()
         }
     }
@@ -113,10 +121,10 @@ class MenuForDictionaryDialog(
     private fun writeDictionaries(dictionaries: List<Dictionary>, file: File) {
         file.printWriter().use { out ->
             dictionaries.forEach() { current ->
-                out.println("{|${current.name}||$idAuthorUUID|}")
+                out.print("{|${current.name}||$idAuthorUUID|}~")
                 current.wordList.forEach {
                     it.apply {
-                        out.println("|$uniqueId||$textFirst||$textLast|")
+                        out.print("|$uniqueId||$textFirst||$textLast|~")
                     }
                 }
             }

@@ -7,8 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.databinding.ChoiceLanguageBinding
@@ -28,6 +28,7 @@ class ChoiceLanguageDialog(
 
     private lateinit var binding: ChoiceLanguageBinding
     private val list = Language.values().filter { it.code != "auto" }.map { it.name }
+    private lateinit var languageSelected: String
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,40 +37,46 @@ class ChoiceLanguageDialog(
     ): View {
         binding = ChoiceLanguageBinding.inflate(inflater, container, false)
         setupTransparent()
-        val adapter: ArrayAdapter<String> = ArrayAdapter<String>(
-            requireContext(),
-            R.layout.language_item,
-            list
-        )
-        binding.listLanguages.adapter = adapter
+        languageSelected = sessionRepository.getTranslationLanguage()
         binding.root.hideKeyboard()
-        val lang = sessionRepository.getTranslationLanguage()
-        val currentLangText = requireContext().getString(R.string.current_language, lang)
+        val currentLangText =
+            requireContext().getString(R.string.current_language, languageSelected)
         binding.currentLanguage.text = currentLangText
         binding.autoTranslation.isChecked = sessionRepository.getAutoTranslation()
         return binding.root
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.apply {
-            cancelButton.setOnClickListener {
-                langSelected.invoke(null, autoTranslation.isChecked)
-                dismiss()
-            }
-            listLanguages.setOnItemClickListener() { _, _, position: Int, _ ->
-                val lang = list[position]
-                sessionRepository.saveTranslationLanguage(lang)
-                langSelected.invoke(lang, autoTranslation.isChecked)
+            done.setOnClickListener {
+                sessionRepository.saveTranslationLanguage(languageSelected)
+                langSelected.invoke(languageSelected, autoTranslation.isChecked)
                 dismiss()
             }
             autoTranslation.setOnClickListener {
                 sessionRepository.saveAutoTranslation(autoTranslation.isChecked)
             }
+            closeButton.setOnClickListener {
+                dismiss()
+            }
         }
+        initAdapter()
     }
 
+    private fun initAdapter() {
+        val adapter = LanguagesAdapter(languageSelected, list) { pos ->
+            languageSelected = list[pos]
+        }
+        binding.listLanguages.apply {
+            this.adapter = adapter
+            layoutManager = LinearLayoutManager(requireContext())
+
+            var pos = list.indexOf(languageSelected)
+            pos -= if (pos >= 5) 5 else pos
+            scrollToPosition(pos)
+        }
+    }
 
     private fun setupTransparent() {
         dialog?.requestWindowFeature(Window.FEATURE_NO_TITLE)

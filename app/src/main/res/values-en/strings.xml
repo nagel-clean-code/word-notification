@@ -73,7 +73,7 @@
     <string name="export_all">Send all</string>
     <string name="my_dictionaries">My dictionaries</string>
     <string name="could_not_open_file">The file could not be read</string>
-    <string name="export_success">Export completed successfully</string>
+    <string name="import_success">Import completed successfully</string>
     <string name="color_hex">#%1$s</string>
     <string name="email_to_support_chooser_title">Write to support...</string>
     <string name="main_msg_NoNetworkConnection">No internet connection</string>
@@ -92,4 +92,11 @@
     <string name="memorization_step">The memorization step:</string>
     <string name="current_language">Current language: %s</string>
     <string name="automatic_translation">Automatic translation</string>
+    <string name="apply">Delete</string>
+    <string name="import_s">Import</string>
+    <string name="dictionary">Dictionary</string>
+    <string name="library">Libraries</string>
+    <string name="in_process_implementation">In preprocessing</string>
+    <string name="error_loading_dictionaries">To download dictionaries\nplease try later</string>
+    <string name="add_to_yourself">Add yourself</string>
 </resources>

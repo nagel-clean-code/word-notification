@@ -9,6 +9,7 @@ fun Fragment.navigator(): Navigator? {
 interface Navigator {
     fun showAddingWordsFragment()
     fun showRandomizingFragment()
+    fun showLibraryDictionariesFragment()
     fun showModeSettingsFragment(idDictionary: Long)
     fun showChoosingDictionaryFragment()
     fun showProfileFragment()

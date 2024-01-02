@@ -84,8 +84,8 @@ class ChoosingDictionaryVM @Inject constructor(
         }
     }
 
-    fun deleteWord(idWord: Long, success: () -> Unit) {
-        dictionaryRepository.deleteDictionaryById(idWord) { successfully ->
+    fun deleteDictionary(idDictionary: Long, success: () -> Unit) {
+        dictionaryRepository.deleteDictionaryById(idDictionary) { successfully ->
             if (successfully) {
                 success.invoke()
             } else {

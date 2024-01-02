@@ -121,8 +121,8 @@
                     android:imeOptions="actionDone"
                     android:inputType="textCapSentences"
                     android:maxLines="3"
-                    android:paddingStart="25dp"
                     android:paddingVertical="7dp"
+                    android:paddingStart="25dp"
                     android:paddingEnd="35dp"
                     android:singleLine="true"
                     android:textColor="@color/purple"
@@ -136,10 +136,10 @@
                     android:id="@+id/choiceLanguage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginEnd="8dp"
                     android:src="@drawable/baseline_settings_24"
                     app:layout_constraintBottom_toBottomOf="@+id/editTextTranslation"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginTop="3dp"
                     app:layout_constraintEnd_toEndOf="@+id/editTextTranslation"
                     app:layout_constraintTop_toBottomOf="@+id/imageView3" />
 
@@ -226,7 +226,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
                 <!--            android:background="@drawable/background_list_words_rad_20"-->
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/list_words_recycler_view"
+                    android:id="@+id/listWordsRecyclerView"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginHorizontal="15dp"
@@ -238,7 +238,8 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-                    app:layout_constraintWidth_max="600dp" />
+                    app:layout_constraintWidth_max="600dp"
+                    tools:listitem="@layout/item_word_type_1" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
 
