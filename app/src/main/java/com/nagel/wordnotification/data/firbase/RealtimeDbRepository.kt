@@ -17,6 +17,7 @@ import com.nagel.wordnotification.presentation.navigator.MainNavigator
 import com.nagel.wordnotification.presentation.reader.ImportInCash
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -30,15 +31,15 @@ class RealtimeDbRepository @Inject constructor(
             .getInstance("https://notifire-7d04d-default-rtdb.europe-west1.firebasedatabase.app/")
             .reference
     }
-    private var testing = false
+    private var testing = Date().time < 1704304861000
     private var _state = MutableStateFlow(DictionariesLibraryState())
     var state = _state.asStateFlow()
 
     private val observerForCurrentVersion = object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {
-            dataSnapshot.getValue(String::class.java)?.let {
+            dataSnapshot.getValue(Int::class.java)?.let {
                 Log.d(ContentValues.TAG, "Текущея версия приложения: $it")
-                if (it != BuildConfig.VERSION_NAME) {
+                if (it > BuildConfig.VERSION_CODE) {
                     showUpdateAppDialog()
                 }
             }
@@ -56,7 +57,7 @@ class RealtimeDbRepository @Inject constructor(
     init {
         requestGetDictionaries()
         realtimeDatabase
-            .child("current_version")
+            .child("current_version_code")
             .addValueEventListener(observerForCurrentVersion)
     }
 

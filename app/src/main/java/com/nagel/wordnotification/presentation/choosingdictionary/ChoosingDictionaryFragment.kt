@@ -21,6 +21,7 @@ import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.services.Utils
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.dictionaries.entities.Word
+import com.nagel.wordnotification.data.firbase.RealtimeDbRepository
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.databinding.FragmentChoosingDictionaryBinding
 import com.nagel.wordnotification.presentation.base.BaseFragment
@@ -48,6 +49,9 @@ class ChoosingDictionaryFragment : BaseFragment() {
 
     @Inject
     lateinit var fileReader: ImportInDb
+
+    @Inject
+    lateinit var realtimeDb: RealtimeDbRepository
 
     private val fileImportIntentLauncher =
         registerForActivityResult(
@@ -124,7 +128,6 @@ class ChoosingDictionaryFragment : BaseFragment() {
             ::showEditDictionaryDialog
         ) {
             viewModel.deleteDictionary(dictionary.idDictionary) {
-//                adapter.notifyItemRemoved(position)
                 Utils.deleteNotification(dictionary.wordList)
             }
         }.show(parentFragmentManager, null)
@@ -156,6 +159,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
             closeFABMenu()
         }
         binding.importButton.setOnClickListener {
+            if(realtimeDb.isTesting()) return@setOnClickListener
             try {
                 val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
