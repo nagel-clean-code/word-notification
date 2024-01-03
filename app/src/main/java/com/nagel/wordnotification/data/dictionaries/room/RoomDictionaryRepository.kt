@@ -10,6 +10,7 @@ import com.nagel.wordnotification.data.dictionaries.room.entities.WordDbEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -22,17 +23,32 @@ class RoomDictionaryRepository @Inject constructor(
 ) : DictionaryRepository {
 
     override fun loadDictionariesFlow(accountId: Long): Flow<List<Dictionary>> {
-        return dictionaryDao.getMyDictionariesFlow(accountId).map { itFlow ->
-            itFlow?.map {
-                val result = it.toDictionary()
-                result.wordList = getWordsByIdDictionary(result.idDictionary).toMutableList()
-                result
-            } ?: listOf()
-        }
+        val flowDictionary = dictionaryDao.getMyDictionariesFlow(accountId)
+        val flowWords = getAllWordsFlow()
+        return flowDictionary.combine(flowWords, ::combineDictionariesWithWords)
+    }
+
+    private fun combineDictionariesWithWords(
+        flowD: List<DictionaryDbEntity>?,
+        flowW: List<Word>
+    ): List<Dictionary> {
+        return flowD?.map { dictionaryDbEntity ->
+            val curDict = dictionaryDbEntity.toDictionary()
+            curDict.wordList = flowW.filter {
+                it.idDictionary == curDict.idDictionary
+            }.toMutableList()
+            curDict
+        } ?: listOf()
     }
 
     override fun loadWordsByIdDictionaryFlow(idDictionary: Long): Flow<List<Word>> {
         return dictionaryDao.getWordsFlow(idDictionary).map { itFlow ->
+            itFlow?.map { it.toWord() } ?: listOf()
+        }
+    }
+
+    override fun getAllWordsFlow(): Flow<List<Word>> {
+        return dictionaryDao.getAllWordsFlow().map { itFlow ->
             itFlow?.map { it.toWord() } ?: listOf()
         }
     }
@@ -88,8 +104,8 @@ class RoomDictionaryRepository @Inject constructor(
     }
 
     override suspend fun addWord(word: Word): Long {
-        val word = WordDbEntity.createWordDbEntity(word)
-        return dictionaryDao.addWord(word)
+        val wordDbEntity = WordDbEntity.createWordDbEntity(word)
+        return dictionaryDao.addWord(wordDbEntity)
     }
 
     override suspend fun updateWord(word: Word) {
@@ -97,7 +113,12 @@ class RoomDictionaryRepository @Inject constructor(
     }
 
     override suspend fun updateText(word: Word) {
-        dictionaryDao.updateTextInWord(word.idWord, word.textFirst, word.textLast, word.uniqueId)
+        dictionaryDao.updateTextInWord(
+            word.idWord,
+            word.textFirst,
+            word.textLast,
+            word.uniqueId
+        )
     }
 
     override suspend fun updateIncludeDictionary(include: Boolean, idDictionary: Long) {
@@ -134,7 +155,14 @@ class RoomDictionaryRepository @Inject constructor(
     override suspend fun saveDictionary(dto: Dictionary): Long {
         val dictionary = dto.toDbEntity()
         dictionary.id = 0
-        return dictionaryDao.saveDictionary(dictionary)
+        val idDictionary = dictionaryDao.saveDictionary(dictionary)
+        dto.wordList.forEach {
+            val word = it.toDbEntity()
+            word.idWord = 0
+            word.idDictionary = idDictionary
+            dictionaryDao.addWord(word)
+        }
+        return idDictionary
     }
 
     override suspend fun createDictionary(

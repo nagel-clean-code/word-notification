@@ -84,14 +84,14 @@ class ChoosingDictionaryFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initListeners()
+        initAdapter()
     }
 
-    private fun initAdapter(words: List<Word>) {
+    private fun initAdapter() {
         viewModel.idAccount = sessionRepository.getSession().account!!.id
         val dictionariesAdapter = DictionariesListAdapter(
             dictionaries = viewModel.dictionaries,
             settingsRepository = viewModel.settingsRepository,
-            allWord = words,
             requireContext(),
             ::openDictionary,
             ::showMenuActionOnDictionary,
@@ -159,7 +159,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
             closeFABMenu()
         }
         binding.importButton.setOnClickListener {
-            if(realtimeDb.isTesting()) return@setOnClickListener
+            if (realtimeDb.isTesting()) return@setOnClickListener
             try {
                 val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
@@ -168,16 +168,6 @@ class ChoosingDictionaryFragment : BaseFragment() {
                 fileImportIntentLauncher.launch(intent)
             } catch (e: ActivityNotFoundException) {
                 e.printStackTrace()
-            }
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.loadingWords.collect() {
-                    it?.let {
-                        binding.progress.isVisible = false
-                        initAdapter(it)
-                    }
-                }
             }
         }
     }

@@ -20,8 +20,8 @@ import com.nagel.wordnotification.data.dictionaries.entities.Word
     ]
 )
 class WordDbEntity(
-    @ColumnInfo(name = "id_word") @PrimaryKey(autoGenerate = true) val idWord: Long,
-    @ColumnInfo(name = "id_dictionary") val idDictionary: Long,
+    @ColumnInfo(name = "id_word") @PrimaryKey(autoGenerate = true) var idWord: Long,
+    @ColumnInfo(name = "id_dictionary") var idDictionary: Long,
     @ColumnInfo(name = "text_first") val textFirst: String,
     @ColumnInfo(name = "text_last") val textLast: String,
     @ColumnInfo(name = "learn_step") val learnStep: Int,

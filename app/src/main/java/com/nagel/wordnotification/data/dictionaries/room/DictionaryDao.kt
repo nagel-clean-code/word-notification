@@ -79,6 +79,9 @@ interface DictionaryDao {
     fun getWordsFlow(idDictionary: Long): Flow<List<WordDbEntity>?>
 
     @Query("SELECT * FROM words")
+    fun getAllWordsFlow(): Flow<List<WordDbEntity>?>
+
+    @Query("SELECT * FROM words")
     suspend fun getAllWords(): List<WordDbEntity>
 
 //    @Query("SELECT * FROM accounts WHERE id = :accountId")

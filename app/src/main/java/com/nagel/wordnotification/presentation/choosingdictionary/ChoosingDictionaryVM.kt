@@ -21,22 +21,14 @@ import javax.inject.Inject
 class ChoosingDictionaryVM @Inject constructor(
     val dictionaryRepository: DictionaryRepository,
     val settingsRepository: SettingsRepository,
-    private val dictionaryDao: DictionaryDao,
     private var navigatorV2: NavigatorV2
 ) : BaseViewModel() {
 
-    val loadingWords = MutableStateFlow<List<Word>?>(null)
     var idAccount = -1L
     val dictionaries: Flow<List<Dictionary>> by lazy {
         dictionaryRepository.loadDictionariesFlow(idAccount)
     }
     var listDictionary: List<Dictionary>? = null
-
-    init {
-        viewModelScope.launch {
-            loadingWords.value = dictionaryDao.getAllWords().map { it.toWord() }
-        }
-    }
 
     fun toggleActiveDictionary(dictionary: Long, active: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {

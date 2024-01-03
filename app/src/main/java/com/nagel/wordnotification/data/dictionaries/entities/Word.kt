@@ -1,5 +1,6 @@
 package com.nagel.wordnotification.data.dictionaries.entities
 
+import com.nagel.wordnotification.data.dictionaries.room.entities.WordDbEntity
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import com.nagel.wordnotification.presentation.addingwords.worddetails.widget.model.ShowStepsWordDto
 import com.nagel.wordnotification.utils.GlobalFunction
@@ -25,6 +26,19 @@ data class Word(
             allNotificationsCreated,
             learnStep,
             lastDateMention
+        )
+    }
+
+    fun toDbEntity(): WordDbEntity {
+        return WordDbEntity(
+            idWord,
+            idDictionary,
+            textFirst,
+            textLast,
+            learnStep,
+            lastDateMention,
+            uniqueId,
+            allNotificationsCreated
         )
     }
 

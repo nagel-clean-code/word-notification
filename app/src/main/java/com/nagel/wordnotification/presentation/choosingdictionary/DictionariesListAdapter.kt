@@ -2,6 +2,7 @@ package com.nagel.wordnotification.presentation.choosingdictionary
 
 import android.content.Context
 import android.graphics.Rect
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +16,6 @@ import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.settings.SettingsRepository
 import com.nagel.wordnotification.databinding.ItemCardDictionaryBinding
-import com.nagel.wordnotification.presentation.addingwords.ListWordsAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -27,7 +27,6 @@ import kotlinx.coroutines.launch
 class DictionariesListAdapter(
     private var dictionaries: Flow<List<Dictionary>>,
     private var settingsRepository: SettingsRepository,
-    private val allWord: List<Word>,
     private val context: Context,
     private val selectDictionary: (Long) -> Unit,
     private val showMenuActionOnWord: (dictionary: Dictionary, position: Int) -> Unit,
@@ -43,7 +42,10 @@ class DictionariesListAdapter(
             size = list.size
             val diffCallback = ArticleDiffItemCallback(dataList, list)
             val diffResult = DiffUtil.calculateDiff(diffCallback)
-            dataList = ArrayList(list)
+            dataList = ArrayList(list).map {
+                it.wordList = ArrayList(it.wordList)
+                it
+            }
             diffResult.dispatchUpdatesTo(this)
         }.launchIn(MainScope())
     }
@@ -60,11 +62,6 @@ class DictionariesListAdapter(
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
         val currentDictionary = dataList[dataList.size - 1 - position]
-        currentDictionary.wordList =
-            allWord.filter {
-                it.idDictionary == currentDictionary.idDictionary
-            }.toMutableList()
-
         val currentBackground =
             (R.drawable.background_card_dictionary_1 + currentDictionary.idDictionary % 7).toInt()
         holder.binding.apply {
@@ -128,6 +125,7 @@ class DictionariesListAdapter(
             }
         }
     }
+
     private class ArticleDiffItemCallback(
         val oldList: List<Dictionary>,
         val newList: List<Dictionary>

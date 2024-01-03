@@ -31,7 +31,8 @@ class RealtimeDbRepository @Inject constructor(
             .getInstance("https://notifire-7d04d-default-rtdb.europe-west1.firebasedatabase.app/")
             .reference
     }
-    private var testing = Date().time < 1704304861000
+    private var testing = Date().time < 1704300235000
+//    private var testing = false
     private var _state = MutableStateFlow(DictionariesLibraryState())
     var state = _state.asStateFlow()
 
