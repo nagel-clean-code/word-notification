@@ -102,7 +102,7 @@ class ModeSettingsFragment : BaseFragment() {
                     101
                 )
             }
-        }   //TODO реализовать объяснение зачем требуются уведомления
+        }
     }
 
     private fun initListeners() {

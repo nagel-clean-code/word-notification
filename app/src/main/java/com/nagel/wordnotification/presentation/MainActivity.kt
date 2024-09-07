@@ -60,6 +60,7 @@ class MainActivity : AppCompatActivity(), Navigator {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        navigatorInstance = navigator
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initFirebase()
@@ -135,10 +136,7 @@ class MainActivity : AppCompatActivity(), Navigator {
         }
         val workManager = WorkManager.getInstance(App.get())
         val info = workManager.getWorkInfosByTag("AlgorithmWork")
-        val logs = mapOf(
-            "Work" to "start",
-            "info.get()" to info.get()
-        )
+        val logs = mapOf("Work" to "start", "info.get()" to info.get())
         Analytic.logEvent("CoroutineWorker", logs, false)
         val worker = PeriodicWorkRequestBuilder<AlgorithmAdjustmentWork>(
             WORK_REPEAT_INTERVAL,
@@ -176,7 +174,7 @@ class MainActivity : AppCompatActivity(), Navigator {
     }
 
     override fun clearBackStack() {
-        supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
     }
 
     override fun blackoutBottomNavigationView(show: Boolean) {
@@ -198,6 +196,7 @@ class MainActivity : AppCompatActivity(), Navigator {
     }
 
     companion object {
+        var navigatorInstance: MainNavigator? = null
         const val TAG_WORK = "AlgorithmWork"
         const val WORK_REPEAT_INTERVAL = 15L
     }

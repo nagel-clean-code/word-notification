@@ -1,4 +1,4 @@
-package com.nagel.wordnotification.presentation.addingwords.onboard
+package com.nagel.wordnotification.presentation.onboard
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

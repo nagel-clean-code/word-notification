@@ -11,16 +11,15 @@ import android.view.ViewGroup
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
-import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.services.Utils
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
-import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.firbase.RealtimeDbRepository
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.databinding.FragmentChoosingDictionaryBinding
@@ -78,6 +77,10 @@ class ChoosingDictionaryFragment : BaseFragment() {
         binding.dictionariesList.addItemDecoration(
             DictionariesListAdapter.VerticalSpaceItemDecoration(70)
         )
+        val animator = binding.dictionariesList.itemAnimator
+        if (animator is DefaultItemAnimator) {
+            animator.supportsChangeAnimations = false
+        }
         return binding.root
     }
 

@@ -10,7 +10,6 @@ import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 
-
 @Singleton
 class SharedprefSessionRepository @Inject constructor(
     @ApplicationContext val context: Context

@@ -29,5 +29,4 @@ class AlgorithmAdjustmentWork @AssistedInject constructor(
         }
         return Result.success()
     }
-
 }

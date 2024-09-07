@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import com.google.gson.Gson
 import com.nagel.wordnotification.Constants
 import com.nagel.wordnotification.app.App
@@ -16,13 +17,13 @@ object Utils {
 
     fun deleteNotification(word: Word) {
         val context = App.get()
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager?
-        val myIntent = Intent(context, AlarmReceiver::class.java)
+        val alarmManager = ContextCompat.getSystemService(App.get(), AlarmManager::class.java)
+        val intentAlarm = Intent(context, AlarmReceiver::class.java)
         for (i in (1..word.learnStep)) {
             val pendingIntent = PendingIntent.getBroadcast(
                 context,
                 word.uniqueId + i,
-                myIntent,
+                intentAlarm,
                 PendingIntent.FLAG_IMMUTABLE
             )
             Log.d(

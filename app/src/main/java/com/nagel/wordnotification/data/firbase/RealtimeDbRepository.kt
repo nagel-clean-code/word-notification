@@ -17,7 +17,6 @@ import com.nagel.wordnotification.presentation.navigator.MainNavigator
 import com.nagel.wordnotification.presentation.reader.ImportInCash
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -31,8 +30,9 @@ class RealtimeDbRepository @Inject constructor(
             .getInstance("https://notifire-7d04d-default-rtdb.europe-west1.firebasedatabase.app/")
             .reference
     }
-    private var testing = Date().time < 1704300235000
-//    private var testing = false
+
+    //    private var testing = Date().time < 1704300235000
+    private var testing = false
     private var _state = MutableStateFlow(DictionariesLibraryState())
     var state = _state.asStateFlow()
 

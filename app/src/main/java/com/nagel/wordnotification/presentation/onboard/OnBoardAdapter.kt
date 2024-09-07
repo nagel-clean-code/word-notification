@@ -1,4 +1,4 @@
-package com.nagel.wordnotification.presentation.addingwords.onboard
+package com.nagel.wordnotification.presentation.onboard
 
 import android.view.LayoutInflater
 import android.view.View

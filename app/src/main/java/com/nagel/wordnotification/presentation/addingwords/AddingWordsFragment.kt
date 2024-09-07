@@ -20,7 +20,7 @@ import com.nagel.wordnotification.databinding.FragmentAddingWordsBinding
 import com.nagel.wordnotification.presentation.addingwords.actions.EditWordDialog
 import com.nagel.wordnotification.presentation.addingwords.actions.MenuSelectingActions
 import com.nagel.wordnotification.presentation.addingwords.choicelanguage.ChoiceLanguageDialog
-import com.nagel.wordnotification.presentation.addingwords.onboard.OnboardingActivity
+import com.nagel.wordnotification.presentation.onboard.OnboardingActivity
 import com.nagel.wordnotification.presentation.addingwords.worddetails.WordDetailsDialog
 import com.nagel.wordnotification.presentation.base.BaseFragment
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
@@ -49,6 +49,7 @@ class AddingWordsFragment : BaseFragment() {
         binding.listWordsRecyclerView.addItemDecoration(
             ListWordsAdapter.VerticalSpaceItemDecoration(50)
         )
+        binding.listWordsRecyclerView.itemAnimator = null
         initButtons()
         initListeners()
         return binding.root
