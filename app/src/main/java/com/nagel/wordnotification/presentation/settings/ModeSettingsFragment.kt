@@ -285,7 +285,7 @@ class ModeSettingsFragment : BaseFragment() {
 
     private fun unselectedDayWeek(textView: TextView) {
         textView.setBackgroundResource(R.drawable.unselected_day_week)
-        textView.setTextColor(resources.getColor(R.color.black))
+        textView.setTextColor(resources.getColor(R.color.gray_3))
         textView.tag = true
     }
 

@@ -11,30 +11,42 @@
         android:background="@color/beige"
         tools:context=".presentation.settings.ModeSettingsFragment">
 
-        <FrameLayout
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <View
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/full_title_background" />
+                android:background="@drawable/background_header_short"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingBottom="17.5dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="top|center"
-                android:layout_marginTop="19dp"
-                android:fontFamily="@font/montserrat_bold"
-                android:text="@string/mode_settings"
-                android:textColor="@color/white"
-                android:textSize="22sp" />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:fontFamily="@font/montserrat_bold"
+                        android:text="@string/mode_settings"
+                        android:textColor="@color/white"
+                        android:textSize="20sp" />
+                </LinearLayout>
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="80dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
                 android:background="@drawable/rounded_background_settings"
                 android:orientation="vertical"
@@ -52,6 +64,7 @@
                         android:layout_gravity="top|center"
                         android:fontFamily="@font/montserrat_bold"
                         android:gravity="center"
+                        android:textColor="@color/gray_3"
                         android:text="@string/frequency_reminders"
                         android:textSize="22sp" />
 
@@ -255,6 +268,7 @@
                             android:fontFamily="@font/montserrat_bold"
                             android:includeFontPadding="false"
                             android:paddingHorizontal="5dp"
+                            android:textColor="@color/gray_3"
                             android:paddingVertical="2dp"
                             android:text="@string/Sb"
                             android:textStyle="bold"
@@ -268,6 +282,7 @@
                             android:background="@drawable/unselected_day_week"
                             android:fontFamily="@font/montserrat_bold"
                             android:includeFontPadding="false"
+                            android:textColor="@color/gray_3"
                             android:paddingHorizontal="5dp"
                             android:paddingVertical="2dp"
                             android:text="@string/Vs"
@@ -380,7 +395,7 @@
                     android:text="@string/save" />
 
             </LinearLayout>
-        </FrameLayout>
+        </LinearLayout>
     </ScrollView>
 
     <include
