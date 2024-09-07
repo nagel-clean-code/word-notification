@@ -18,7 +18,7 @@
             android:background="@drawable/background_header_short"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingVertical="17.5dp">
+            android:paddingBottom="17.5dp">
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -60,9 +60,8 @@
             style="@style/width_match_parent_max_600"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:layout_marginHorizontal="15dp"
+            android:layout_marginHorizontal="27dp"
             android:nestedScrollingEnabled="false"
-            android:paddingHorizontal="20dp"
             tools:itemCount="20"
             tools:listitem="@layout/item_card_dictionary" />
     </LinearLayout>
@@ -90,7 +89,8 @@
             android:layout_height="wrap_content"
             android:background="@drawable/text_background"
             android:paddingHorizontal="10dp"
-            android:text="@string/dictionary" />
+            android:text="@string/dictionary"
+            android:textColor="@color/gray_3" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/addButton"
@@ -100,7 +100,8 @@
             app:borderWidth="0dp"
             app:elevation="6dp"
             app:fabSize="mini"
-            app:srcCompat="@drawable/baseline_book_24" />
+            app:srcCompat="@drawable/baseline_book_24"
+            app:tint="@color/gray_3" />
     </LinearLayout>
 
     <LinearLayout
@@ -120,7 +121,8 @@
             android:layout_height="wrap_content"
             android:background="@drawable/text_background"
             android:paddingHorizontal="10dp"
-            android:text="@string/library" />
+            android:text="@string/library"
+            android:textColor="@color/gray_3" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/openLibrary"
@@ -130,7 +132,8 @@
             app:borderWidth="0dp"
             app:elevation="6dp"
             app:fabSize="mini"
-            app:srcCompat="@drawable/books_library" />
+            app:srcCompat="@drawable/books_library"
+            app:tint="@color/gray_3" />
     </LinearLayout>
 
 
@@ -151,7 +154,8 @@
             android:layout_height="wrap_content"
             android:background="@drawable/text_background"
             android:paddingHorizontal="10dp"
-            android:text="@string/import_s" />
+            android:text="@string/import_s"
+            android:textColor="@color/gray_3" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/importButton"
@@ -161,7 +165,8 @@
             app:borderWidth="0dp"
             app:elevation="6dp"
             app:fabSize="mini"
-            app:srcCompat="@drawable/import_icon" />
+            app:srcCompat="@drawable/import_icon"
+            app:tint="@color/gray_3" />
     </LinearLayout>
 
 
@@ -180,9 +185,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
-            android:layout_margin="@dimen/fab_margin"
+            android:layout_margin="17dp"
             android:gravity="center_vertical"
-            app:srcCompat="@drawable/baseline_add_24" />
+            app:srcCompat="@drawable/baseline_add_24"
+            app:tint="@color/gray_3" />
     </LinearLayout>
 
     <ProgressBar

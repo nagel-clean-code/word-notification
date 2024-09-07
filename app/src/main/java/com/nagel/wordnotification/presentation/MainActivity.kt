@@ -59,6 +59,7 @@ class MainActivity : AppCompatActivity(), Navigator {
     private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_WordNotification)
         super.onCreate(savedInstanceState)
         navigatorInstance = navigator
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -118,7 +119,7 @@ class MainActivity : AppCompatActivity(), Navigator {
     override fun onResume() {
         super.onResume()
         navigator.whenActivityActive.mainActivity = this
-        rateApp()
+//        rateApp()
     }
 
     private fun rateApp() {
