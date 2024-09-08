@@ -130,7 +130,7 @@ class ShowAlgorithmSteps(
                 val nextDate =
                     dataForRendering!!.mode.selectedMode?.getNewDate(lastStep++, lastDate)
                 if (nextDate == null) {
-                    resultList.add("Завершено")
+                    resultList.add(context.resources.getString(R.string.completed))
                     continue
                 }
                 if (AlgorithmHelper.checkOccurrenceInTimeInterval(

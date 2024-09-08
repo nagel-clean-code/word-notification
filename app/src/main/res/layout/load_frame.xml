@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/black_transparent">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:id="@+id/loadingLayout"
@@ -16,14 +15,14 @@
             android:id="@+id/progressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:indeterminateTint="@color/white" />
+            android:indeterminateTint="@color/purple" />
 
         <TextView
             android:id="@+id/textLoading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/saving"
-            android:textColor="@color/white"
+            android:textColor="@color/purple"
             android:textSize="18sp" />
     </LinearLayout>
 
@@ -41,7 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/error_saving_mode"
-            android:textColor="@color/white"
+            android:textColor="@color/purple"
             android:textSize="18sp" />
 
         <com.google.android.material.button.MaterialButton

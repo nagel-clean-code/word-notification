@@ -1,7 +1,6 @@
 package com.nagel.wordnotification.presentation
 
 import android.os.Bundle
-import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
@@ -99,7 +98,6 @@ class MainActivity : AppCompatActivity(), Navigator {
                         FirebaseAnalytics.Param.METHOD,
                         "successful"
                     )
-//                    val user = auth.currentUser
                 } else {
                     Analytic.logEvent(
                         FirebaseAnalytics.Event.LOGIN,
@@ -122,6 +120,7 @@ class MainActivity : AppCompatActivity(), Navigator {
 //        rateApp()
     }
 
+    //TODO Вернуть когда выложу на плеймаркет
     private fun rateApp() {
         if (viewModel.isItPossibleShowRateApp()) {
             EvaluationAppDialog().show(supportFragmentManager, EvaluationAppDialog.TAG)
@@ -176,10 +175,6 @@ class MainActivity : AppCompatActivity(), Navigator {
 
     override fun clearBackStack() {
         supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
-    }
-
-    override fun blackoutBottomNavigationView(show: Boolean) {
-        binding.blackout.visibility = if (show) View.VISIBLE else View.INVISIBLE
     }
 
     override fun goBack() {

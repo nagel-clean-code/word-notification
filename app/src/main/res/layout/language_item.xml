@@ -10,6 +10,6 @@
     android:gravity="center|start"
     android:paddingStart="10dp"
     android:paddingEnd="0dp"
-    android:textColor="@color/black"
+    android:textColor="@color/gray_3"
     android:textSize="14sp"
     tools:text="English" />

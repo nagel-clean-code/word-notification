@@ -12,9 +12,9 @@
         tools:context=".presentation.settings.ModeSettingsFragment">
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -22,7 +22,7 @@
                 android:background="@drawable/background_header_short"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingBottom="17.5dp">
+                android:paddingBottom="16dp">
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -35,10 +35,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
+                        android:layout_marginTop="4dp"
                         android:fontFamily="@font/montserrat_bold"
                         android:text="@string/mode_settings"
                         android:textColor="@color/white"
-                        android:textSize="20sp" />
+                        android:textSize="18sp" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -64,8 +65,8 @@
                         android:layout_gravity="top|center"
                         android:fontFamily="@font/montserrat_bold"
                         android:gravity="center"
-                        android:textColor="@color/gray_3"
                         android:text="@string/frequency_reminders"
+                        android:textColor="@color/gray_3"
                         android:textSize="22sp" />
 
                     <ImageView
@@ -268,9 +269,9 @@
                             android:fontFamily="@font/montserrat_bold"
                             android:includeFontPadding="false"
                             android:paddingHorizontal="5dp"
-                            android:textColor="@color/gray_3"
                             android:paddingVertical="2dp"
                             android:text="@string/Sb"
+                            android:textColor="@color/gray_3"
                             android:textStyle="bold"
                             tools:ignore="MissingConstraints" />
 
@@ -282,10 +283,10 @@
                             android:background="@drawable/unselected_day_week"
                             android:fontFamily="@font/montserrat_bold"
                             android:includeFontPadding="false"
-                            android:textColor="@color/gray_3"
                             android:paddingHorizontal="5dp"
                             android:paddingVertical="2dp"
                             android:text="@string/Vs"
+                            android:textColor="@color/gray_3"
                             android:textStyle="bold"
                             tools:ignore="MissingConstraints" />
 

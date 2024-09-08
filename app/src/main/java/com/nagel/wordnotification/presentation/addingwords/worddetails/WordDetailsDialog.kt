@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.Toast
+import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
@@ -25,7 +26,6 @@ import com.nagel.wordnotification.presentation.base.PendingResult
 import com.nagel.wordnotification.presentation.base.SuccessResult
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -95,8 +95,18 @@ class WordDetailsDialog(val word: Word, val idMode: Long) : DialogFragment() {
             algorithmName += " " + data.mode.selectedMode.getName(requireContext())
             binding.algorithmName.text = algorithmName
         }
-        val flow = viewModel.loadNotificationHistory(word.idWord, mode.idMode)
-        initShowSteps(data, flow)
+        val startAlgorithm = checkStartAlgorithm(data)
+        if (startAlgorithm) {
+            val historyFlow = viewModel.loadNotificationHistory(word.idWord, mode.idMode)
+            initShowSteps(data, historyFlow)
+        }
+    }
+
+    private fun checkStartAlgorithm(data: ShowStepsWordDto): Boolean {
+        val algorithmNotStarted = data.lastDateMention == 0L
+        binding.showSteps.isGone = algorithmNotStarted
+        binding.notStartAlgorithm.isVisible = algorithmNotStarted
+        return algorithmNotStarted.not()
     }
 
     private fun initShowSteps(

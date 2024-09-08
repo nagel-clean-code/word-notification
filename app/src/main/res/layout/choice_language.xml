@@ -27,6 +27,7 @@
         <TextView
             android:id="@+id/currentLanguage"
             android:layout_width="wrap_content"
+            android:textColor="@color/gray_3"
             android:layout_height="wrap_content"
             tools:text="@string/current_language" />
 
@@ -35,7 +36,6 @@
             android:layout_width="250dp"
             android:layout_height="500dp"
             android:layout_marginTop="10dp"
-
             tools:listitem="@layout/language_item" />
 
         <CheckBox

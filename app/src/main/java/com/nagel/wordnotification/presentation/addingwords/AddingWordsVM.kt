@@ -66,11 +66,13 @@ class AddingWordsVM @Inject constructor(
         if (!isAutoTranslation) return
         jobTranslation?.cancel()
         jobTranslation = viewModelScope.launch(coroutineExceptionHandler) {
+            if (text.isBlank()) {
+                showTranslate.emit("")
+                return@launch
+            }
             delay(500)
             val translation = translator.translate(text, language, Language.AUTO)
-            if (translation.translatedText.isNotBlank()) {
-                showTranslate.emit(translation.translatedText)
-            }
+            showTranslate.emit(translation.translatedText)
         }
     }
 

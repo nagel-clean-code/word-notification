@@ -24,7 +24,7 @@
                 android:background="@drawable/background_header_short"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingBottom="17.5dp">
+                android:paddingBottom="16dp">
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -37,10 +37,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
+                        android:layout_marginTop="4dp"
                         android:fontFamily="@font/montserrat_bold"
                         android:text="@string/dictionaries"
                         android:textColor="@color/white"
-                        android:textSize="20sp" />
+                        android:textSize="18sp" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -224,14 +225,6 @@
                     </FrameLayout>
                 </LinearLayout>
 
-                <ProgressBar
-                    android:id="@+id/progressBar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
-                <!--            android:background="@drawable/background_list_words_rad_20"-->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/listWordsRecyclerView"
                     android:layout_width="0dp"
@@ -247,6 +240,16 @@
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout"
                     app:layout_constraintWidth_max="600dp"
                     tools:listitem="@layout/item_word_type_1" />
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+                <!--            android:background="@drawable/background_list_words_rad_20"-->
+
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
 

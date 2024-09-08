@@ -14,7 +14,6 @@ interface Navigator {
     fun showChoosingDictionaryFragment()
     fun showProfileFragment()
     fun clearBackStack()
-    fun blackoutBottomNavigationView(show: Boolean)
     fun startAlgorithm(postDelay: Long? = null)
     fun goBack()
 }

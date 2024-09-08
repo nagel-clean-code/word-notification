@@ -139,9 +139,6 @@ class ModeSettingsFragment : BaseFragment() {
                         root.isVisible = true
                         loadingLayout.isVisible = true
                         errorLayout.isVisible = false
-                        navigatorV2.whenActivityActive {
-                            it.blackoutBottomNavigationView(true)
-                        }
                     }
 
                     is ErrorResult -> {
@@ -157,7 +154,6 @@ class ModeSettingsFragment : BaseFragment() {
 
                     is SuccessResult -> {
                         navigatorV2.whenActivityActive {
-                            it.blackoutBottomNavigationView(false)
                             it.showToast(R.string.changes_saved)
                             it.goBack()
                         }
@@ -345,13 +341,6 @@ class ModeSettingsFragment : BaseFragment() {
             }
         }
         return listDays
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        navigatorV2.whenActivityActive {
-            it.blackoutBottomNavigationView(false)
-        }
     }
 
     companion object {

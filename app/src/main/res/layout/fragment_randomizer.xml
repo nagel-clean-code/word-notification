@@ -15,10 +15,11 @@
         android:background="@drawable/background_header_short"
         android:fontFamily="@font/montserrat_bold"
         android:gravity="center"
-        android:paddingBottom="17.5dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="16dp"
         android:text="@string/randomizing"
         android:textColor="@color/white"
-        android:textSize="20sp" />
+        android:textSize="18sp" />
 
     <FrameLayout
         style="@style/width_match_parent_max_600"

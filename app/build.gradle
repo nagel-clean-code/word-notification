@@ -15,8 +15,8 @@ android {
         applicationId "com.nagel.wordnotification"
         minSdk 24
         targetSdk 34
-        versionCode 420
-        versionName "1.4.2"
+        versionCode 430
+        versionName "1.4.3"
 
         kapt {
             arguments {
