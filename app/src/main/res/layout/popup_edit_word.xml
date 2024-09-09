@@ -27,7 +27,7 @@
         android:fontFamily="@font/montserrat_bold"
         android:hint="@string/enter_word"
         android:inputType="textCapSentences"
-        android:textColor="@color/black"
+        android:textColor="@color/gray_3"
         android:textColorHint="@color/gray"
         android:textSize="16sp" />
 
@@ -41,7 +41,7 @@
         android:fontFamily="@font/montserrat_bold"
         android:hint="@string/translation"
         android:inputType="textCapSentences"
-        android:textColor="@color/black"
+        android:textColor="@color/gray_3"
         android:textColorHint="@color/gray"
         android:textSize="16sp" />
 
