@@ -46,11 +46,10 @@ class ModeSettingsFragment : BaseFragment() {
 
     data class Screen(val idDictionary: Long) : BaseScreen
 
-    private lateinit var binding: FragmentModeSettingsBinding
-    override val viewModel: ModeSettingsVM by viewModels()
-
     @Inject
     lateinit var navigatorV2: NavigatorV2
+    private lateinit var binding: FragmentModeSettingsBinding
+    override val viewModel: ModeSettingsVM by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -105,30 +104,48 @@ class ModeSettingsFragment : BaseFragment() {
         }
     }
 
-    private fun initListeners() {
-        binding.time1.setOnClickListener {
-            getTimePiker(binding.time1)
+    private fun initListeners() = with(binding) {
+        initListenerRadioGroup()
+        time1.setOnClickListener {
+            getTimePiker(time1)
         }
-        binding.time2.setOnClickListener {
-            getTimePiker(binding.time2)
+        time2.setOnClickListener {
+            getTimePiker(time2)
         }
 
-        initRadioButtons()
-        binding.saveButton.setOnClickListener {
+        saveButton.setOnClickListener {
             saveMode(true)
         }
-        binding.chainDaysWeek.children.forEachIndexed() { i, view: View ->
+        chainDaysWeek.children.forEachIndexed() { i, view: View ->
             if (view !is Flow) {
                 if (i < 5) {
                     view.tag = false
                 }
             }
         }
-        binding.infoButton.setOnClickListener {
+        infoButton.setOnClickListener {
             InformationDialog().show(childFragmentManager, InformationDialog.TAG)
         }
         initListenerLiveResult()
         initData()
+    }
+
+    private fun initListenerRadioGroup() = with(binding) {
+        radioGroup.setOnCheckedChangeListener { _, checkedId ->
+            when (checkedId) {
+                forgetfulnessCurve.id -> {
+
+                }
+
+                forgetfulnessCurveLong.id -> {
+
+                }
+
+                plateauEffect.id -> {
+
+                }
+            }
+        }
     }
 
     private fun initListenerLiveResult() {
@@ -231,31 +248,29 @@ class ModeSettingsFragment : BaseFragment() {
                 binding.forgetfulnessCurve.isChecked = true
             }
 
-            else -> {
-            }
+            else -> {}
         }
     }
-
-    private fun initRadioButtons() {
-        binding.apply {
-            plateauEffect.setOnClickListener {
-                viewModel.selectedMode = PlateauEffect
-                forgetfulnessCurveLong.isChecked = false
-                forgetfulnessCurve.isChecked = false
-            }
-            forgetfulnessCurveLong.setOnClickListener {
-                viewModel.selectedMode = ForgetfulnessCurveLong
-                plateauEffect.isChecked = false
-                forgetfulnessCurve.isChecked = false
-            }
-            forgetfulnessCurve.setOnClickListener {
-                viewModel.selectedMode = ForgetfulnessCurveShort
-                forgetfulnessCurveLong.isChecked = false
-                plateauEffect.isChecked = false
-            }
-        }
-
-    }
+//
+//    private fun initRadioButtons() {
+//        binding.apply {
+//            plateauEffect.setOnClickListener {
+//                viewModel.selectedMode = PlateauEffect
+//                forgetfulnessCurveLong.isChecked = false
+//                forgetfulnessCurve.isChecked = false
+//            }
+//            forgetfulnessCurveLong.setOnClickListener {
+//                viewModel.selectedMode = ForgetfulnessCurveLong
+//                plateauEffect.isChecked = false
+//                forgetfulnessCurve.isChecked = false
+//            }
+//            forgetfulnessCurve.setOnClickListener {
+//                viewModel.selectedMode = ForgetfulnessCurveShort
+//                forgetfulnessCurveLong.isChecked = false
+//                plateauEffect.isChecked = false
+//            }
+//        }
+//    }
 
     private fun initWeekday() {
         binding.chainDaysWeek.children.forEachIndexed() { ix: Int, view: View ->

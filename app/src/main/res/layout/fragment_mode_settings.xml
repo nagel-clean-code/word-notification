@@ -81,18 +81,16 @@
                         android:src="@drawable/baseline_info_24" />
                 </FrameLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                <RadioGroup
+                    android:id="@+id/radioGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
 
                     <RadioButton
                         android:id="@+id/forgetfulnessCurve"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="end"
                         android:layout_marginStart="-5dp"
-                        android:layout_marginEnd="-15dp"
                         android:buttonTint="@color/purple"
                         android:checked="false"
                         android:fontFamily="@font/montserrat_bold"
@@ -100,48 +98,30 @@
                         android:textColor="@color/gray_3"
                         android:textSize="16sp" />
 
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
                     <RadioButton
                         android:id="@+id/forgetfulnessCurveLong"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="end"
                         android:layout_marginStart="-5dp"
-                        android:layout_marginEnd="-15dp"
                         android:buttonTint="@color/purple"
                         android:checked="false"
                         android:fontFamily="@font/montserrat_bold"
                         android:text="@string/forgetfulness_curve_long"
                         android:textColor="@color/gray_3"
                         android:textSize="16sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
 
                     <RadioButton
                         android:id="@+id/plateauEffect"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="end"
                         android:layout_marginStart="-5dp"
-                        android:layout_marginEnd="-15dp"
                         android:buttonTint="@color/purple"
                         android:fontFamily="@font/montserrat_bold"
                         android:text="@string/plateau_effect"
                         android:textColor="@color/gray_3"
                         android:textSize="16sp" />
 
-                </LinearLayout>
-
+                </RadioGroup>
 
                 <LinearLayout
                     android:layout_width="match_parent"
