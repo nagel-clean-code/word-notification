@@ -168,7 +168,7 @@ class RandomizingFragment : BaseFragment() {
             ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
-        val textView = TextView(context)
+        val textView = TextView(requireContext())
         textView.id = View.generateViewId()
         textView.setTextColor(resources.getColor(R.color.light_beige))
         textView.setBackgroundResource(R.drawable.selected_day_week)
