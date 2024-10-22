@@ -44,10 +44,14 @@ class RandomizingFragment : BaseFragment() {
         binding.root.postDelayed(runable, duration)
     }
 
-    private fun onClickAnswer() {
-        if (binding.translation.text == EMPTY_WORD) {
-            binding.translation.text = viewModel.currentWord.value?.textLast ?: ""
-            binding.root.postDelayed({
+    private fun onClickAnswer() = with(binding) {
+        if (translation.text == EMPTY_WORD) {
+            translation.text = if (translation.tag as? Boolean != true) {
+                viewModel.currentWord.value?.textLast ?: ""
+            } else {
+                viewModel.currentWord.value?.textFirst ?: ""
+            }
+            root.postDelayed({
                 viewModel.nextWord()
             }, DURATION_SHOW_ANSWER)
         } else {
@@ -55,8 +59,27 @@ class RandomizingFragment : BaseFragment() {
         }
     }
 
-    private fun initListeners() {
-        with(binding.notRememberButton) {
+    private fun initListeners() = with(binding) {
+        swapIcon.setOnClickListener {
+            if (translation.tag as? Boolean != true) {
+                translation.tag = true
+                word.text = viewModel.currentWord.value?.textLast ?: ""
+            } else {
+                translation.tag = false
+                word.text = viewModel.currentWord.value?.textFirst ?: ""
+            }
+            translation.text = EMPTY_WORD
+        }
+        head.setOnClickListener {
+            if (head.tag as? Boolean == true) {
+                head.tag = false
+                updateHead(viewModel.currentDictionary.value)
+            } else {
+                updateHead("❄❄❄❄❄❄❄❄")
+                head.tag = true
+            }
+        }
+        with(notRememberButton) {
             setOnClickListener {
                 if (runable == null) {
                     setBackgroundResource(R.drawable.background_selected_not_remember)
@@ -69,7 +92,7 @@ class RandomizingFragment : BaseFragment() {
             }
         }
 
-        with(binding.rememberButton) {
+        with(rememberButton) {
             setOnClickListener {
                 if (runable == null) {
                     setBackgroundResource(R.drawable.background_selected_remember)
@@ -82,7 +105,7 @@ class RandomizingFragment : BaseFragment() {
             }
         }
 
-        with(binding.bookButton) {
+        with(bookButton) {
             setOnClickListener {
                 setBackgroundResource(R.drawable.background_selected_book_view)
                 openBookButtonClick()
@@ -94,20 +117,19 @@ class RandomizingFragment : BaseFragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.currentDictionary.collect() {
-                    if (it?.isBlank() == true) {
-                        val msg = requireContext().getString(R.string.dictionary_not_selected)
-                        binding.head.text = msg
-                    } else {
-                        binding.head.text = it
-                    }
+                    updateHead(it)
                 }
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.currentWord.collect() {
-                    binding.word.text = it?.textFirst
-                    binding.translation.text = EMPTY_WORD
+                    word.text = if (translation.tag as? Boolean != true) {
+                        it?.textFirst
+                    } else {
+                        it?.textLast
+                    }
+                    translation.text = EMPTY_WORD
                     showDataCounter()
                 }
             }
@@ -117,7 +139,7 @@ class RandomizingFragment : BaseFragment() {
                 viewModel.loadingDictionaries.collect() {
                     it?.let {
                         initDictionaries()
-                        binding.progressBar.isVisible = false
+                        progressBar.isVisible = false
                     }
                 }
             }
@@ -130,11 +152,21 @@ class RandomizingFragment : BaseFragment() {
                             it.first,
                             it.second
                         ).show(parentFragmentManager, null)
-                        binding.translation.text = EMPTY_WORD
+                        translation.text = EMPTY_WORD
                         showDataCounter()
                     }
                 }
             }
+        }
+    }
+
+    private fun updateHead(dictionaryName: String?) = with(binding) {
+        if (head.tag as? Boolean == true) return@with
+        if (dictionaryName?.isBlank() == true) {
+            val msg = requireContext().getString(R.string.dictionary_not_selected)
+            head.text = msg
+        } else {
+            head.text = dictionaryName
         }
     }
 
@@ -148,7 +180,11 @@ class RandomizingFragment : BaseFragment() {
     private fun openBookButtonClick() {
         with(binding.translation) {
             text = if (text.toString() == EMPTY_WORD) {
-                viewModel.currentWord.value?.textLast ?: ""
+                if (tag as? Boolean != true) {
+                    viewModel.currentWord.value?.textLast ?: ""
+                } else {
+                    viewModel.currentWord.value?.textFirst ?: ""
+                }
             } else {
                 EMPTY_WORD
             }
@@ -194,7 +230,7 @@ class RandomizingFragment : BaseFragment() {
     private fun unselectedDictionary(textView: TextView) {
         viewModel.unselectedDictionary(textView.text.toString())
         textView.setBackgroundResource(R.drawable.unselected_day_week)
-        textView.setTextColor(resources.getColor(R.color.black))
+        textView.setTextColor(resources.getColor(R.color.gray_3))
         textView.tag = true
     }
 

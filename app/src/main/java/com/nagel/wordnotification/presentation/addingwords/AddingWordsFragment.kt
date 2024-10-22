@@ -20,11 +20,11 @@ import com.nagel.wordnotification.databinding.FragmentAddingWordsBinding
 import com.nagel.wordnotification.presentation.addingwords.actions.EditWordDialog
 import com.nagel.wordnotification.presentation.addingwords.actions.MenuSelectingActions
 import com.nagel.wordnotification.presentation.addingwords.choicelanguage.ChoiceLanguageDialog
-import com.nagel.wordnotification.presentation.onboard.OnboardingActivity
 import com.nagel.wordnotification.presentation.addingwords.worddetails.WordDetailsDialog
 import com.nagel.wordnotification.presentation.base.BaseFragment
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import com.nagel.wordnotification.presentation.navigator.navigator
+import com.nagel.wordnotification.presentation.onboard.OnboardingActivity
 import com.nagel.wordnotification.utils.common.hideKeyboard
 import com.nagel.wordnotification.utils.common.showToast
 import dagger.hilt.android.AndroidEntryPoint
@@ -55,12 +55,15 @@ class AddingWordsFragment : BaseFragment() {
         return binding.root
     }
 
-    private fun initListeners() {
-        binding.selectDictionary.setOnClickListener {
+    private fun initListeners() = with(binding) {
+        swapIcon.setOnClickListener {
+            viewModel.swapWordsInCurrentDictionary()
+        }
+        selectDictionary.setOnClickListener {
             showChoosingDictionary()
         }
 
-        binding.modeSettings.setOnClickListener {
+        modeSettings.setOnClickListener {
             viewModel.loadedDictionaryFlow.value?.let {
                 navigator()?.showModeSettingsFragment(it.idDictionary)
             }
@@ -69,10 +72,10 @@ class AddingWordsFragment : BaseFragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.loadedDictionaryFlow.collect() { loaded ->
-                    binding.progressBar.isVisible = loaded == null
+                    progressBar.isVisible = loaded == null
                     loaded?.let {
                         initAdapter()
-                        binding.nameDictionary.text = loaded.name
+                        nameDictionary.text = loaded.name
                     }
                 }
             }
@@ -81,19 +84,19 @@ class AddingWordsFragment : BaseFragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.showTranslate.collect() {
                     it?.let {
-                        binding.editTextTranslation.setText(it)
+                        editTextTranslation.setText(it)
                     }
                 }
             }
         }
-        binding.choiceLanguage.setOnClickListener {
+        choiceLanguage.setOnClickListener {
             ChoiceLanguageDialog { lang, isAutoTranslation ->
                 viewModel.setAutoTranslation(isAutoTranslation)
                 lang?.let { viewModel.setTranslateLang(lang) }
-                viewModel.requestTranslation(binding.editTextWord.text.toString())
+                viewModel.requestTranslation(editTextWord.text.toString())
             }.show(childFragmentManager, ChoiceLanguageDialog.TAG)
         }
-        binding.editTextWord.addTextChangedListener(object : TextWatcher {
+        editTextWord.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {}
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {

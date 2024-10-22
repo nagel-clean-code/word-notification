@@ -109,8 +109,9 @@
 
                 <ImageView
                     android:id="@+id/imageView3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:rotation="180"
                     android:src="@drawable/arrow"
                     app:layout_constraintBottom_toTopOf="@+id/editTextTranslation"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -144,12 +145,11 @@
                     android:id="@+id/choiceLanguage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="3dp"
                     android:layout_marginEnd="8dp"
                     android:src="@drawable/baseline_settings_24"
                     app:layout_constraintBottom_toBottomOf="@+id/editTextTranslation"
                     app:layout_constraintEnd_toEndOf="@+id/editTextTranslation"
-                    app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+                    app:layout_constraintTop_toTopOf="@+id/editTextTranslation" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/addWordButton"
@@ -241,14 +241,25 @@
                     app:layout_constraintWidth_max="600dp"
                     tools:listitem="@layout/item_word_type_1" />
 
+                <ImageView
+                    android:id="@+id/swapIcon"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="-10dp"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:src="@drawable/swap"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
                 <ProgressBar
                     android:id="@+id/progressBar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="-14dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
-                <!--            android:background="@drawable/background_list_words_rad_20"-->
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>

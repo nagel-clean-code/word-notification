@@ -209,6 +209,17 @@ class AddingWordsVM @Inject constructor(
         }
     }
 
+    fun swapWordsInCurrentDictionary() {
+        viewModelScope.launch {
+            _loadedDictionaryFlow.value?.wordList?.forEach { word ->
+                val first = word.textFirst
+                word.textFirst = word.textLast
+                word.textLast = first
+                dictionaryRepository.updateText(word)
+            }
+        }
+    }
+
     private suspend fun getFirstDictionary(idAccount: Long?): Dictionary? {
         if (idAccount == null) return null
         val dictionaries = dictionaryRepository.loadDictionaries(idAccount)

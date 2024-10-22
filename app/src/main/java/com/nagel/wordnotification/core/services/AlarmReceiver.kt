@@ -53,12 +53,14 @@ class AlarmReceiver : BroadcastReceiver() {
                 context.resources.getString(R.string.app_name),
                 NotificationManager.IMPORTANCE_HIGH
             )
-            val customSoundUri =
-                Uri.parse("android.resource://${context.packageName}/${R.raw.custom_sound}")
-            val attributes = AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
-                .build()
-            nc.setSound(customSoundUri, attributes)
+            if (currentType == TYPE_ANSWER) {
+                val customSoundUri =
+                    Uri.parse("android.resource://${context.packageName}/${R.raw.custom_sound}")
+                val attributes = AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                    .build()
+                nc.setSound(customSoundUri, attributes)
+            }
             notificationManager.createNotificationChannel(nc)
         }
 
@@ -81,6 +83,7 @@ class AlarmReceiver : BroadcastReceiver() {
         if (currentType == TYPE_QUEST) {
             customNotification
                 .setContentText("${dto.text} - ${dto.translation}")
+                .setAutoCancel(true)
                 .addAction(
                     0,
                     context.getString(R.string.ok),
