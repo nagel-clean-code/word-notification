@@ -40,7 +40,7 @@ object AlgorithmHelper {
         var currentTime = lastTime
         while (!checkOccurrenceInTimeInterval(currentTime, mode)) {
             currentTime += 15 * 60 * 1000
-            if (countRepeater++ > 100000) {
+            if (countRepeater++ > 1000) {
                 return currentTime
             }
         }

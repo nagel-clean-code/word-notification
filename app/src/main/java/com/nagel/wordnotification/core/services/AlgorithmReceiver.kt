@@ -1,18 +1,15 @@
 package com.nagel.wordnotification.core.services
 
-import android.app.AlarmManager
-import android.app.PendingIntent
+import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
 import android.util.Log
-import androidx.core.content.ContextCompat
 import com.nagel.wordnotification.Constants.TAKE_AWAY
 import com.nagel.wordnotification.Constants.TYPE
 import com.nagel.wordnotification.Constants.TYPE_ANSWER
 import com.nagel.wordnotification.Constants.TYPE_QUEST
-import com.nagel.wordnotification.app.App
-
 
 class AlgorithmReceiver : BroadcastReceiver() {
 
@@ -27,18 +24,12 @@ class AlgorithmReceiver : BroadcastReceiver() {
                 newIntent.putExtra(TAKE_AWAY, json)
                 newIntent.putExtra(TYPE, TYPE_QUEST)
                 context.sendBroadcast(newIntent)
+                return
             }
 
             Log.d("CoroutineWorker:", "notificationDto: $notificationDto")
-            val alarmManager = ContextCompat.getSystemService(App.get(), AlarmManager::class.java)
-            val intentAlarm = Intent(App.get(), AlarmReceiver::class.java)
-            val pendingIntent = PendingIntent.getBroadcast(
-                App.get(),
-                notificationDto.uniqueId + notificationDto.step,
-                intentAlarm,
-                PendingIntent.FLAG_IMMUTABLE
-            )
-            alarmManager?.cancel(pendingIntent)
+            val manager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager?
+            manager?.cancel(notificationDto.uniqueId + notificationDto.step)
         }
     }
 }
