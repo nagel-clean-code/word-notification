@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.databinding.ChoiceLanguageBinding
+import com.nagel.wordnotification.presentation.addingwords.TranslationWord
 import com.nagel.wordnotification.utils.common.hideKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 import me.bush.translator.Language
@@ -20,6 +21,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class ChoiceLanguageDialog(
+    private val typeInputField: TranslationWord,
     private val langSelected: (String?, Boolean) -> Unit
 ) : DialogFragment() {
 
@@ -37,7 +39,11 @@ class ChoiceLanguageDialog(
     ): View {
         binding = ChoiceLanguageBinding.inflate(inflater, container, false)
         setupTransparent()
-        languageSelected = sessionRepository.getTranslationLanguage()
+        languageSelected = if (typeInputField == TranslationWord.FIRST_WORD) {
+            sessionRepository.getWordLanguage()
+        } else {
+            sessionRepository.getTranslationLanguage()
+        }
         binding.root.hideKeyboard()
         val currentLangText =
             requireContext().getString(R.string.current_language, languageSelected)
@@ -50,7 +56,11 @@ class ChoiceLanguageDialog(
         super.onViewCreated(view, savedInstanceState)
         binding.apply {
             done.setOnClickListener {
-                sessionRepository.saveTranslationLanguage(languageSelected)
+                if (typeInputField == TranslationWord.FIRST_WORD) {
+                    sessionRepository.saveWordLanguage(languageSelected)
+                } else {
+                    sessionRepository.saveTranslationLanguage(languageSelected)
+                }
                 langSelected.invoke(languageSelected, autoTranslation.isChecked)
                 dismiss()
             }

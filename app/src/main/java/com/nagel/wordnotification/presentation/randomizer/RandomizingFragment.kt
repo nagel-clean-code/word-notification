@@ -15,6 +15,7 @@ import com.nagel.wordnotification.R
 import com.nagel.wordnotification.databinding.FragmentRandomizerBinding
 import com.nagel.wordnotification.presentation.base.BaseFragment
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
+import com.nagel.wordnotification.utils.RotationAnimator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -24,6 +25,7 @@ class RandomizingFragment : BaseFragment() {
     class Screen : BaseScreen
 
     private lateinit var binding: FragmentRandomizerBinding
+    private lateinit var rotationAnimatorReloadIcon: RotationAnimator
     override val viewModel: RandomizingVM by viewModels()
     private var runable: Runnable? = null
     override fun onCreateView(
@@ -33,6 +35,12 @@ class RandomizingFragment : BaseFragment() {
         binding = FragmentRandomizerBinding.inflate(inflater, container, false)
         initListeners()
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        rotationAnimatorReloadIcon =
+            RotationAnimator(0, viewLifecycleOwner.lifecycleScope, binding.swapIcon)
     }
 
     private fun addRunnable(duration: Long, run: () -> Unit) {
@@ -69,6 +77,7 @@ class RandomizingFragment : BaseFragment() {
                 word.text = viewModel.currentWord.value?.textFirst ?: ""
             }
             translation.text = EMPTY_WORD
+            rotationAnimatorReloadIcon.rotationLeft()
         }
         head.setOnClickListener {
             if (head.tag as? Boolean == true) {
@@ -135,12 +144,10 @@ class RandomizingFragment : BaseFragment() {
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.loadingDictionaries.collect() {
-                    it?.let {
-                        initDictionaries()
-                        progressBar.isVisible = false
-                    }
+            viewModel.loadingDictionaries.collect() {
+                it?.let {
+                    initDictionaries()
+                    progressBar.isVisible = false
                 }
             }
         }
@@ -191,11 +198,11 @@ class RandomizingFragment : BaseFragment() {
         }
     }
 
-    private fun initDictionaries() {
+    private fun initDictionaries() = with(binding) {
         viewModel.selectedDictionarySet.forEach {
             val view = createTextView(it)
-            binding.chainDictionaries.addView(view)
-            binding.flow.addView(view)
+            chainDictionaries.addView(view)
+            flow.addView(view)
         }
     }
 

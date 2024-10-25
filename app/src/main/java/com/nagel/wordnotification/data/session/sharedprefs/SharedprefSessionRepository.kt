@@ -61,6 +61,14 @@ class SharedprefSessionRepository @Inject constructor(
         sharedPreferences.edit().putString(TRANSLATION_LANGUAGE, lang).apply()
     }
 
+    override fun getWordLanguage(): String {
+        return sharedPreferences.getString(TRANSLATION_WORD_LANGUAGE, "RUSSIA") ?: "RUSSIA"
+    }
+
+    override fun saveWordLanguage(lang: String) {
+        sharedPreferences.edit().putString(TRANSLATION_WORD_LANGUAGE, lang).apply()
+    }
+
     override fun getAutoTranslation(): Boolean {
         return sharedPreferences.getBoolean(AUTO_TRANSLATION, true)
     }
@@ -84,6 +92,7 @@ class SharedprefSessionRepository @Inject constructor(
 
     companion object {
         private const val TRANSLATION_LANGUAGE = "TRANSLATION_LANGUAGE"
+        private const val TRANSLATION_WORD_LANGUAGE = "TRANSLATION_WORD_LANGUAGE"
         private const val AUTO_TRANSLATION = "AUTO_TRANSLATION"
         private const val SESSiON_STATE = "SESSiON_STATE"
         private const val SHARED_PREFS_SESSION = "SHARED_PREFS_SESSION"

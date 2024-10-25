@@ -43,6 +43,7 @@ class ShowAlgorithmSteps(
     private lateinit var paintCircleSelected: Paint
     private lateinit var paintCircleUnselected: Paint
     private var dataForRendering: ShowStepsWordDto? = null
+    private var isAlgorithmEnabled: Boolean = false
     private val mTextSize = 14f
     private val linesWidth = 5
     private val linesWidthSelected = 7
@@ -101,13 +102,15 @@ class ShowAlgorithmSteps(
         color = context.getColor(colorSource)
     }
 
-    fun setData(data: ShowStepsWordDto) {
+    fun setData(data: ShowStepsWordDto, isAlgorithmEnabled: Boolean) {
+        this.isAlgorithmEnabled = isAlgorithmEnabled
         dataForRendering = data
         textList = generationText()
         requestLayout()
     }
 
     private fun generationText(): List<String> {
+
         val historyList = dataForRendering!!.historyList
         val steps = dataForRendering!!.mode.selectedMode?.getCountSteps() ?: return listOf()
         val resultList = mutableListOf<String>()
@@ -119,9 +122,13 @@ class ShowAlgorithmSteps(
                 val current: NotificationHistoryItem = historyList[i]
                 var text = context.getString(R.string.step)
                 text += " №${current.learnStep}   "
-                text += dateTemplate.format(current.dateMention)
                 lastStep = current.learnStep
                 lastDate = current.dateMention
+                if(currentIx == -1){
+                    text += dateTemplate.format(current.dateMention)
+                } else if(isAlgorithmEnabled){
+                    text += dateTemplate.format(current.dateMention)
+                }
                 resultList.add(text)
                 if (currentIx == -1 && currentTime < current.dateMention) {
                     currentIx = lastStep - 1
@@ -140,9 +147,13 @@ class ShowAlgorithmSteps(
                 ) {
                     var text = context.getString(R.string.step)
                     text += " №${lastStep}   "
-                    text += dateTemplate.format(nextDate)
-                    resultList.add(text)
                     lastDate = nextDate
+                    if(currentIx == -1){
+                        text += dateTemplate.format(nextDate)
+                    } else if(isAlgorithmEnabled){
+                        text += dateTemplate.format(nextDate)
+                    }
+                    resultList.add(text)
                     if (currentIx == -1 && currentTime < lastDate) {
                         currentIx = lastStep - 2
                     }
@@ -150,7 +161,11 @@ class ShowAlgorithmSteps(
                     lastDate = AlgorithmHelper.nextAvailableDate(lastDate, dataForRendering!!.mode)
                     var text = context.getString(R.string.step)
                     text += " №${lastStep}   "
-                    text += dateTemplate.format(lastDate)
+                    if(currentIx == -1 && isAlgorithmEnabled){
+                        text += dateTemplate.format(lastDate)
+                    } else if(isAlgorithmEnabled){
+                        text += dateTemplate.format(nextDate)
+                    }
                     resultList.add(text)
                     if (currentIx == -1 && currentTime < lastDate) {
                         currentIx = lastStep - 2
@@ -177,10 +192,10 @@ class ShowAlgorithmSteps(
                 canvas.drawRect(rect, getPaintLine(i))
             }
             for (i in 0 until algorithm.getCountSteps()) {
-                val cy = i * linesHeight + marginTop
+                val offsetTop = i * linesHeight + marginTop
                 canvas.drawCircle(
                     marginLeft,
-                    cy,
+                    offsetTop,
                     radiusCircle,
                     getPaintCircle(i)
                 )
@@ -192,7 +207,7 @@ class ShowAlgorithmSteps(
                 canvas.drawText(
                     text,
                     marginLeft + radiusCircle * 2 + marginTextLeft,
-                    cy + mTextSize,
+                    offsetTop + mTextSize,
                     getPaintText(i)
                 )
             }

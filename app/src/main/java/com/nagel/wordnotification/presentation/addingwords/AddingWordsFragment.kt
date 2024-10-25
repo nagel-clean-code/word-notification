@@ -25,12 +25,12 @@ import com.nagel.wordnotification.presentation.base.BaseFragment
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import com.nagel.wordnotification.presentation.navigator.navigator
 import com.nagel.wordnotification.presentation.onboard.OnboardingActivity
+import com.nagel.wordnotification.utils.RotationAnimator
 import com.nagel.wordnotification.utils.common.hideKeyboard
 import com.nagel.wordnotification.utils.common.showToast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
 
 @AndroidEntryPoint
 class AddingWordsFragment : BaseFragment() {
@@ -40,6 +40,8 @@ class AddingWordsFragment : BaseFragment() {
     private lateinit var binding: FragmentAddingWordsBinding
     private var listWordsAdapter: ListWordsAdapter? = null
     override val viewModel: AddingWordsVM by viewModels()
+    private lateinit var rotationAnimatorDoubleArrow: RotationAnimator
+    private lateinit var rotationAnimatorReloadIcon: RotationAnimator
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,14 +52,29 @@ class AddingWordsFragment : BaseFragment() {
             ListWordsAdapter.VerticalSpaceItemDecoration(50)
         )
         binding.listWordsRecyclerView.itemAnimator = null
-        initButtons()
-        initListeners()
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initListeners()
+        initButtons()
+        rotationAnimatorDoubleArrow =
+            RotationAnimator(180, viewLifecycleOwner.lifecycleScope, binding.imageView3)
+        rotationAnimatorReloadIcon =
+            RotationAnimator(0, viewLifecycleOwner.lifecycleScope, binding.swapIcon)
+    }
+
     private fun initListeners() = with(binding) {
+        imageView3.setOnClickListener {
+            choiceLanguageWord.isVisible = choiceLanguageWord.isVisible.not()
+            choiceLanguageTranslation.isVisible = choiceLanguageWord.isVisible.not()
+            viewModel.changeCurrentAutoTranslate()
+            rotationAnimatorDoubleArrow.rotationRight()
+        }
         swapIcon.setOnClickListener {
             viewModel.swapWordsInCurrentDictionary()
+            rotationAnimatorReloadIcon.rotationLeft()
         }
         selectDictionary.setOnClickListener {
             showChoosingDictionary()
@@ -82,25 +99,50 @@ class AddingWordsFragment : BaseFragment() {
         }
         viewLifecycleOwner.lifecycleScope.launch() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.showTranslate.collect() {
-                    it?.let {
-                        editTextTranslation.setText(it)
-                    }
+                viewModel.showTranslateLastWord.collect() {
+                    it?.let { editTextTranslation.setText(it) }
                 }
             }
         }
-        choiceLanguage.setOnClickListener {
-            ChoiceLanguageDialog { lang, isAutoTranslation ->
+        viewLifecycleOwner.lifecycleScope.launch() {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.showTranslateFirstWord.collect() {
+                    it?.let { editTextWord.setText(it) }
+                }
+            }
+        }
+        choiceLanguageTranslation.setOnClickListener {
+            ChoiceLanguageDialog(viewModel.currentAutoTranslate) { lang, isAutoTranslation ->
                 viewModel.setAutoTranslation(isAutoTranslation)
                 lang?.let { viewModel.setTranslateLang(lang) }
-                viewModel.requestTranslation(editTextWord.text.toString())
+                viewModel.requestTranslation(
+                    editTextWord.text.toString(),
+                    TranslationWord.LAST_WORD
+                )
+            }.show(childFragmentManager, ChoiceLanguageDialog.TAG)
+        }
+        choiceLanguageWord.setOnClickListener {
+            ChoiceLanguageDialog(viewModel.currentAutoTranslate) { lang, isAutoTranslation ->
+                viewModel.setAutoTranslation(isAutoTranslation)
+                lang?.let { viewModel.setFirstWordTranslateLang(lang) }
+                viewModel.requestTranslation(
+                    editTextTranslation.text.toString(),
+                    TranslationWord.FIRST_WORD
+                )
             }.show(childFragmentManager, ChoiceLanguageDialog.TAG)
         }
         editTextWord.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {}
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                viewModel.requestTranslation(s.toString())
+                viewModel.requestTranslation(s.toString(), TranslationWord.LAST_WORD)
+            }
+        })
+        editTextTranslation.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable) {}
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                viewModel.requestTranslation(s.toString(), TranslationWord.FIRST_WORD)
             }
         })
     }
@@ -153,7 +195,7 @@ class AddingWordsFragment : BaseFragment() {
 
     private fun showWordDetails(word: Word) {
         viewModel.loadedDictionaryFlow.value?.let { dictionary ->
-            WordDetailsDialog(word, dictionary.idMode).show(
+            WordDetailsDialog(word, dictionary.idMode, dictionary.include).show(
                 childFragmentManager,
                 WordDetailsDialog.TAG
             )
@@ -179,10 +221,10 @@ class AddingWordsFragment : BaseFragment() {
         }.show(parentFragmentManager, EditWordDialog.TAG)
     }
 
-    private fun initButtons() {
-        binding.addWordButton.setOnClickListener {
-            val textFirst = binding.editTextWord.text.toString().trim()
-            val textLast = binding.editTextTranslation.text.toString().trim()
+    private fun initButtons() = with(binding) {
+        addWordButton.setOnClickListener {
+            val textFirst = editTextWord.text.toString().trim()
+            val textLast = editTextTranslation.text.toString().trim()
             if (textFirst.isBlank() || textLast.isBlank()) return@setOnClickListener
             val word = Word(
                 idDictionary = viewModel.loadedDictionaryFlow.value!!.idDictionary,
@@ -194,10 +236,10 @@ class AddingWordsFragment : BaseFragment() {
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
                     word.idWord = idWord
                     viewModel.loadedDictionaryFlow.value?.wordList?.add(word)
-                    binding.listWordsRecyclerView.scrollToPosition(0)
-                    binding.editTextTranslation.setText("")
-                    binding.editTextWord.setText("")
-                    binding.editTextWord.requestFocus()
+                    listWordsRecyclerView.scrollToPosition(0)
+                    editTextTranslation.setText("")
+                    editTextWord.setText("")
+                    editTextWord.requestFocus()
                 }
             }
         }

@@ -34,6 +34,10 @@ import me.bush.translator.languageOf
 import java.util.Date
 import javax.inject.Inject
 
+enum class TranslationWord {
+    FIRST_WORD, LAST_WORD
+}
+
 @HiltViewModel
 class AddingWordsVM @Inject constructor(
     val dictionaryRepository: DictionaryRepository,
@@ -53,31 +57,62 @@ class AddingWordsVM @Inject constructor(
     private var isAutoTranslation = sessionRepository.getAutoTranslation()
     private var jobTranslation: Job? = null
     private val translator = Translator()
-    private lateinit var language: Language
-    val showTranslate = MutableStateFlow<String?>(null)
+
+    var currentAutoTranslate: TranslationWord = TranslationWord.LAST_WORD
+    private var languageLastWord: Language = Language.ENGLISH
+    private var languageFirstWord: Language = Language.RUSSIAN
+
+    val showTranslateLastWord = MutableStateFlow<String?>(null)
+    val showTranslateFirstWord = MutableStateFlow<String?>(null)
 
 
     init {
         setTranslateLang(sessionRepository.getTranslationLanguage())
+        setFirstWordTranslateLang(sessionRepository.getWordLanguage())
     }
 
+    fun changeCurrentAutoTranslate() {
+        currentAutoTranslate = if (currentAutoTranslate == TranslationWord.LAST_WORD) {
+            TranslationWord.FIRST_WORD
+        } else {
+            TranslationWord.LAST_WORD
+        }
+    }
 
-    fun requestTranslation(text: String) {
+    fun requestTranslation(text: String, typeTranslate: TranslationWord) {
+        if (typeTranslate != currentAutoTranslate) return
         if (!isAutoTranslation) return
         jobTranslation?.cancel()
         jobTranslation = viewModelScope.launch(coroutineExceptionHandler) {
             if (text.isBlank()) {
-                showTranslate.emit("")
+                if (typeTranslate == TranslationWord.LAST_WORD) {
+                    showTranslateLastWord.emit("")
+                } else {
+                    showTranslateFirstWord.emit("")
+                }
                 return@launch
             }
             delay(500)
-            val translation = translator.translate(text, language, Language.AUTO)
-            showTranslate.emit(translation.translatedText)
+            val lang = if (typeTranslate == TranslationWord.LAST_WORD) {
+                languageLastWord
+            } else {
+                languageFirstWord
+            }
+            val translation = translator.translate(text, lang, Language.AUTO)
+            if (typeTranslate == TranslationWord.LAST_WORD) {
+                showTranslateLastWord.emit(translation.translatedText)
+            } else {
+                showTranslateFirstWord.emit(translation.translatedText)
+            }
         }
     }
 
     fun setTranslateLang(lang: String) {
-        language = languageOf(lang) ?: Language.ENGLISH
+        languageLastWord = languageOf(lang) ?: Language.ENGLISH
+    }
+
+    fun setFirstWordTranslateLang(lang: String) {
+        languageFirstWord = languageOf(lang) ?: Language.RUSSIAN
     }
 
     fun setAutoTranslation(isAuto: Boolean) {

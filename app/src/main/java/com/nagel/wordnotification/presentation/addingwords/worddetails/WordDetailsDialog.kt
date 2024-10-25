@@ -29,7 +29,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class WordDetailsDialog(val word: Word, val idMode: Long) : DialogFragment() {
+class WordDetailsDialog(
+    private val word: Word,
+    private val idMode: Long,
+    private val isAlgorithmEnabled: Boolean
+) : DialogFragment() {
 
     private lateinit var binding: WordDetailsDialogBinding
     private val viewModel: WordDetailsVM by viewModels()
@@ -117,7 +121,7 @@ class WordDetailsDialog(val word: Word, val idMode: Long) : DialogFragment() {
             historyFlow.collect() { historyList ->
                 historyList?.let {
                     data.historyList = historyList
-                    binding.showSteps.setData(data)
+                    binding.showSteps.setData(data, isAlgorithmEnabled)
                 }
             }
         }

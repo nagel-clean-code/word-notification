@@ -92,7 +92,7 @@
     <string name="memorization_step">Speicherschritt:</string>
     <string name="current_language">Aktuelle Sprache: %s</string>
     <string name="automatic_translation">Automatische Übersetzung</string>
-    <string name="apply">Löschen</string>
+    <string name="apply">Anwenden</string>
     <string name="import_s">Importieren</string>
     <string name="dictionary">Wörterbuch</string>
     <string name="library">Bibliotheken</string>
