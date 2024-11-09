@@ -53,6 +53,10 @@ class RoomDictionaryRepository @Inject constructor(
         }
     }
 
+    override suspend fun getAllWords(): List<Word> {
+        return dictionaryDao.getAllWords().map { it.toWord() }
+    }
+
     override suspend fun loadDictionaries(accountId: Long): List<Dictionary> {
         return dictionaryDao.getMyDictionaries(accountId)?.map { dictionary ->
             val result = dictionary.toDictionary()

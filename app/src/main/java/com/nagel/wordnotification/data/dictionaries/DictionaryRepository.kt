@@ -9,6 +9,7 @@ interface DictionaryRepository : IFormationOfDictionaries {
     fun loadDictionariesFlow(accountId: Long): Flow<List<Dictionary>>
     fun loadWordsByIdDictionaryFlow(idDictionary: Long): Flow<List<Word>>
     fun getAllWordsFlow(): Flow<List<Word>>
+    suspend fun getAllWords(): List<Word>
     suspend fun loadDictionaries(accountId: Long): List<Dictionary>
     suspend fun getWordsByIdDictionary(idDictionary: Long): List<Word>
     suspend fun updateNameDictionary(idDictionary: Long, name: String)

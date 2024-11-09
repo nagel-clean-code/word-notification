@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.algorithms.AlgorithmHelper
+import com.nagel.wordnotification.core.algorithms.NotificationAlgorithm
 import com.nagel.wordnotification.core.services.NotificationDto
 import com.nagel.wordnotification.data.accounts.entities.Account
 import com.nagel.wordnotification.data.accounts.room.AccountDao
@@ -44,7 +45,8 @@ class AddingWordsVM @Inject constructor(
     private val settingsRepository: SettingsRepository,
     val navigator: NavigatorV2,
     private val accountDao: AccountDao,
-    private var sessionRepository: SessionRepository
+    private var sessionRepository: SessionRepository,
+    private val notificationAlgorithm: NotificationAlgorithm
 ) : BaseViewModel() {
     private val coroutineExceptionHandler = CoroutineExceptionHandler() { _, ex ->
         ex.printStackTrace()
@@ -262,6 +264,16 @@ class AddingWordsVM @Inject constructor(
             null
         } else {
             dictionaries.first()
+        }
+    }
+
+    fun tryCreateNotification(word: Word) {
+        if (loadedDictionaryFlow.value?.include == true) {
+            viewModelScope.launch {
+                loadedDictionaryFlow.value?.let {
+                    notificationAlgorithm.createNotification(word, it.idMode)
+                }
+            }
         }
     }
 

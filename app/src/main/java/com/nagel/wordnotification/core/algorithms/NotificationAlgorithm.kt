@@ -1,109 +1,104 @@
 package com.nagel.wordnotification.core.algorithms
 
-import android.util.Log
 import com.nagel.wordnotification.core.services.NotificationDto
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
-import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.dictionaries.entities.NotificationHistoryItem
 import com.nagel.wordnotification.data.dictionaries.entities.Word
-import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.data.settings.SettingsRepository
 import com.nagel.wordnotification.data.settings.room.entities.ModeDbEntity
 import java.text.SimpleDateFormat
 import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.math.abs
 
 
 @Singleton
 class NotificationAlgorithm @Inject constructor(
-    private var sessionRepository: SessionRepository,
     private var settingsRepository: SettingsRepository,
-    var dictionaryRepository: DictionaryRepository,
+    private var dictionaryRepository: DictionaryRepository
 ) {
 
-    private var bufArray = mutableListOf<NotificationDto?>()
-    private var countFirstNotifications = 0
-
-    suspend fun getWords(): List<NotificationDto?> {
-        bufArray.clear()
-        Log.d("CoroutineWorker:", "bufArray после очистки: $bufArray")
-        countFirstNotifications = 0
-        sessionRepository.getSession()?.account?.id?.let { id ->
-            val dictionaries = dictionaryRepository.loadDictionaries(id)
-            dictionaries.forEach {
-                if (it.include) {
-                    initNotifications(it)
-                }
-            }
-        }
-        Log.d("CoroutineWorker:", "bufArray результат: $bufArray")
-        return bufArray.toList()
-    }
-
-    private suspend fun initNotifications(dictionary: Dictionary) {
-        val mode = settingsRepository.getModeSettingsById(dictionary.idMode)
-        if (mode == null) {
-            Log.d("CoroutineWorker:", "mode == null")
+    suspend fun createNotification(word: Word, idMode: Long) {
+        val mode = settingsRepository.getModeSettingsById(idMode) ?: return
+        val minStartTime = getNewDate(mode, ++word.learnStep)
+        if (minStartTime == null) { //Слово уже выучено
+            updateWord(word.markWordAsLearned())
             return
         }
-        val words = dictionary.wordList.filter {
-            !it.allNotificationsCreated && it.lastDateMention < Date().time
-        }
-        Log.d("CoroutineWorker:", "words: $words")
 
-        words.forEach { word ->
-            if (word.learnStep == 0) {
-                //Добавление интервала между словами на первом шаге, чтобы не появились все в один раз
-                word.lastDateMention = countFirstNotifications++ * getIntervalBetweenWords()
+        //Получаем все активные слова
+        val words = dictionaryRepository.getAllWords().filter {
+            it.currentDateMention > 0 && word.currentDateMention >= minStartTime - MINIMUM_DISTANCE
+        }.sortedBy {
+            it.currentDateMention
+        }
+        val nextTime = getFreeTimeForNotification(words, minStartTime)
+        val notification = createNotificationDto(word, mode, nextTime)
+        AlgorithmHelper.createAlarm(notification)
+    }
+
+    private fun getFreeTimeForNotification(words: List<Word>, minStartTime: Long): Long {
+        if (words.isEmpty()) return minStartTime
+        var currentPosition = minStartTime
+        var lastDate = -1L
+        var arrayIx = 0
+
+        fun getCurrentDate(): Long {
+            return if (arrayIx < words.size) {
+                words[arrayIx++].currentDateMention
+            } else {
+                lastDate
             }
-            var nextTime = getNewDate(mode, word.learnStep++, word.lastDateMention)
-            do {
-                val notification = createNotificationDto(word, mode, nextTime)
-                nextTime = if (nextTime == null ||
-                    !AlgorithmHelper.checkOccurrenceInTimeInterval(nextTime, mode.toMode())
+        }
+
+        while (true) {
+            val currentDate = getCurrentDate()
+            if (lastDate != -1L) {
+                //TODO встроить проверку рабочих дней AlgorithmHelper.nextAvailableDate()
+                if (abs(currentPosition - lastDate) >= MINIMUM_DISTANCE &&
+                    abs(currentPosition - currentDate) >= MINIMUM_DISTANCE
                 ) {
-                    word.learnStep--
-                    updateWord(word)
-                    null
-                } else {
-                    updateWord(word)
-                    bufArray.add(notification)
-                    getNewDate(mode, word.learnStep++, word.lastDateMention)
+                    return currentPosition
                 }
-            } while (nextTime != null && nextTime - Date().time < MAX_WORKER_RESTART_INTERVAL)
+                val newPos = lastDate + MINIMUM_DISTANCE
+                if (newPos >= currentPosition && abs(currentDate - newPos) >= MINIMUM_DISTANCE) {
+                    return newPos
+                }
+                if (currentDate + MINIMUM_DISTANCE > currentPosition) {
+                    currentPosition = currentDate + MINIMUM_DISTANCE
+                }
+            }
+            lastDate = currentDate
         }
     }
 
     private suspend fun createNotificationDto(
         word: Word,
         mode: ModeDbEntity,
-        nextTime: Long?
-    ): NotificationDto? {
-        return if (nextTime == null) {
-            word.allNotificationsCreated = true
-            null
-        } else {
-            word.lastDateMention = nextTime
-            val historyItem =
-                NotificationHistoryItem(0, word.idWord, nextTime, mode.idMode, word.learnStep)
+        nextTime: Long
+    ): NotificationDto {
+        with(word) {
+            word.currentDateMention = nextTime
+            val historyItem = NotificationHistoryItem(0, idWord, nextTime, mode.idMode, learnStep)
             dictionaryRepository.saveNotificationHistoryItem(historyItem)
-            NotificationDto(word.textFirst, word.textLast, nextTime, word.uniqueId, word.learnStep)
+            return NotificationDto(textFirst, textLast, nextTime, uniqueId, learnStep)
         }
     }
 
-    private fun getNewDate(mode: ModeDbEntity, step: Int, lastDate: Long): Long? {
+    private fun getNewDate(mode: ModeDbEntity, step: Int): Long? {
+        val currentTime = Date().time
         val time = when (mode.selectedMode) {
             PlateauEffect::class.simpleName -> {
-                PlateauEffect.getNewDate(step, lastDate)
+                PlateauEffect.getNewDate(step, currentTime)
             }
 
             ForgetfulnessCurveLong::class.simpleName -> {
-                ForgetfulnessCurveLong.getNewDate(step, lastDate)
+                ForgetfulnessCurveLong.getNewDate(step, currentTime)
             }
 
             ForgetfulnessCurveShort::class.simpleName -> {
-                ForgetfulnessCurveShort.getNewDate(step, lastDate)
+                ForgetfulnessCurveShort.getNewDate(step, currentTime)
             }
 
             else -> {
@@ -121,8 +116,6 @@ class NotificationAlgorithm @Inject constructor(
     companion object {
         val dateFormat = SimpleDateFormat("d, hh:mm:ss")
 
-        const val MAX_WORKER_RESTART_INTERVAL = 20 * 60 * 1000L
-        fun getIntervalBetweenWords() = (2..5).random() * 60 * 1000L
-        const val TAG = "CoroutineWorker:"
+        const val MINIMUM_DISTANCE = 60 * 1000L
     }
 }

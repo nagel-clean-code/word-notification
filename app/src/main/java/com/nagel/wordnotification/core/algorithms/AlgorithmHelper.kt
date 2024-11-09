@@ -18,11 +18,12 @@ object AlgorithmHelper {
 
     fun createAlarm(word: NotificationDto) {
         Log.d("CoroutineWorker:startAlarm:", word.toString())
-        val intent = Intent(App.get(), AlarmReceiver::class.java)
+        val appContext= App.get()
+        val intent = Intent(appContext, AlarmReceiver::class.java)
         val json = Gson().toJson(word)
         intent.putExtra("TAKE_AWAY", json)
         val pendingIntent = PendingIntent.getBroadcast(
-            App.get(),
+            appContext,
             word.uniqueId + word.step,
             intent,
             PendingIntent.FLAG_IMMUTABLE
@@ -31,10 +32,11 @@ object AlgorithmHelper {
             "CoroutineWorker:startAlarm:",
             "requestCode: ${word.uniqueId + word.step}" + ", Name:${word.text}"
         )
-        val alarmManager = ContextCompat.getSystemService(App.get(), AlarmManager::class.java)
-        alarmManager!!.setExact(AlarmManager.RTC_WAKEUP, word.date, pendingIntent)
+        val alarmManager = ContextCompat.getSystemService(appContext, AlarmManager::class.java)
+        alarmManager?.setExact(AlarmManager.RTC_WAKEUP, word.date, pendingIntent)
     }
 
+    //TODO переделать на точную следующую дату
     fun nextAvailableDate(lastTime: Long, mode: ModeSettingsDto): Long {
         var countRepeater = 0
         var currentTime = lastTime

@@ -240,6 +240,7 @@ class AddingWordsFragment : BaseFragment() {
                     editTextTranslation.setText("")
                     editTextWord.setText("")
                     editTextWord.requestFocus()
+                    viewModel.tryCreateNotification(word)
                 }
             }
         }

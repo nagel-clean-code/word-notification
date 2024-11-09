@@ -2,9 +2,8 @@ package com.nagel.wordnotification.core.algorithms
 
 import android.content.Context
 import com.nagel.wordnotification.R
-import java.util.Date
 
-object ForgetfulnessCurveShort: Algorithm {
+object ForgetfulnessCurveShort : Algorithm {
 
     private val mapDate = mapOf<Int, Long>(
         1 to 1 * 60,
@@ -13,15 +12,10 @@ object ForgetfulnessCurveShort: Algorithm {
         4 to 24 * 60 * 60,
     )
 
-    override fun getNewDate(lastStep: Int, lastDate: Long): Long? {
-        val currentDate = if (lastStep == 0) {
-            Date().time + lastDate
-        } else {
-            lastDate
-        }
+    override fun getNewDate(lastStep: Int, currentTime: Long): Long? {
         val move = mapDate[lastStep + 1]
         return if (move != null) {
-            currentDate + (move * 1000)
+            currentTime + (move * 1000)
         } else {
             null
         }

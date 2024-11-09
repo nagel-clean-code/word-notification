@@ -4,8 +4,6 @@ import com.nagel.wordnotification.data.dictionaries.room.entities.WordDbEntity
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import com.nagel.wordnotification.presentation.addingwords.worddetails.widget.model.ShowStepsWordDto
 import com.nagel.wordnotification.utils.GlobalFunction
-import java.util.Date
-
 
 data class Word(
     val idDictionary: Long,
@@ -13,19 +11,25 @@ data class Word(
     var textLast: String,
     var allNotificationsCreated: Boolean = false,
     var learnStep: Int = 0,
-    var lastDateMention: Long = 0,
+    var currentDateMention: Long = THERE_IS_NO_DATE_MENTION,
     var uniqueId: Int = GlobalFunction.generateUniqueId()
 ) {
     var idWord: Long = 0
 
-    fun isItWasRepeated() = allNotificationsCreated && lastDateMention < Date().time
+    fun markWordAsLearned(): Word {
+        allNotificationsCreated = true
+        currentDateMention = THERE_IS_NO_DATE_MENTION
+        return this
+    }
+
+    fun isWordLearned() = allNotificationsCreated
 
     fun toShowStepsWordDto(modeSettingsDto: ModeSettingsDto): ShowStepsWordDto {
         return ShowStepsWordDto(
             modeSettingsDto,
             allNotificationsCreated,
             learnStep,
-            lastDateMention
+            currentDateMention
         )
     }
 
@@ -36,7 +40,7 @@ data class Word(
             textFirst,
             textLast,
             learnStep,
-            lastDateMention,
+            currentDateMention,
             uniqueId,
             allNotificationsCreated
         )
@@ -46,5 +50,9 @@ data class Word(
         val newWord = this.copy()
         newWord.idWord = this.idWord
         return newWord
+    }
+
+    companion object {
+        const val THERE_IS_NO_DATE_MENTION = -1L
     }
 }

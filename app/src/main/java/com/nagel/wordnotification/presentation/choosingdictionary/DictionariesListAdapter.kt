@@ -2,7 +2,6 @@ package com.nagel.wordnotification.presentation.choosingdictionary
 
 import android.content.Context
 import android.graphics.Rect
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -71,7 +70,7 @@ class DictionariesListAdapter(
                     currentBackground
                 )
             )
-            val currentLearnedWords = currentDictionary.wordList.count { it.isItWasRepeated() }
+            val currentLearnedWords = currentDictionary.wordList.count { it.isWordLearned() }
             name.text = currentDictionary.name
             data.text = generateStringData(currentDictionary.wordList)
             progress.text = "${currentLearnedWords}/${currentDictionary.wordList.size}"

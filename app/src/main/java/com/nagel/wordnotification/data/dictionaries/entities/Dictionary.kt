@@ -10,7 +10,7 @@ data class Dictionary(
     val idFolder: Long,
     val idMode: Long,
     var wordList: MutableList<Word> = mutableListOf(),
-    var include: Boolean
+    var include: Boolean //Включён ли алгоритм
 ) {
 
     fun toDbEntity(): DictionaryDbEntity {

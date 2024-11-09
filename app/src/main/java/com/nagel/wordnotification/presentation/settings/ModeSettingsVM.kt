@@ -82,7 +82,7 @@ class ModeSettingsVM @Inject constructor(
             val lastDate = history?.maxByOrNull { it.dateMention }?.dateMention ?: 0L
             word.learnStep = steps
             word.allNotificationsCreated = all
-            word.lastDateMention = lastDate
+            word.currentDateMention = lastDate
             dictionaryRepository.updateWord(word)
         }
     }

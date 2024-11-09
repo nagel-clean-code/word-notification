@@ -14,10 +14,10 @@ import com.nagel.wordnotification.data.dictionaries.entities.Word
 
 
 object Utils {
-
+    //TODO скорее всего надо будет переработать
     fun deleteNotification(word: Word) {
         val context = App.get()
-        val alarmManager = ContextCompat.getSystemService(App.get(), AlarmManager::class.java)
+        val alarmManager = ContextCompat.getSystemService(context, AlarmManager::class.java)
         val intentAlarm = Intent(context, AlarmReceiver::class.java)
         for (i in (1..word.learnStep)) {
             val pendingIntent = PendingIntent.getBroadcast(
