@@ -19,19 +19,17 @@ object Utils {
         val context = App.get()
         val alarmManager = ContextCompat.getSystemService(context, AlarmManager::class.java)
         val intentAlarm = Intent(context, AlarmReceiver::class.java)
-        for (i in (1..word.learnStep)) {
-            val pendingIntent = PendingIntent.getBroadcast(
-                context,
-                word.uniqueId + i,
-                intentAlarm,
-                PendingIntent.FLAG_IMMUTABLE
-            )
-            Log.d(
-                "CoroutineWorker:delete:",
-                "requestCode: ${word.uniqueId + i}" + ", name:${word.textFirst}"
-            )
-            alarmManager?.cancel(pendingIntent)
-        }
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            word.uniqueId + word.learnStep,
+            intentAlarm,
+            PendingIntent.FLAG_IMMUTABLE
+        )
+        Log.d(
+            "CoroutineWorker:delete:",
+            "requestCode: ${word.uniqueId + word.learnStep}" + ", name:${word.textFirst}"
+        )
+        alarmManager?.cancel(pendingIntent)
     }
 
     fun deleteNotification(wordList: List<Word>) {

@@ -38,4 +38,30 @@ data class ModeSettingsDto(
 
 }
 
-data class IntervalsDto(val sIHour: Int, val sIMinutes: Int, val eIHour: Int, val eIMinutes: Int)
+data class IntervalsDto(val sIHour: Int, val sIMinutes: Int, val eIHour: Int, val eIMinutes: Int) {
+
+    //TODO нужно перенести эту балансировку при сохранении интервала
+    fun balancingTimeIntervals(): IntervalsDto {
+        var newSIHour = sIHour
+        var newSIMinutes = sIMinutes
+        var newEIHour = eIHour
+        var newEIMinutes = eIMinutes
+
+        fun swap() {
+            newSIHour = eIHour
+            newEIHour = sIHour
+            newSIMinutes = eIMinutes
+            newEIMinutes = sIMinutes
+        }
+
+        if (sIHour > eIHour) swap()
+        if (sIHour == eIHour && sIMinutes > eIMinutes) swap()
+
+        return this.copy(
+            sIHour = newSIHour,
+            sIMinutes = newSIMinutes,
+            eIHour = newEIHour,
+            eIMinutes = newEIMinutes
+        )
+    }
+}

@@ -305,9 +305,6 @@ class ModeSettingsFragment : BaseFragment() {
             if (resetSteps) {
                 viewModel.dictionary?.wordList?.let { list ->
                     Utils.deleteNotification(list)
-                    navigatorV2.whenActivityActive {
-                        it.startAlgorithm(2000)
-                    }
                 }
             }
         } else if (goBack) {

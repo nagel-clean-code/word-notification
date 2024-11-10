@@ -5,6 +5,7 @@ import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.NotificationHistoryItem
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.settings.SettingsRepository
+import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import com.nagel.wordnotification.data.settings.room.entities.ModeDbEntity
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -33,12 +34,16 @@ class NotificationAlgorithm @Inject constructor(
         }.sortedBy {
             it.currentDateMention
         }
-        val nextTime = getFreeTimeForNotification(words, minStartTime)
+        val nextTime = getFreeTimeForNotification(words, minStartTime, mode.toMode())
         val notification = createNotificationDto(word, mode, nextTime)
         AlgorithmHelper.createAlarm(notification)
     }
 
-    private fun getFreeTimeForNotification(words: List<Word>, minStartTime: Long): Long {
+    private fun getFreeTimeForNotification(
+        words: List<Word>,
+        minStartTime: Long,
+        mode: ModeSettingsDto,
+    ): Long {
         if (words.isEmpty()) return minStartTime
         var currentPosition = minStartTime
         var lastDate = -1L
@@ -55,15 +60,30 @@ class NotificationAlgorithm @Inject constructor(
         while (true) {
             val currentDate = getCurrentDate()
             if (lastDate != -1L) {
-                //TODO встроить проверку рабочих дней AlgorithmHelper.nextAvailableDate()
                 if (abs(currentPosition - lastDate) >= MINIMUM_DISTANCE &&
                     abs(currentPosition - currentDate) >= MINIMUM_DISTANCE
                 ) {
-                    return currentPosition
+                    if (AlgorithmHelper.checkOccurrenceInTimeInterval(currentPosition, mode)) {
+                        return currentPosition
+                    } else {
+                        val nextDate = AlgorithmHelper.nextAvailableDate(currentPosition, mode)
+                        val newWords = words.filter {
+                            it.currentDateMention >= minStartTime - MINIMUM_DISTANCE
+                        }
+                        return getFreeTimeForNotification(newWords, nextDate, mode)
+                    }
                 }
                 val newPos = lastDate + MINIMUM_DISTANCE
                 if (newPos >= currentPosition && abs(currentDate - newPos) >= MINIMUM_DISTANCE) {
-                    return newPos
+                    if (AlgorithmHelper.checkOccurrenceInTimeInterval(newPos, mode)) {
+                        return newPos
+                    } else {
+                        val nextDate = AlgorithmHelper.nextAvailableDate(newPos, mode)
+                        val newWords = words.filter {
+                            it.currentDateMention >= minStartTime - MINIMUM_DISTANCE
+                        }
+                        return getFreeTimeForNotification(newWords, nextDate, mode)
+                    }
                 }
                 if (currentDate + MINIMUM_DISTANCE > currentPosition) {
                     currentPosition = currentDate + MINIMUM_DISTANCE

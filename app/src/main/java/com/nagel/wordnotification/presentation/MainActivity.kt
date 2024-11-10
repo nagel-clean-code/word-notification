@@ -6,18 +6,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.analytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.nagel.wordnotification.R
-import com.nagel.wordnotification.app.App
 import com.nagel.wordnotification.core.analytecs.Analytic
-import com.nagel.wordnotification.core.services.AlgorithmAdjustmentWork
 import com.nagel.wordnotification.data.firbase.RealtimeDbRepository
 import com.nagel.wordnotification.databinding.ActivityMainBinding
 import com.nagel.wordnotification.presentation.addingwords.AddingWordsFragment
@@ -35,7 +30,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
@@ -111,7 +105,6 @@ class MainActivity : AppCompatActivity(), Navigator {
     override fun onPause() {
         super.onPause()
         navigator.whenActivityActive.mainActivity = null
-        startAlgorithm()
     }
 
     override fun onResume() {
@@ -125,28 +118,6 @@ class MainActivity : AppCompatActivity(), Navigator {
         if (viewModel.isItPossibleShowRateApp()) {
             EvaluationAppDialog().show(supportFragmentManager, EvaluationAppDialog.TAG)
         }
-    }
-
-    override fun startAlgorithm(postDelay: Long?) {
-        postDelay?.let {
-            binding.root.postDelayed({
-                startAlgorithm()
-            }, it)
-            return
-        }
-        val workManager = WorkManager.getInstance(App.get())
-        val info = workManager.getWorkInfosByTag("AlgorithmWork")
-        val logs = mapOf("Work" to "start", "info.get()" to info.get())
-        Analytic.logEvent("CoroutineWorker", logs, false)
-        val worker = PeriodicWorkRequestBuilder<AlgorithmAdjustmentWork>(
-            WORK_REPEAT_INTERVAL,
-            TimeUnit.MINUTES
-        ).addTag(TAG_WORK).build()
-        workManager.enqueueUniquePeriodicWork(
-            TAG_WORK,
-            ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
-            worker
-        )
     }
 
     override fun showAddingWordsFragment() {
@@ -193,7 +164,5 @@ class MainActivity : AppCompatActivity(), Navigator {
 
     companion object {
         var navigatorInstance: MainNavigator? = null
-        const val TAG_WORK = "AlgorithmWork"
-        const val WORK_REPEAT_INTERVAL = 15L
     }
 }

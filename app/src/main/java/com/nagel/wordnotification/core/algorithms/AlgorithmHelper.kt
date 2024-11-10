@@ -16,9 +16,11 @@ import java.util.Date
 
 object AlgorithmHelper {
 
+    private const val ONE_DAY_MLS = 24 * 60 * 60 * 1000L
+
     fun createAlarm(word: NotificationDto) {
         Log.d("CoroutineWorker:startAlarm:", word.toString())
-        val appContext= App.get()
+        val appContext = App.get()
         val intent = Intent(appContext, AlarmReceiver::class.java)
         val json = Gson().toJson(word)
         intent.putExtra("TAKE_AWAY", json)
@@ -36,35 +38,70 @@ object AlgorithmHelper {
         alarmManager?.setExact(AlarmManager.RTC_WAKEUP, word.date, pendingIntent)
     }
 
-    //TODO переделать на точную следующую дату
     fun nextAvailableDate(lastTime: Long, mode: ModeSettingsDto): Long {
-        var countRepeater = 0
-        var currentTime = lastTime
-        while (!checkOccurrenceInTimeInterval(currentTime, mode)) {
-            currentTime += 15 * 60 * 1000
-            if (countRepeater++ > 1000) {
-                return currentTime
+        var time = lastTime
+        fun goBeginningDay() {
+            val c = Calendar.getInstance()      //Встаём в начало дня
+            c.time = Date(time)
+            val hours = c.get(Calendar.HOUR_OF_DAY)
+            val minutes = c.get(Calendar.MINUTE)
+            val seconds = c.get(Calendar.SECOND)
+            time -= (hours * 60 * 60 * 1000 + minutes * 60 * 1000 + seconds * 1000)
+        }
+        if (mode.sampleDays) {
+            while (checkDays(mode, time).not()) {
+                time += ONE_DAY_MLS
+            }
+            goBeginningDay()
+        }
+
+        fun goNextDay(): Long {
+            time += ONE_DAY_MLS
+            goBeginningDay()
+            return nextAvailableDate(time, mode)
+        }
+        if (mode.timeIntervals) {
+            if (checkMinutes(mode, time).not()) {
+                val c = Calendar.getInstance()
+                c.time = Date(time)
+                val hours = c.get(Calendar.HOUR_OF_DAY)
+                val minutes = c.get(Calendar.MINUTE)
+                val interval = mode.intervalsDto?.balancingTimeIntervals()
+                interval?.apply {
+                    if (hours > eIHour) {
+                        return goNextDay()
+                    } else if (hours == eIHour && minutes > eIMinutes) {
+                        return goNextDay()
+                    } else if (hours < sIHour) {
+                        //TODO протестить интервал 5:30-7:30 текущее время 4:40 / 4:20
+                        val subHoursWithMin = (sIHour - hours) * 60
+                        time += subHoursWithMin + (sIMinutes - minutes)
+                    } else if (hours == sIHour && minutes < sIMinutes) {
+                        time += sIMinutes - minutes
+                    }
+                }
             }
         }
-        return currentTime
+        return time
     }
 
     fun checkOccurrenceInTimeInterval(time: Long, mode: ModeSettingsDto): Boolean {
-        var timeInterval = true
-        if (mode.timeIntervals) {
-            timeInterval = checkMinutes(mode, time)
-        }
-
-        var daysSelected = true
-        if (mode.sampleDays) {
-            val day = SimpleDateFormat("EE").format(Date(time))
-            val str = day[0].uppercase() + day[1]
-            daysSelected = mode.days.contains(str)
-        }
+        val timeInterval = checkMinutes(mode, time)
+        val daysSelected = checkDays(mode, time)
         return timeInterval && daysSelected
     }
 
+    private fun checkDays(mode: ModeSettingsDto, time: Long): Boolean {
+        if (mode.sampleDays) {
+            val day = SimpleDateFormat("EE").format(Date(time))
+            val str = day[0].uppercase() + day[1]
+            return mode.days.contains(str)
+        }
+        return true
+    }
+
     private fun checkMinutes(mode: ModeSettingsDto, time: Long): Boolean {
+        if (mode.timeIntervals.not()) return true
         var timeInterval = true
         mode.intervalsDto?.apply {
             val c = Calendar.getInstance()
