@@ -19,7 +19,7 @@ object GlobalFunction {
         return str.toInt()
     }
 
-    fun Context.openUrl(link: String){
+    fun Context.openUrl(link: String) {
         try {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
             startActivity(intent)
@@ -27,7 +27,8 @@ object GlobalFunction {
             Log.e("PopupUpdateAppDialog", "Не удалось открыть ссылку", e)
             Analytic.logEvent(
                 ParametersAnalytics.EXCEPTION,
-                ParametersAnalytics.EXCEPTION_OPEN_LINK, e.toString())
+                ParametersAnalytics.EXCEPTION_OPEN_LINK, e.toString()
+            )
         }
     }
 }

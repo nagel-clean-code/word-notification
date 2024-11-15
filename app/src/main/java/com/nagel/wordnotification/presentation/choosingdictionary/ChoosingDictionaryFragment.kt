@@ -17,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.services.Utils
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
@@ -127,13 +128,27 @@ class ChoosingDictionaryFragment : BaseFragment() {
 
     private fun showMenuActionOnDictionary(dictionary: Dictionary, position: Int) {
         MenuForDictionaryDialog(
-            dictionary,
-            ::showEditDictionaryDialog
+            dictionary = dictionary,
+            edit = ::showEditDictionaryDialog,
+            copy = ::copyDictionary
         ) {
-            viewModel.deleteDictionary(dictionary.idDictionary) {
+            //TODO спрашивать действительно ли хотят удалить
+            viewModel.deleteDictionary(dictionary) {
                 Utils.deleteNotification(dictionary.wordList)
             }
         }.show(parentFragmentManager, null)
+    }
+
+    private fun copyDictionary(dictionary: Dictionary) {
+        viewModel.copyDictionary(dictionary) {
+            with(binding) {
+                dictionariesList.layoutManager?.smoothScrollToPosition(
+                    dictionariesList,
+                    RecyclerView.State(),
+                    0
+                )
+            }
+        }
     }
 
     private fun openDictionary(idDictionary: Long) {

@@ -101,4 +101,6 @@
     <string name="add_to_yourself">Selbst hinzufügen</string>
     <string name="completed">Abgeschlossen</string>
     <string name="start_algorithm_description">Der Algorithmus startet nach dem Beenden der Anwendung</string>
+    <string name="create_copy">Kopie erstellen</string>
+
 </resources>

@@ -273,10 +273,24 @@ class ModeSettingsFragment : BaseFragment() {
         }
     }
 
+    private fun getCountSelectedDays(): Int {
+        var count = 0
+        binding.chainDaysWeek.children.forEach { view: View ->
+            if (view !is Flow) {
+                if ((view as TextView).tag == false) {
+                    ++count
+                }
+            }
+        }
+        return count
+    }
+
     private fun initClickListenerItem(textView: TextView) {
         textView.setOnClickListener {
             if (textView.tag != true) {
-                unselectedDayWeek(textView)
+                if (getCountSelectedDays() > 1) {
+                    unselectedDayWeek(textView)
+                }
             } else {
                 selectedDayWeek(textView)
             }

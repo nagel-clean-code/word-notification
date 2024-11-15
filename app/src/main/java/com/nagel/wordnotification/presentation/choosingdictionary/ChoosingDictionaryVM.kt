@@ -9,8 +9,10 @@ import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.data.settings.SettingsRepository
 import com.nagel.wordnotification.presentation.base.BaseViewModel
 import com.nagel.wordnotification.presentation.navigator.NavigatorV2
+import com.nagel.wordnotification.utils.GlobalFunction
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -22,7 +24,7 @@ class ChoosingDictionaryVM @Inject constructor(
     val settingsRepository: SettingsRepository,
     private var navigatorV2: NavigatorV2,
     private val notificationAlgorithm: NotificationAlgorithm,
-    private var sessionRepository: SessionRepository
+    private var sessionRepository: SessionRepository,
 ) : BaseViewModel() {
 
     var idAccount = -1L
@@ -88,12 +90,43 @@ class ChoosingDictionaryVM @Inject constructor(
         }
     }
 
-    fun deleteDictionary(idDictionary: Long, success: () -> Unit) {
-        dictionaryRepository.deleteDictionaryById(idDictionary) { successfully ->
+    fun deleteDictionary(dictionary: Dictionary, success: () -> Unit) {
+        dictionaryRepository.deleteDictionaryById(dictionary.idDictionary) { successfully ->
             if (successfully) {
+                val idWord = sessionRepository.getCurrentWordIdNotification()
+                dictionary.wordList.forEach {
+                    if (it.idWord == idWord) {
+                        sessionRepository.updateIsNotificationCreated(false)
+                        viewModelScope.launch {
+                            notificationAlgorithm.createNotification()
+                        }
+                    }
+                }
                 success.invoke()
             } else {
                 navigatorV2.toast(R.string.couldnt_delete_dictionary)
+            }
+        }
+    }
+
+    fun copyDictionary(dictionary: Dictionary, success: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val name = dictionary.name + " copy"
+            val newDic = dictionaryRepository.createDictionary(name, idAccount, false)
+            dictionary.wordList.forEach {
+                dictionaryRepository.addWord(
+                    it.copy(
+                        idDictionary = newDic.idDictionary,
+                        allNotificationsCreated = false,
+                        learnStep = 0,
+                        lastDateMention = 0,
+                        uniqueId = GlobalFunction.generateUniqueId()
+                    )
+                )
+            }
+            delay(300)
+            withContext(Dispatchers.Main) {
+                success.invoke()
             }
         }
     }

@@ -101,4 +101,6 @@
     <string name="add_to_yourself">Добавить себе</string>
     <string name="completed">Завершено</string>
     <string name="start_algorithm_description">Алгоритм стартует после выхода из приложения</string>
+    <string name="create_copy">Создать копию</string>
+
 </resources>

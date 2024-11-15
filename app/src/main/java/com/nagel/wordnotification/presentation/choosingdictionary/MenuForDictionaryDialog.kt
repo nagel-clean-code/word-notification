@@ -30,7 +30,8 @@ import javax.inject.Inject
 class MenuForDictionaryDialog(
     private val dictionary: Dictionary,
     private val edit: ((Dictionary) -> Unit)? = null,
-    private val delete: () -> Unit
+    private val copy: (Dictionary) -> Unit,
+    private val delete: () -> Unit,
 ) : DialogFragment() {
 
     private lateinit var binding: MenuForDictionaryBinding
@@ -83,6 +84,10 @@ class MenuForDictionaryDialog(
         binding.exportAll.setOnClickListener {
             if (realtimeDb.isTesting()) return@setOnClickListener
             exportAll()
+        }
+        binding.copyDictionary.setOnClickListener {
+            copy.invoke(dictionary)
+            dismiss()
         }
     }
 

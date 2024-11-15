@@ -101,4 +101,6 @@
     <string name="add_to_yourself">Add yourself</string>
     <string name="completed">Completed</string>
     <string name="start_algorithm_description">The algorithm starts after exiting the application</string>
+    <string name="create_copy">Create a copy</string>
+
 </resources>
