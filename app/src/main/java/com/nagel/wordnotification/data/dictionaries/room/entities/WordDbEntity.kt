@@ -25,7 +25,7 @@ class WordDbEntity(
     @ColumnInfo(name = "text_first") val textFirst: String,
     @ColumnInfo(name = "text_last") val textLast: String,
     @ColumnInfo(name = "learn_step") val learnStep: Int,
-    @ColumnInfo(name = "last_date_mention") val currentDateMention: Long,
+    @ColumnInfo(name = "last_date_mention") var lastDateMention: Long,
     @ColumnInfo(name = "unique_id") val uniqueId: Int,
     val learned: Boolean,
 ) {
@@ -38,7 +38,7 @@ class WordDbEntity(
             textLast = textLast,
             allNotificationsCreated = learned,
             learnStep = learnStep,
-            currentDateMention = currentDateMention,
+            lastDateMention = lastDateMention,
             uniqueId = uniqueId
         )
         word.idWord = idWord
@@ -55,7 +55,7 @@ class WordDbEntity(
                 textFirst = word.textFirst,
                 textLast = word.textLast,
                 learnStep = word.learnStep,
-                currentDateMention = word.currentDateMention,
+                lastDateMention = word.lastDateMention,
                 uniqueId = word.uniqueId
             )
     }

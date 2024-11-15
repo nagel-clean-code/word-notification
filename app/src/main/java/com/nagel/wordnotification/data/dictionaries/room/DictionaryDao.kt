@@ -47,6 +47,12 @@ interface DictionaryDao {
     @Query("DELETE FROM notification_history_items WHERE id_notification =:idHistory")
     suspend fun deleteNotificationHistoryItem(idHistory: Long): Int
 
+    @Query("DELETE FROM notification_history_items WHERE id_word = :idWord")
+    suspend fun deleteNotificationsHistoryByIdWord(idWord: Long): Int
+
+    @Query("SELECT * FROM words WHERE id_word = :idWord")
+    suspend fun getWordById(idWord: Long): WordDbEntity?
+
     @Query("SELECT * FROM notification_history_items WHERE id_word = :idWord AND id_mode = :idMode")
     fun getNotificationHistoryFlow(
         idWord: Long,

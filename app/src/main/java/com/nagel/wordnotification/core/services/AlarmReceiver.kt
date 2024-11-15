@@ -74,6 +74,7 @@ class AlarmReceiver : BroadcastReceiver() {
         if (currentType == TYPE_ANSWER) {
             customNotification
                 .setContentText(dto.text)
+                .setOngoing(true)
                 .addAction(
                     0,
                     context.getString(R.string.show_answer),
@@ -83,6 +84,7 @@ class AlarmReceiver : BroadcastReceiver() {
         if (currentType == TYPE_QUEST) {
             customNotification
                 .setContentText("${dto.text} - ${dto.translation}")
+                .setOngoing(false)
                 .setAutoCancel(true)
                 .addAction(
                     0,

@@ -71,6 +71,7 @@ class AddingWordsFragment : BaseFragment() {
             choiceLanguageTranslation.isVisible = choiceLanguageWord.isVisible.not()
             viewModel.changeCurrentAutoTranslate()
             rotationAnimatorDoubleArrow.rotationRight()
+            toggleTranslate()
         }
         swapIcon.setOnClickListener {
             viewModel.swapWordsInCurrentDictionary()
@@ -145,6 +146,14 @@ class AddingWordsFragment : BaseFragment() {
                 viewModel.requestTranslation(s.toString(), TranslationWord.FIRST_WORD)
             }
         })
+    }
+
+    private fun toggleTranslate() = with(binding) {
+        if (viewModel.currentAutoTranslate == TranslationWord.LAST_WORD) {
+            viewModel.requestTranslation(editTextWord.text.toString(), TranslationWord.LAST_WORD)
+        } else {
+            viewModel.requestTranslation(editTextTranslation.text.toString(), TranslationWord.FIRST_WORD)
+        }
     }
 
     override fun onResume() {
@@ -239,7 +248,7 @@ class AddingWordsFragment : BaseFragment() {
                     editTextTranslation.setText("")
                     editTextWord.setText("")
                     editTextWord.requestFocus()
-                    viewModel.tryCreateNotification(word)
+                    viewModel.tryCreateNotification()
                 }
             }
         }

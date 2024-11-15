@@ -2,17 +2,16 @@ package com.nagel.wordnotification.presentation.choosingdictionary
 
 import androidx.lifecycle.viewModelScope
 import com.nagel.wordnotification.R
+import com.nagel.wordnotification.core.algorithms.NotificationAlgorithm
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
-import com.nagel.wordnotification.data.dictionaries.entities.Word
-import com.nagel.wordnotification.data.dictionaries.room.DictionaryDao
+import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.data.settings.SettingsRepository
 import com.nagel.wordnotification.presentation.base.BaseViewModel
 import com.nagel.wordnotification.presentation.navigator.NavigatorV2
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -21,7 +20,9 @@ import javax.inject.Inject
 class ChoosingDictionaryVM @Inject constructor(
     val dictionaryRepository: DictionaryRepository,
     val settingsRepository: SettingsRepository,
-    private var navigatorV2: NavigatorV2
+    private var navigatorV2: NavigatorV2,
+    private val notificationAlgorithm: NotificationAlgorithm,
+    private var sessionRepository: SessionRepository
 ) : BaseViewModel() {
 
     var idAccount = -1L
@@ -30,9 +31,20 @@ class ChoosingDictionaryVM @Inject constructor(
     }
     var listDictionary: List<Dictionary>? = null
 
-    fun toggleActiveDictionary(dictionary: Long, active: Boolean) {
-        viewModelScope.launch(Dispatchers.IO) {
-            dictionaryRepository.updateIncludeDictionary(active, dictionary)
+    fun toggleActiveDictionary(active: Boolean, dictionary: Dictionary) {
+        viewModelScope.launch {
+            dictionaryRepository.updateIncludeDictionary(active, dictionary.idDictionary)
+        }
+        if (!active) {
+            val idWord = sessionRepository.getCurrentWordIdNotification()
+            dictionary.wordList.forEach {
+                if (it.idWord == idWord) {
+                    sessionRepository.updateIsNotificationCreated(false)
+                }
+            }
+        }
+        viewModelScope.launch {
+            notificationAlgorithm.createNotification()
         }
     }
 

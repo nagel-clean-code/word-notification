@@ -73,11 +73,10 @@ object AlgorithmHelper {
                     } else if (hours == eIHour && minutes > eIMinutes) {
                         return goNextDay()
                     } else if (hours < sIHour) {
-                        //TODO протестить интервал 5:30-7:30 текущее время 4:40 / 4:20
                         val subHoursWithMin = (sIHour - hours) * 60
-                        time += subHoursWithMin + (sIMinutes - minutes)
+                        time += (subHoursWithMin + (sIMinutes - minutes)) * 60 * 1000
                     } else if (hours == sIHour && minutes < sIMinutes) {
-                        time += sIMinutes - minutes
+                        time += (sIMinutes - minutes) * 60 * 1000
                     }
                 }
             }
@@ -104,6 +103,7 @@ object AlgorithmHelper {
         if (mode.timeIntervals.not()) return true
         var timeInterval = true
         mode.intervalsDto?.apply {
+            balancingTimeIntervals()
             val c = Calendar.getInstance()
             c.time = Date(time)
             val hours = c.get(Calendar.HOUR_OF_DAY)
@@ -118,7 +118,7 @@ object AlgorithmHelper {
                     timeInterval = false
                 }
             } else if (sIHour > eIHour) {
-                if (hours < sIHour && hours > eIHour) {
+                if (hours > sIHour || hours < eIHour) {
                     timeInterval = false
                 } else if (hours == sIHour && minutes < sIMinutes) {
                     timeInterval = false

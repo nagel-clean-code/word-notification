@@ -44,6 +44,12 @@ class SharedprefSessionRepository @Inject constructor(
         }
     }
 
+    override fun updateIsNotificationCreated(isNotificationCreated: Boolean) {
+        val session = getSession()
+        session.isNotificationCreated = isNotificationCreated
+        saveSession(session)
+    }
+
     override fun getAccountId(): Long? = getSession().account?.id
 
     override fun getPreviewFlag(screenCode: String): Boolean {
@@ -77,6 +83,14 @@ class SharedprefSessionRepository @Inject constructor(
         sharedPreferences.edit().putBoolean(AUTO_TRANSLATION, isAuto).apply()
     }
 
+    override fun saveCurrentWordNotification(idWord: Long) {
+        sharedPreferences.edit().putLong(ID_CURRENT_WORD_NOTIFICATION, idWord).apply()
+    }
+
+    override fun getCurrentWordIdNotification(): Long {
+        return sharedPreferences.getLong(ID_CURRENT_WORD_NOTIFICATION, -1L)
+    }
+
     private fun createSession(): SessionDataEntity {
         val currentTime = Date().time
         val loadSession = SessionDataEntity(dateAppInstallation = currentTime)
@@ -96,5 +110,6 @@ class SharedprefSessionRepository @Inject constructor(
         private const val AUTO_TRANSLATION = "AUTO_TRANSLATION"
         private const val SESSiON_STATE = "SESSiON_STATE"
         private const val SHARED_PREFS_SESSION = "SHARED_PREFS_SESSION"
+        private const val ID_CURRENT_WORD_NOTIFICATION = "ID_CURRENT_WORD_NOTIFICATION"
     }
 }

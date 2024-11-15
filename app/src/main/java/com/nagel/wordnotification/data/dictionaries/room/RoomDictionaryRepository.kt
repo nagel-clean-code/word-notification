@@ -138,6 +138,10 @@ class RoomDictionaryRepository @Inject constructor(
         return dictionaryDao.deleteNotificationHistoryItem(notification.idNotification)
     }
 
+    override suspend fun deleteNotificationsHistoryByIdWord(idWord: Long): Int {
+        return dictionaryDao.deleteNotificationsHistoryByIdWord(idWord)
+    }
+
     override fun loadHistoryNotificationFlow(
         idWord: Long,
         idMode: Long
@@ -167,6 +171,10 @@ class RoomDictionaryRepository @Inject constructor(
             dictionaryDao.addWord(word)
         }
         return idDictionary
+    }
+
+    override suspend fun getWordById(idWord: Long): Word? {
+        return dictionaryDao.getWordById(idWord)?.toWord()
     }
 
     override suspend fun createDictionary(

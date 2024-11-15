@@ -22,6 +22,7 @@ interface DictionaryRepository : IFormationOfDictionaries {
     suspend fun updateIncludeDictionary(include: Boolean, idDictionary: Long)
     suspend fun saveNotificationHistoryItem(notification: NotificationHistoryItem)
     suspend fun deleteNotificationHistoryItem(notification: NotificationHistoryItem): Int
+    suspend fun deleteNotificationsHistoryByIdWord(idWord: Long): Int
     fun loadHistoryNotificationFlow(
         idWord: Long,
         idMode: Long
@@ -29,6 +30,7 @@ interface DictionaryRepository : IFormationOfDictionaries {
 
     suspend fun loadHistoryNotification(idWord: Long, idMode: Long): List<NotificationHistoryItem>?
     suspend fun saveDictionary(dto: Dictionary): Long
+    suspend fun getWordById(idWord: Long): Word?
 }
 
 interface IFormationOfDictionaries {

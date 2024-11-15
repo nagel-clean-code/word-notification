@@ -8,5 +8,6 @@ data class SessionDataEntity(
     var account: Account? = null,
     var dateAppInstallation: Long? = null,
     var ratedApp: Boolean? = false,
-    var stepRatedApp: Int? = 0
+    var stepRatedApp: Int? = 0,
+    var isNotificationCreated: Boolean? = false
 )

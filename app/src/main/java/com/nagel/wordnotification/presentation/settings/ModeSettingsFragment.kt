@@ -176,7 +176,12 @@ class ModeSettingsFragment : BaseFragment() {
         picker.show(childFragmentManager, "")
 
         picker.addOnPositiveButtonClickListener {
-            textView.text = "${picker.hour}:${picker.minute}"
+            val minutes = if (picker.minute < 10) {
+                "0${picker.minute}"
+            } else {
+                picker.minute.toString()
+            }
+            textView.text = "${picker.hour}:${minutes}"
         }
     }
 
@@ -302,10 +307,16 @@ class ModeSettingsFragment : BaseFragment() {
         if (newMode != prevMode) {
             val resetSteps = newMode.selectedMode != prevMode?.selectedMode
             viewModel.saveNewSettings(newMode, resetSteps)
+            viewModel.dictionary?.wordList?.let { list -> //TODO удалять только текущую
+                Utils.deleteNotification(list)
+            }
             if (resetSteps) {
                 viewModel.dictionary?.wordList?.let { list ->
-                    Utils.deleteNotification(list)
+                    viewModel.resetStepsSetTimeToCurrentOne(list)
+                    viewModel.resetHistory(list)
                 }
+            } else {
+                viewModel.reinstallNotification(newMode.idMode)
             }
         } else if (goBack) {
             navigatorV2.whenActivityActive {

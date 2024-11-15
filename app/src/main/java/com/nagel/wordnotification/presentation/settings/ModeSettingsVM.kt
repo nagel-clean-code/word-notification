@@ -3,10 +3,13 @@ package com.nagel.wordnotification.presentation.settings
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.nagel.wordnotification.core.algorithms.Algorithm
+import com.nagel.wordnotification.core.algorithms.NotificationAlgorithm
 import com.nagel.wordnotification.core.algorithms.PlateauEffect
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.dictionaries.entities.Word
+import com.nagel.wordnotification.data.dictionaries.entities.Word.Companion.THERE_IS_NO_DATE_MENTION
+import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.data.settings.SettingsRepository
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import com.nagel.wordnotification.presentation.base.BaseViewModel
@@ -22,8 +25,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ModeSettingsVM @Inject constructor(
+    private var sessionRepository: SessionRepository,
     private val settingsRepository: SettingsRepository,
     private val dictionaryRepository: DictionaryRepository,
+    private val notificationAlgorithm: NotificationAlgorithm
 ) : BaseViewModel() {
 
     var idDictionary: Long = -1
@@ -31,6 +36,29 @@ class ModeSettingsVM @Inject constructor(
     val loadingMode = MutableStateFlow<ModeSettingsDto?>(null)
     var dictionary: Dictionary? = null
     val liveResult: MutableLiveResult<Unit> = MutableLiveData()
+
+    fun resetStepsSetTimeToCurrentOne(wordList: List<Word>) {
+        val currentTime = Date().time
+        val newList = wordList.map {
+            it.copy(
+                learnStep = 0,
+                lastDateMention = currentTime
+            )
+        }
+        viewModelScope.launch {
+            newList.forEach {
+                dictionaryRepository.updateWord(it)
+            }
+        }
+    }
+
+    fun resetHistory(wordList: List<Word>) {
+        viewModelScope.launch {
+            wordList.forEach {
+                dictionaryRepository.deleteNotificationsHistoryByIdWord(it.idWord)
+            }
+        }
+    }
 
     suspend fun loadDictionary(idDictionary: Long) {
         withContext(Dispatchers.IO) {
@@ -79,11 +107,23 @@ class ModeSettingsVM @Inject constructor(
             val history = dictionaryRepository.loadHistoryNotification(word.idWord, mode.idMode)
             val steps = history?.size ?: 0
             val all = (mode.selectedMode?.getCountSteps() ?: Integer.MAX_VALUE) <= steps
-            val lastDate = history?.maxByOrNull { it.dateMention }?.dateMention ?: 0L
             word.learnStep = steps
             word.allNotificationsCreated = all
-            word.currentDateMention = lastDate
+            word.lastDateMention = THERE_IS_NO_DATE_MENTION
             dictionaryRepository.updateWord(word)
+        }
+    }
+
+    fun reinstallNotification(idMode: Long) {
+        viewModelScope.launch {
+            sessionRepository.updateIsNotificationCreated(false)
+            val idCurrentWordNotification = sessionRepository.getCurrentWordIdNotification()
+            val word = dictionaryRepository.getWordById(idCurrentWordNotification)
+            word?.apply{
+                --learnStep
+                mode = settingsRepository.getModeSettingsById(idMode)
+                notificationAlgorithm.createNotification(this)
+            }
         }
     }
 }

@@ -8,6 +8,7 @@ interface SessionRepository {
     fun saveSession(data: SessionDataEntity)
     fun saveCurrentIdDictionary(idDictionary: Long)
     fun getSession(): SessionDataEntity
+    fun updateIsNotificationCreated(isNotificationCreated: Boolean)
     fun getAccountId(): Long?
     fun getPreviewFlag(screenCode: String): Boolean
     fun getTranslationLanguage(): String
@@ -16,4 +17,6 @@ interface SessionRepository {
     fun saveWordLanguage(lang: String)
     fun getAutoTranslation(): Boolean
     fun saveAutoTranslation(isAuto: Boolean)
+    fun saveCurrentWordNotification(idWord: Long)
+    fun getCurrentWordIdNotification(): Long
 }

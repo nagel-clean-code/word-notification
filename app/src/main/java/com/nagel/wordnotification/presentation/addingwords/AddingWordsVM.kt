@@ -267,11 +267,12 @@ class AddingWordsVM @Inject constructor(
         }
     }
 
-    fun tryCreateNotification(word: Word) {
+    fun tryCreateNotification() {
         if (loadedDictionaryFlow.value?.include == true) {
+            if(sessionRepository.getSession().isNotificationCreated == true) return
             viewModelScope.launch {
                 loadedDictionaryFlow.value?.let {
-                    notificationAlgorithm.createNotification(word, it.idMode)
+                    notificationAlgorithm.createNotification()
                 }
             }
         }

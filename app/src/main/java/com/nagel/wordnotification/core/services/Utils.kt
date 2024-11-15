@@ -14,7 +14,7 @@ import com.nagel.wordnotification.data.dictionaries.entities.Word
 
 
 object Utils {
-    //TODO скорее всего надо будет переработать
+
     fun deleteNotification(word: Word) {
         val context = App.get()
         val alarmManager = ContextCompat.getSystemService(context, AlarmManager::class.java)
