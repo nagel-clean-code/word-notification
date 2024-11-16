@@ -7,7 +7,6 @@ import com.nagel.wordnotification.core.algorithms.PlateauEffect
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.dictionaries.entities.Word
-import com.nagel.wordnotification.data.dictionaries.entities.Word.Companion.THERE_IS_NO_DATE_MENTION
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.data.settings.SettingsRepository
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
@@ -99,26 +98,16 @@ class ModeSettingsVM @Inject constructor(
 
             if (dictionary?.include == true && (needReinstallNotification || changeTime)) {
                 val idCurrentWordNotification = sessionRepository.getCurrentWordIdNotification()
-                val word = dictionaryRepository.getWordById(idCurrentWordNotification)
-                word?.apply {
-                    val history = dictionaryRepository.loadHistoryNotification(
-                        idWord, newMode.idMode
-                    )?.sortedByDescending { it.dateMention }
-                    history?.let {
-                        val currentTime = Date().time
-                        if (history.isNotEmpty()) {
-                            --learnStep //TODO это всё надо ещё протестировать
-                            lastDateMention = history[0].dateMention
-                        } else {
-                            learnStep = 0
-                            if (lastDateMention > currentTime || lastDateMention == THERE_IS_NO_DATE_MENTION) {
-                                lastDateMention = currentTime
-                            }
-                        }
+                val containsWordInDictionary = dictionary?.wordList?.map {
+                    it.idWord
+                }?.contains(idCurrentWordNotification)
+                if (containsWordInDictionary == true) {
+                    val word = dictionaryRepository.getWordById(idCurrentWordNotification)
+                    word?.apply {
+                        mode = settingsRepository.getModeSettingsById(newMode.idMode)
                     }
-                    mode = settingsRepository.getModeSettingsById(newMode.idMode)
+                    notificationAlgorithm.createNotification(word)
                 }
-                notificationAlgorithm.createNotification(word)
             }
             success.invoke()
         }

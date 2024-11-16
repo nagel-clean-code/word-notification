@@ -37,12 +37,11 @@ class AlarmReceiver : BroadcastReceiver() {
     }
 
     private fun newNotification(context: Context, dto: NotificationDto) {
-        val pendingIntent = PendingIntent.getActivity(
-            context,
-            dto.uniqueId + dto.step,
-            Intent(context, MainActivity::class.java),
-            PendingIntent.FLAG_IMMUTABLE
-        )
+        val pendingIntent = if (currentType == TYPE_ANSWER) {
+            getAction(context, dto, TYPE_QUEST)
+        } else {
+            getAction(context, dto, TYPE_ANSWER)
+        }
 
         val notificationManager =
             context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
@@ -74,6 +73,7 @@ class AlarmReceiver : BroadcastReceiver() {
             customNotification
                 .setContentText(dto.text)
                 .setOngoing(true)
+                .setAutoCancel(false)
                 .addAction(
                     0,
                     context.getString(R.string.show_answer),
@@ -83,8 +83,8 @@ class AlarmReceiver : BroadcastReceiver() {
         if (currentType == TYPE_QUEST) {
             customNotification
                 .setContentText("${dto.text} - ${dto.translation}")
-                .setOngoing(false)
-                .setAutoCancel(true)
+                .setOngoing(true)
+                .setAutoCancel(false)
                 .addAction(
                     0,
                     context.getString(R.string.ok),
