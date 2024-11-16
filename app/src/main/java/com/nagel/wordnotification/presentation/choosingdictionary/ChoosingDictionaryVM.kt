@@ -5,6 +5,7 @@ import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.algorithms.NotificationAlgorithm
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
+import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.data.settings.SettingsRepository
 import com.nagel.wordnotification.presentation.base.BaseViewModel
@@ -33,19 +34,21 @@ class ChoosingDictionaryVM @Inject constructor(
     }
     var listDictionary: List<Dictionary>? = null
 
-    fun toggleActiveDictionary(active: Boolean, dictionary: Dictionary) {
+    fun toggleActiveDictionary(
+        active: Boolean,
+        dictionary: Dictionary,
+        deleteNotification: (Word) -> Unit
+    ) {
         viewModelScope.launch {
             dictionaryRepository.updateIncludeDictionary(active, dictionary.idDictionary)
-        }
-        if (!active) {
-            val idWord = sessionRepository.getCurrentWordIdNotification()
-            dictionary.wordList.forEach {
-                if (it.idWord == idWord) {
-                    sessionRepository.updateIsNotificationCreated(false)
+            if (active == false) {
+                val idWord = sessionRepository.getCurrentWordIdNotification()
+                dictionary.wordList.forEach {
+                    if (it.idWord == idWord) {
+                        deleteNotification.invoke(it)
+                    }
                 }
             }
-        }
-        viewModelScope.launch {
             notificationAlgorithm.createNotification()
         }
     }
@@ -96,7 +99,6 @@ class ChoosingDictionaryVM @Inject constructor(
                 val idWord = sessionRepository.getCurrentWordIdNotification()
                 dictionary.wordList.forEach {
                     if (it.idWord == idWord) {
-                        sessionRepository.updateIsNotificationCreated(false)
                         viewModelScope.launch {
                             notificationAlgorithm.createNotification()
                         }

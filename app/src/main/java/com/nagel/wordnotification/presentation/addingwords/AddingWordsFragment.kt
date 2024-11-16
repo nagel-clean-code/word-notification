@@ -152,7 +152,10 @@ class AddingWordsFragment : BaseFragment() {
         if (viewModel.currentAutoTranslate == TranslationWord.LAST_WORD) {
             viewModel.requestTranslation(editTextWord.text.toString(), TranslationWord.LAST_WORD)
         } else {
-            viewModel.requestTranslation(editTextTranslation.text.toString(), TranslationWord.FIRST_WORD)
+            viewModel.requestTranslation(
+                editTextTranslation.text.toString(),
+                TranslationWord.FIRST_WORD
+            )
         }
     }
 
@@ -216,16 +219,14 @@ class AddingWordsFragment : BaseFragment() {
         MenuSelectingActions({
             chowEdit(word)
         }) {
-            viewModel.deleteWord(word.idWord) {
-                viewModel.loadedDictionaryFlow.value?.wordList?.removeIf { it.idWord == word.idWord }
-                Utils.deleteNotification(word)
-            }
+            Utils.deleteNotification(word)
+            viewModel.deleteWord(word.idWord)
         }.show(childFragmentManager, null)
     }
 
     private fun chowEdit(word: Word) {
         EditWordDialog(word) {
-            viewModel.repeatNotification(word)
+            viewModel.repeatNotification()
         }.show(parentFragmentManager, EditWordDialog.TAG)
     }
 
@@ -240,7 +241,7 @@ class AddingWordsFragment : BaseFragment() {
                 textLast = textLast
             )
             lifecycleScope.launch(Dispatchers.IO) { //TODO перенести в VM
-                val idWord = viewModel.dictionaryRepository.addWord(word)
+                val idWord = viewModel.addWord(word)
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
                     word.idWord = idWord
                     viewModel.loadedDictionaryFlow.value?.wordList?.add(word)

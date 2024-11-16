@@ -19,7 +19,6 @@ import com.nagel.wordnotification.Constants.TYPE
 import com.nagel.wordnotification.Constants.TYPE_ANSWER
 import com.nagel.wordnotification.Constants.TYPE_QUEST
 import com.nagel.wordnotification.R
-import com.nagel.wordnotification.presentation.MainActivity
 
 
 class AlarmReceiver : BroadcastReceiver() {
@@ -67,7 +66,7 @@ class AlarmReceiver : BroadcastReceiver() {
         val title = context.getString(R.string.memorization_step)
         val customNotification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.arrow)
-            .setContentTitle(title + dto.step)
+            .setContentTitle(title + (dto.step + 1).toString())
             .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_MAX)
 

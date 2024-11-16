@@ -44,12 +44,6 @@ class SharedprefSessionRepository @Inject constructor(
         }
     }
 
-    override fun updateIsNotificationCreated(isNotificationCreated: Boolean) {
-        val session = getSession()
-        session.isNotificationCreated = isNotificationCreated
-        saveSession(session)
-    }
-
     override fun getAccountId(): Long? = getSession().account?.id
 
     override fun getPreviewFlag(screenCode: String): Boolean {

@@ -14,7 +14,6 @@ import androidx.constraintlayout.helper.widget.Flow
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
-import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -25,13 +24,9 @@ import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.algorithms.ForgetfulnessCurveLong
 import com.nagel.wordnotification.core.algorithms.ForgetfulnessCurveShort
 import com.nagel.wordnotification.core.algorithms.PlateauEffect
-import com.nagel.wordnotification.core.services.Utils
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import com.nagel.wordnotification.databinding.FragmentModeSettingsBinding
 import com.nagel.wordnotification.presentation.base.BaseFragment
-import com.nagel.wordnotification.presentation.base.ErrorResult
-import com.nagel.wordnotification.presentation.base.PendingResult
-import com.nagel.wordnotification.presentation.base.SuccessResult
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import com.nagel.wordnotification.presentation.navigator.MainNavigator
 import com.nagel.wordnotification.presentation.navigator.NavigatorV2
@@ -58,12 +53,7 @@ class ModeSettingsFragment : BaseFragment() {
     ): View {
         binding = FragmentModeSettingsBinding.inflate(inflater, container, false)
         val screen = arguments?.getSerializable(MainNavigator.ARG_SCREEN) as Screen
-        val idDictionary = screen.idDictionary
-        viewModel.idDictionary = idDictionary
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.loadDictionary(idDictionary)
-            viewModel.loadCurrentSettings()
-        }
+        viewModel.preload(screen.idDictionary)
         return binding.root
     }
 
@@ -82,7 +72,7 @@ class ModeSettingsFragment : BaseFragment() {
                 override fun handleOnBackPressed() {
                     if (isEnabled) {
                         isEnabled = false
-                        saveMode(true)
+                        saveMode()
                     }
                 }
             }
@@ -115,7 +105,9 @@ class ModeSettingsFragment : BaseFragment() {
 
         initRadioButtons()
         binding.saveButton.setOnClickListener {
-            saveMode(true)
+            navigatorV2.whenActivityActive {
+                it.goBack()
+            }
         }
         binding.chainDaysWeek.children.forEachIndexed() { i, view: View ->
             if (view !is Flow) {
@@ -127,43 +119,7 @@ class ModeSettingsFragment : BaseFragment() {
         binding.infoButton.setOnClickListener {
             InformationDialog().show(childFragmentManager, InformationDialog.TAG)
         }
-        initListenerLiveResult()
         initData()
-    }
-
-    private fun initListenerLiveResult() {
-        binding.loadFrame.apply {
-            viewModel.liveResult.observe(viewLifecycleOwner) { status ->
-                when (status) {
-                    is PendingResult -> {
-                        root.isVisible = true
-                        loadingLayout.isVisible = true
-                        errorLayout.isVisible = false
-                    }
-
-                    is ErrorResult -> {
-                        loadingLayout.isVisible = true
-                        errorLayout.isVisible = false
-                        if (isAdded) {
-                            navigatorV2.whenActivityActive {
-                                it.showToast(R.string.error_saving_mode)
-                                it.goBack()
-                            }
-                        }
-                    }
-
-                    is SuccessResult -> {
-                        navigatorV2.whenActivityActive {
-                            it.showToast(R.string.changes_saved)
-                            it.goBack()
-                        }
-                    }
-                }
-            }
-            repeatButton.setOnClickListener {
-                saveMode()
-            }
-        }
     }
 
     private fun getTimePiker(textView: TextView) {
@@ -310,7 +266,7 @@ class ModeSettingsFragment : BaseFragment() {
         textView.tag = false
     }
 
-    private fun saveMode(goBack: Boolean = false) {
+    private fun saveMode() {
         val prevMode = viewModel.loadingMode.value
         val newMode = buildModeSettingsDto()
         Log.d("dd", "prevMode:" + prevMode)
@@ -320,19 +276,25 @@ class ModeSettingsFragment : BaseFragment() {
 
         if (newMode != prevMode) {
             val resetSteps = newMode.selectedMode != prevMode?.selectedMode
-            viewModel.saveNewSettings(newMode, resetSteps)
-            viewModel.dictionary?.wordList?.let { list -> //TODO удалять только текущую
-                Utils.deleteNotification(list)
-            }
-            if (resetSteps) {
-                viewModel.dictionary?.wordList?.let { list ->
-                    viewModel.resetStepsSetTimeToCurrentOne(list)
-                    viewModel.resetHistory(list)
+            val statusNotification = viewModel.getStatusNotificationDictionary()
+            viewModel.saveNewSettings(newMode) {
+                if (resetSteps) {
+                    viewModel.dictionary?.wordList?.let { list ->
+                        viewModel.resetStepsSetTimeToCurrentOne(list)
+                        viewModel.resetHistory(list)
+                    }
                 }
-            } else {
-                viewModel.reinstallNotification(newMode.idMode)
+                viewModel.tryReinstallNotification(newMode, prevMode) {
+                    navigatorV2.whenActivityActive {
+                        it.showToast(R.string.changes_saved)
+                        if (!statusNotification) {
+                            it.showToast(R.string.notifications_enabled)
+                        }
+                        it.goBack()
+                    }
+                }
             }
-        } else if (goBack) {
+        } else {
             navigatorV2.whenActivityActive {
                 it.goBack()
             }

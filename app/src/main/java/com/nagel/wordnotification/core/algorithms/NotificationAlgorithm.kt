@@ -5,12 +5,11 @@ import android.util.Log
 import com.google.gson.Gson
 import com.nagel.wordnotification.Constants.TAKE_AWAY
 import com.nagel.wordnotification.Constants.TYPE
-import com.nagel.wordnotification.Constants.TYPE_QUEST
+import com.nagel.wordnotification.Constants.TYPE_ANSWER
 import com.nagel.wordnotification.app.App
 import com.nagel.wordnotification.core.services.AlarmReceiver
 import com.nagel.wordnotification.core.services.NotificationDto
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
-import com.nagel.wordnotification.data.dictionaries.entities.NotificationHistoryItem
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.data.settings.SettingsRepository
@@ -34,11 +33,8 @@ class NotificationAlgorithm @Inject constructor(
      * @param wordNotification - на случай, если мы откатили текущее уведомление и запустили заново
      */
     suspend fun createNotification(wordNotification: Word? = null) {
-        val session = sessionRepository.getSession()
-        if (session.isNotificationCreated == true) return
-
         var word = prepareWord(wordNotification) ?: getNextWordNotification() ?: return
-        Log.d("CoroutineWorker:", "Выбрано - слово: ${word.toString()}")
+        Log.d("CoroutineWorker:", "Выбрано - слово: $word")
 
         if (word.nextDate == null) {
             Log.d("CoroutineWorker:", "Слово: ${word.textFirst} уже выучено")
@@ -57,27 +53,19 @@ class NotificationAlgorithm @Inject constructor(
             }"
         )
 
-        val notification = createNotificationDto(word, mode, nextDate)
-        sessionRepository.updateIsNotificationCreated(true)
-        word.learnStep++
-        updateWord(word)
-
+        val notification = createNotificationDto(word, nextDate)
         if (nextDate < Date().time) {
+            Log.d(
+                "CoroutineWorker:",
+                "nextDate: ${dateFormat.format(Date(nextDate))} || Date().time: ${
+                    dateFormat.format(Date().time)
+                }"
+            )
             val appContext = App.get()
-//            val intent = Intent(appContext, AlarmReceiver::class.java)
-            val json = Gson().toJson(word)
-//            intent.putExtra("TAKE_AWAY", json)
-//            val pendingIntent = PendingIntent.getBroadcast(
-//                appContext,
-//                word.uniqueId + notification.step,
-//                intent,
-//                PendingIntent.FLAG_IMMUTABLE
-//            )
-//            pendingIntent.send() //TODO протестировать срочно!!!!!
-
             val newIntent = Intent(appContext, AlarmReceiver::class.java)
+            val json = Gson().toJson(notification)
             newIntent.putExtra(TAKE_AWAY, json)
-            newIntent.putExtra(TYPE, TYPE_QUEST)
+            newIntent.putExtra(TYPE, TYPE_ANSWER)
             appContext.sendBroadcast(newIntent)
             Log.d("CoroutineWorker:", "sendBroadcast AlarmReceiver: not:${notification}")
         } else {
@@ -97,7 +85,7 @@ class NotificationAlgorithm @Inject constructor(
             val dicWord = dic.wordList.filter {
                 !it.allNotificationsCreated
             }.sortedBy { word ->
-                val nextDate = getNewDate(mode, word.learnStep)
+                val nextDate = getNewDate(mode, word.learnStep, word.getLastDateMentionOrNull())
                 word.nextDate = nextDate
                 word.mode = mode
                 if (nextDate == null) { //Слово уже выучено
@@ -106,7 +94,7 @@ class NotificationAlgorithm @Inject constructor(
                 } else {
                     Log.d(
                         "CoroutineWorker:",
-                        "Фильтрация: ${word.textFirst} || Мин:${(nextDate - currentTime) / 1000 / 60}"
+                        "Фильтрация: ${word.textFirst} || Мин:${(nextDate - currentTime) / 1000 / 60} STEP: ${word.learnStep}"
                     )
                     nextDate - currentTime
                 }
@@ -193,15 +181,11 @@ class NotificationAlgorithm @Inject constructor(
         }
     }
 
-    private suspend fun createNotificationDto(
+    private fun createNotificationDto(
         word: Word,
-        mode: ModeDbEntity,
         nextTime: Long
     ): NotificationDto {
         with(word) {
-            word.lastDateMention = nextTime
-            val historyItem = NotificationHistoryItem(0, idWord, nextTime, mode.idMode, learnStep)
-            dictionaryRepository.saveNotificationHistoryItem(historyItem)
             return NotificationDto(textFirst, textLast, nextTime, uniqueId, learnStep)
         }
     }
@@ -234,7 +218,7 @@ class NotificationAlgorithm @Inject constructor(
 
 
     companion object {
-        val dateFormat = SimpleDateFormat("d, hh:mm:ss")
+        val dateFormat = SimpleDateFormat("d, HH:mm:ss")
 
         const val MINIMUM_DISTANCE = 60 * 1000L
     }

@@ -102,5 +102,6 @@
     <string name="completed">Completed</string>
     <string name="start_algorithm_description">The algorithm starts after exiting the application</string>
     <string name="create_copy">Create a copy</string>
+    <string name="notifications_enabled">Notifications are enabled</string>
 
 </resources>

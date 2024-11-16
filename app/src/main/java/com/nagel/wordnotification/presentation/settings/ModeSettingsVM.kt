@@ -1,6 +1,5 @@
 package com.nagel.wordnotification.presentation.settings
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.nagel.wordnotification.core.algorithms.Algorithm
 import com.nagel.wordnotification.core.algorithms.NotificationAlgorithm
@@ -13,10 +12,8 @@ import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.data.settings.SettingsRepository
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import com.nagel.wordnotification.presentation.base.BaseViewModel
-import com.nagel.wordnotification.presentation.base.MutableLiveResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -35,14 +32,23 @@ class ModeSettingsVM @Inject constructor(
     var selectedMode: Algorithm? = PlateauEffect
     val loadingMode = MutableStateFlow<ModeSettingsDto?>(null)
     var dictionary: Dictionary? = null
-    val liveResult: MutableLiveResult<Unit> = MutableLiveData()
+
+    fun preload(idDictionary: Long) {
+        this.idDictionary = idDictionary
+        viewModelScope.launch(Dispatchers.IO) {
+            dictionary = dictionaryRepository.loadDictionaryById(idDictionary)
+            loadingMode.value =
+                settingsRepository.getModeSettingsById(dictionary!!.idMode)?.toMode()
+        }
+    }
 
     fun resetStepsSetTimeToCurrentOne(wordList: List<Word>) {
         val currentTime = Date().time
         val newList = wordList.map {
             it.copy(
                 learnStep = 0,
-                lastDateMention = currentTime
+                lastDateMention = currentTime,
+                allNotificationsCreated = false
             )
         }
         viewModelScope.launch {
@@ -60,70 +66,61 @@ class ModeSettingsVM @Inject constructor(
         }
     }
 
-    suspend fun loadDictionary(idDictionary: Long) {
-        withContext(Dispatchers.IO) {
-            dictionary = dictionaryRepository.loadDictionaryById(idDictionary)
-        }
-    }
+    fun getStatusNotificationDictionary(): Boolean = dictionary?.include == true
 
-    fun loadCurrentSettings() {
+    fun saveNewSettings(settings: ModeSettingsDto, success: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
-            loadingMode.value =
-                settingsRepository.getModeSettingsById(dictionary!!.idMode)?.toMode()
-        }
-    }
-
-    private suspend fun deleteUnfulfilledNotifications(words: List<Word>?) {
-        val currentDate = Date().time
-        val prevMode = loadingMode.value
-        prevMode?.let {
-            words?.forEach { word ->
-                val history =
-                    dictionaryRepository.loadHistoryNotification(word.idWord, prevMode.idMode)
-                history?.forEach {
-                    if (it.dateMention > currentDate) {
-                        dictionaryRepository.deleteNotificationHistoryItem(it)
-                    }
-                }
-            }
-        }
-    }
-
-    fun saveNewSettings(settings: ModeSettingsDto, resetSteps: Boolean) {
-        val words = dictionary?.wordList?.map { it.copy() }
-        into(liveResult, scope = MainScope()) {
-            deleteUnfulfilledNotifications(words)
             dictionaryRepository.updateIncludeDictionary(true, idDictionary)
             val idMode = settingsRepository.saveModeSettings(settings)
             settings.idMode = idMode
-            if (resetSteps) {
-                resettingAlgorithm(words, settings)
+            withContext(Dispatchers.Main) {
+                success.invoke()
             }
         }
     }
 
-    private suspend fun resettingAlgorithm(words: List<Word>?, mode: ModeSettingsDto) {
-        words?.forEach { word ->
-            val history = dictionaryRepository.loadHistoryNotification(word.idWord, mode.idMode)
-            val steps = history?.size ?: 0
-            val all = (mode.selectedMode?.getCountSteps() ?: Integer.MAX_VALUE) <= steps
-            word.learnStep = steps
-            word.allNotificationsCreated = all
-            word.lastDateMention = THERE_IS_NO_DATE_MENTION
-            dictionaryRepository.updateWord(word)
-        }
-    }
-
-    fun reinstallNotification(idMode: Long) {
+    fun tryReinstallNotification(
+        newMode: ModeSettingsDto,
+        prevMode: ModeSettingsDto?,
+        success: () -> Unit
+    ) {
         viewModelScope.launch {
-            sessionRepository.updateIsNotificationCreated(false)
-            val idCurrentWordNotification = sessionRepository.getCurrentWordIdNotification()
-            val word = dictionaryRepository.getWordById(idCurrentWordNotification)
-            word?.apply{
-                --learnStep
-                mode = settingsRepository.getModeSettingsById(idMode)
-                notificationAlgorithm.createNotification(this)
+            val needReinstallNotification = newMode.selectedMode != prevMode?.selectedMode ||
+                    newMode.sampleDays != prevMode?.sampleDays ||
+                    newMode.timeIntervals != prevMode.timeIntervals
+
+            val changeTime: Boolean =
+                if (newMode.timeIntervals == prevMode?.timeIntervals && newMode.timeIntervals) {
+                    newMode.workingTimeInterval.first != prevMode.workingTimeInterval.first ||
+                            newMode.workingTimeInterval.second != prevMode.workingTimeInterval.second
+                } else {
+                    false
+                }
+
+            if (dictionary?.include == true && (needReinstallNotification || changeTime)) {
+                val idCurrentWordNotification = sessionRepository.getCurrentWordIdNotification()
+                val word = dictionaryRepository.getWordById(idCurrentWordNotification)
+                word?.apply {
+                    val history = dictionaryRepository.loadHistoryNotification(
+                        idWord, newMode.idMode
+                    )?.sortedByDescending { it.dateMention }
+                    history?.let {
+                        val currentTime = Date().time
+                        if (history.isNotEmpty()) {
+                            --learnStep //TODO это всё надо ещё протестировать
+                            lastDateMention = history[0].dateMention
+                        } else {
+                            learnStep = 0
+                            if (lastDateMention > currentTime || lastDateMention == THERE_IS_NO_DATE_MENTION) {
+                                lastDateMention = currentTime
+                            }
+                        }
+                    }
+                    mode = settingsRepository.getModeSettingsById(newMode.idMode)
+                }
+                notificationAlgorithm.createNotification(word)
             }
+            success.invoke()
         }
     }
 }

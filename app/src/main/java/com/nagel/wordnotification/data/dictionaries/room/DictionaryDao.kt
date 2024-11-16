@@ -53,6 +53,9 @@ interface DictionaryDao {
     @Query("SELECT * FROM words WHERE id_word = :idWord")
     suspend fun getWordById(idWord: Long): WordDbEntity?
 
+    @Query("SELECT * FROM words WHERE unique_id = :uniqueId")
+    suspend fun getWordByUniqueId(uniqueId: Int): WordDbEntity?
+
     @Query("SELECT * FROM notification_history_items WHERE id_word = :idWord AND id_mode = :idMode")
     fun getNotificationHistoryFlow(
         idWord: Long,

@@ -177,6 +177,10 @@ class RoomDictionaryRepository @Inject constructor(
         return dictionaryDao.getWordById(idWord)?.toWord()
     }
 
+    override suspend fun getWordByUniqueId(uniqueId: Int): Word? {
+        return dictionaryDao.getWordByUniqueId(uniqueId)?.toWord()
+    }
+
     override suspend fun createDictionary(
         name: String,
         idAccount: Long,

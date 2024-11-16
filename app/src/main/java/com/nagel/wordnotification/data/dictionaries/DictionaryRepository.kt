@@ -31,6 +31,7 @@ interface DictionaryRepository : IFormationOfDictionaries {
     suspend fun loadHistoryNotification(idWord: Long, idMode: Long): List<NotificationHistoryItem>?
     suspend fun saveDictionary(dto: Dictionary): Long
     suspend fun getWordById(idWord: Long): Word?
+    suspend fun getWordByUniqueId(uniqueId: Int): Word?
 }
 
 interface IFormationOfDictionaries {

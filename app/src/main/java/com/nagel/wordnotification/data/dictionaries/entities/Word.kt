@@ -5,6 +5,7 @@ import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import com.nagel.wordnotification.data.settings.room.entities.ModeDbEntity
 import com.nagel.wordnotification.presentation.addingwords.worddetails.widget.model.ShowStepsWordDto
 import com.nagel.wordnotification.utils.GlobalFunction
+import java.util.Date
 
 data class Word(
     val idDictionary: Long,
@@ -12,7 +13,7 @@ data class Word(
     var textLast: String,
     var allNotificationsCreated: Boolean = false,
     var learnStep: Int = 0,
-    var lastDateMention: Long = THERE_IS_NO_DATE_MENTION,
+    var lastDateMention: Long = Date().time,
     var uniqueId: Int = GlobalFunction.generateUniqueId()
 ) {
     var idWord: Long = 0
@@ -20,6 +21,10 @@ data class Word(
     //использую только как буфер
     var nextDate: Long? = null
     var mode: ModeDbEntity? = null
+
+    fun getLastDateMentionOrNull(): Long? {
+        return if (lastDateMention == THERE_IS_NO_DATE_MENTION) null else lastDateMention
+    }
 
     fun markWordAsLearned(): Word {
         allNotificationsCreated = true

@@ -39,6 +39,10 @@ object AlgorithmHelper {
     }
 
     fun nextAvailableDate(lastTime: Long, mode: ModeSettingsDto): Long {
+        Log.d(
+            "CoroutineWorker:",
+            "currentMode::: workingTimeInterval: ${mode.workingTimeInterval}"
+        )
         var time = lastTime
         fun goBeginningDay() {
             val c = Calendar.getInstance()      //Встаём в начало дня

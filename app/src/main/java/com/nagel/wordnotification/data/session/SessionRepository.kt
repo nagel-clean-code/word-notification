@@ -8,7 +8,6 @@ interface SessionRepository {
     fun saveSession(data: SessionDataEntity)
     fun saveCurrentIdDictionary(idDictionary: Long)
     fun getSession(): SessionDataEntity
-    fun updateIsNotificationCreated(isNotificationCreated: Boolean)
     fun getAccountId(): Long?
     fun getPreviewFlag(screenCode: String): Boolean
     fun getTranslationLanguage(): String
