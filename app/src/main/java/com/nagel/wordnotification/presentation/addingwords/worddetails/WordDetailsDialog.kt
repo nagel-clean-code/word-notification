@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.Toast
-import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
@@ -99,18 +98,8 @@ class WordDetailsDialog(
             algorithmName += " " + data.mode.selectedMode.getName(requireContext())
             binding.algorithmName.text = algorithmName
         }
-        val startAlgorithm = checkStartAlgorithm(data)
-        if (startAlgorithm) {
-            val historyFlow = viewModel.loadNotificationHistory(word.idWord, mode.idMode)
-            initShowSteps(data, historyFlow)
-        }
-    }
-
-    private fun checkStartAlgorithm(data: ShowStepsWordDto): Boolean {
-        val algorithmNotStarted = data.lastDateMention == 0L
-        binding.showSteps.isGone = algorithmNotStarted
-        binding.notStartAlgorithm.isVisible = algorithmNotStarted
-        return algorithmNotStarted.not()
+        val historyFlow = viewModel.loadNotificationHistory(word.idWord, mode.idMode)
+        initShowSteps(data, historyFlow)
     }
 
     private fun initShowSteps(

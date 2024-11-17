@@ -100,7 +100,6 @@
     <string name="error_loading_dictionaries">Ошибка загрузки словарей\nповторите попытку позже</string>
     <string name="add_to_yourself">Добавить себе</string>
     <string name="completed">Завершено</string>
-    <string name="start_algorithm_description">Алгоритм стартует после выхода из приложения</string>
     <string name="create_copy">Создать копию</string>
     <string name="notifications_enabled">Уведомления включены</string>
 
