@@ -7,4 +7,9 @@ object Constants {
     const val TAKE_AWAY = "TAKE_AWAY"
     const val TYPE_QUEST = 1
     const val NOTIFICATION_CHANNEL_ID = "NotiFire_chanel_01"
+
+    const val BOOT_COMPLETED = "android.intent.action.BOOT_COMPLETED"
+    const val QUICKBOOT_POWERON = "android.intent.action.QUICKBOOT_POWERON"
+    const val HTC_QUICKBOOT_POWERON = "com.htc.intent.action.QUICKBOOT_POWERON"
+
 }

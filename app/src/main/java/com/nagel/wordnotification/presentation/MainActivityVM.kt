@@ -1,14 +1,18 @@
 package com.nagel.wordnotification.presentation
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.nagel.wordnotification.core.algorithms.NotificationAlgorithm
 import com.nagel.wordnotification.data.session.SessionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityVM @Inject constructor(
-    private val sessionRepository: SessionRepository
+    private val sessionRepository: SessionRepository,
+    private val notificationAlgorithm: NotificationAlgorithm
 ) : ViewModel() {
 
     fun isItPossibleShowRateApp(): Boolean {
@@ -17,6 +21,12 @@ class MainActivityVM @Inject constructor(
         val date = session.dateAppInstallation ?: return false
         val nextInterval = mapSteps[step] ?: return false
         return Date().time - date > nextInterval
+    }
+
+    fun startNotification() {
+        viewModelScope.launch {
+            notificationAlgorithm.createNotification()
+        }
     }
 
     companion object {

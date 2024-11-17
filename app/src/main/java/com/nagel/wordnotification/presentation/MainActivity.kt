@@ -1,5 +1,6 @@
 package com.nagel.wordnotification.presentation
 
+import android.content.IntentFilter
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -11,8 +12,12 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.analytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.nagel.wordnotification.Constants.BOOT_COMPLETED
+import com.nagel.wordnotification.Constants.HTC_QUICKBOOT_POWERON
+import com.nagel.wordnotification.Constants.QUICKBOOT_POWERON
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.analytecs.Analytic
+import com.nagel.wordnotification.core.services.NotificationRestorerReceiver
 import com.nagel.wordnotification.data.firbase.RealtimeDbRepository
 import com.nagel.wordnotification.databinding.ActivityMainBinding
 import com.nagel.wordnotification.presentation.addingwords.AddingWordsFragment
@@ -32,9 +37,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), Navigator {
+
+    private val broadcastReceiver: NotificationRestorerReceiver = NotificationRestorerReceiver()
 
     private lateinit var binding: ActivityMainBinding
 
@@ -79,6 +85,16 @@ class MainActivity : AppCompatActivity(), Navigator {
                 }
             }
         }
+        initReceiver()
+        viewModel.startNotification()
+    }
+
+    private fun initReceiver() {
+        val intentFilter = IntentFilter()
+        intentFilter.addAction(BOOT_COMPLETED)
+        intentFilter.addAction(QUICKBOOT_POWERON)
+        intentFilter.addAction(HTC_QUICKBOOT_POWERON)
+        registerReceiver(broadcastReceiver, intentFilter)
     }
 
     private fun initFirebase() {
