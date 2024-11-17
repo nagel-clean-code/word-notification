@@ -4,6 +4,7 @@ import android.content.IntentFilter
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
@@ -94,7 +95,12 @@ class MainActivity : AppCompatActivity(), Navigator {
         intentFilter.addAction(BOOT_COMPLETED)
         intentFilter.addAction(QUICKBOOT_POWERON)
         intentFilter.addAction(HTC_QUICKBOOT_POWERON)
-        registerReceiver(broadcastReceiver, intentFilter)
+        ContextCompat.registerReceiver(
+            this,
+            broadcastReceiver,
+            intentFilter,
+            ContextCompat.RECEIVER_EXPORTED
+        )
     }
 
     private fun initFirebase() {
