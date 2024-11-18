@@ -96,11 +96,11 @@ class ChoosingDictionaryFragment : BaseFragment() {
         val dictionariesAdapter = DictionariesListAdapter(
             dictionaries = viewModel.dictionaries,
             settingsRepository = viewModel.settingsRepository,
-            requireContext(),
-            ::openDictionary,
-            ::showMenuActionOnDictionary,
-            ::toggleActiveDictionary,
-            ::openModeSettings
+            context = requireContext(),
+            selectDictionary = ::openDictionary,
+            showMenuActionOnWord = ::showMenuActionOnDictionary,
+            setActive = ::toggleActiveDictionary,
+            openModeSettings = ::openModeSettings
         )
         adapter = dictionariesAdapter
         binding.dictionariesList.adapter = adapter

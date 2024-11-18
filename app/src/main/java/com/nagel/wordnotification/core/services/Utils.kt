@@ -43,13 +43,13 @@ object Utils {
         return try {
             Gson().fromJson(json, NotificationDto::class.java)
         } catch (e: Exception) {
-            showError(context, intent)
+            showError(context, json)
             null
         }
     }
 
-    fun showError(context: Context, intent: Intent) {
-        Log.d("CoroutineWorker", "Не удалось сериализовать: " + intent)
+    fun showError(context: Context, json: String?) {
+        Log.d("CoroutineWorker", "Не удалось сериализовать: " + json)
         Toast.makeText(context, "Уведомление не сработало", Toast.LENGTH_LONG).show()
     }
 }

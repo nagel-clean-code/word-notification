@@ -56,9 +56,22 @@ data class Word(
         )
     }
 
-    fun fullCopyWord(): Word {
+    fun fullCopyWord(
+        learnStep: Int? = null,
+        lastDateMention: Long? = null,
+        allNotificationsCreated: Boolean? = null
+    ): Word {
         val newWord = this.copy()
         newWord.idWord = this.idWord
+        learnStep?.let {
+            newWord.learnStep = learnStep
+        }
+        lastDateMention?.let {
+            newWord.lastDateMention = lastDateMention
+        }
+        allNotificationsCreated?.let {
+            newWord.allNotificationsCreated = allNotificationsCreated
+        }
         return newWord
     }
 

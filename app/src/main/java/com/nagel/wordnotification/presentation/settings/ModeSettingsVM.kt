@@ -7,7 +7,6 @@ import com.nagel.wordnotification.core.algorithms.PlateauEffect
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.dictionaries.entities.Word
-import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.data.settings.SettingsRepository
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import com.nagel.wordnotification.presentation.base.BaseViewModel
@@ -21,7 +20,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ModeSettingsVM @Inject constructor(
-    private var sessionRepository: SessionRepository,
     private val settingsRepository: SettingsRepository,
     private val dictionaryRepository: DictionaryRepository,
     private val notificationAlgorithm: NotificationAlgorithm
@@ -41,35 +39,32 @@ class ModeSettingsVM @Inject constructor(
         }
     }
 
-    fun resetStepsSetTimeToCurrentOne(wordList: List<Word>) {
+    suspend fun resetStepsSetTimeToCurrentOne(wordList: List<Word>) {
         val currentTime = Date().time
         val newList = wordList.map {
-            it.copy(
+            it.fullCopyWord(
                 learnStep = 0,
                 lastDateMention = currentTime,
                 allNotificationsCreated = false
             )
         }
-        viewModelScope.launch {
-            newList.forEach {
-                dictionaryRepository.updateWord(it)
-            }
+        newList.forEach {
+            dictionaryRepository.updateWord(it)
         }
     }
 
-    fun resetHistory(wordList: List<Word>) {
-        viewModelScope.launch {
-            wordList.forEach {
-                dictionaryRepository.deleteNotificationsHistoryByIdWord(it.idWord)
-            }
+    suspend fun resetHistory(wordList: List<Word>) {
+        wordList.forEach {
+            dictionaryRepository.deleteNotificationsHistoryByIdWord(it.idWord)
         }
     }
 
     fun getStatusNotificationDictionary(): Boolean = dictionary?.include == true
 
-    fun saveNewSettings(settings: ModeSettingsDto, success: () -> Unit) {
+    fun saveNewSettings(settings: ModeSettingsDto, success: suspend () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             dictionaryRepository.updateIncludeDictionary(true, idDictionary)
+            dictionary?.include = true
             val idMode = settingsRepository.saveModeSettings(settings)
             settings.idMode = idMode
             withContext(Dispatchers.Main) {
@@ -78,38 +73,26 @@ class ModeSettingsVM @Inject constructor(
         }
     }
 
-    fun tryReinstallNotification(
+    suspend fun tryReinstallNotification(
         newMode: ModeSettingsDto,
         prevMode: ModeSettingsDto?,
         success: () -> Unit
     ) {
-        viewModelScope.launch {
-            val needReinstallNotification = newMode.selectedMode != prevMode?.selectedMode ||
-                    newMode.sampleDays != prevMode?.sampleDays ||
-                    newMode.timeIntervals != prevMode.timeIntervals
+        val needReinstallNotification = newMode.selectedMode != prevMode?.selectedMode ||
+                newMode.sampleDays != prevMode?.sampleDays ||
+                newMode.timeIntervals != prevMode.timeIntervals
 
-            val changeTime: Boolean =
-                if (newMode.timeIntervals == prevMode?.timeIntervals && newMode.timeIntervals) {
-                    newMode.workingTimeInterval.first != prevMode.workingTimeInterval.first ||
-                            newMode.workingTimeInterval.second != prevMode.workingTimeInterval.second
-                } else {
-                    false
-                }
-
-            if (dictionary?.include == true && (needReinstallNotification || changeTime)) {
-                val idCurrentWordNotification = sessionRepository.getCurrentWordIdNotification()
-                val containsWordInDictionary = dictionary?.wordList?.map {
-                    it.idWord
-                }?.contains(idCurrentWordNotification)
-                if (containsWordInDictionary == true) {
-                    val word = dictionaryRepository.getWordById(idCurrentWordNotification)
-                    word?.apply {
-                        mode = settingsRepository.getModeSettingsById(newMode.idMode)
-                    }
-                    notificationAlgorithm.createNotification(word)
-                }
+        val changeTime: Boolean =
+            if (newMode.timeIntervals == prevMode?.timeIntervals && newMode.timeIntervals) {
+                newMode.workingTimeInterval.first != prevMode.workingTimeInterval.first ||
+                        newMode.workingTimeInterval.second != prevMode.workingTimeInterval.second
+            } else {
+                false
             }
-            success.invoke()
+
+        if (dictionary?.include == true && (needReinstallNotification || changeTime)) {
+            notificationAlgorithm.createNotification()
         }
+        success.invoke()
     }
 }

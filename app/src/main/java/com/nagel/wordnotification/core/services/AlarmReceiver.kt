@@ -13,6 +13,7 @@ import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.google.gson.Gson
+import com.nagel.wordnotification.Constants
 import com.nagel.wordnotification.Constants.NOTIFICATION_CHANNEL_ID
 import com.nagel.wordnotification.Constants.TAKE_AWAY
 import com.nagel.wordnotification.Constants.TYPE
@@ -32,7 +33,10 @@ class AlarmReceiver : BroadcastReceiver() {
             Log.d("CoroutineWorker", "Сработал ${notificationDto.text}")
             newNotification(context, notificationDto)
         } ?: kotlin.run {
-            Utils.showError(context, intent)
+            val json = intent.getStringExtra(Constants.TAKE_AWAY)
+            Log.d("Json:", json.toString())
+            Log.d("currentType:", currentType.toString())
+            Utils.showError(context, "notificationDto = null")
         }
     }
 

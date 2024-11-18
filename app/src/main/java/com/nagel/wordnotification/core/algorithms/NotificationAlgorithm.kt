@@ -36,7 +36,7 @@ class NotificationAlgorithm @Inject constructor(
         var word = prepareWord(wordNotification) ?: getNextWordNotification() ?: return
         Log.d("CoroutineWorker:", "Выбрано - слово: $word")
 
-        if (word.nextDate == null) {
+        while (word.nextDate == null) {
             Log.d("CoroutineWorker:", "Слово: ${word.textFirst} уже выучено")
             updateWord(word.markWordAsLearned())
             word = getNextWordNotification() ?: return
@@ -98,10 +98,11 @@ class NotificationAlgorithm @Inject constructor(
                     )
                     nextDate - currentTime
                 }
-            }[0] //Берём слово с самой просроченной датой или самой ближайшей
-            Log.d("CoroutineWorker:", "ВЫБРАЛИ DICWORD: ${dicWord.textFirst}")
+            }.getOrNull(0) //Берём слово с самой просроченной датой или самой ближайшей
+            Log.d("CoroutineWorker:", "ВЫБРАЛИ DICWORD: ${dicWord?.textFirst}")
             dicWord
         }.sortedBy {
+            it ?: return@sortedBy null
             if (it.nextDate == null) {
                 Long.MAX_VALUE
             } else {

@@ -86,6 +86,7 @@ class AlgorithmReceiver : BroadcastReceiver() {
                     it.idMode,
                     notificationDto.step
                 )
+                Log.d("HISTORY::", "saveNotificationHistoryItem historyItem:$historyItem")
                 dictionaryRepository.saveNotificationHistoryItem(historyItem)
             }
         }

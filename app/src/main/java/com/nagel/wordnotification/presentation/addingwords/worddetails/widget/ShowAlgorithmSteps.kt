@@ -140,18 +140,16 @@ class ShowAlgorithmSteps(
                     continue
                 }
                 nextDate = AlgorithmHelper.nextAvailableDate(nextDate, mode)
-                    var text = context.getString(R.string.step)
-                    text += " №${lastStep}   "
-                    lastDate = nextDate
-                    if (currentIx == -1) {
-                        text += dateTemplate.format(nextDate)
-                    } else if (isAlgorithmEnabled) {
-                        text += dateTemplate.format(nextDate)
-                    }
-                    resultList.add(text)
-                    if (currentIx == -1 && currentTime < lastDate) {
-                        currentIx = lastStep - 2
-                    }
+                var text = context.getString(R.string.step)
+                text += " №${lastStep}   "
+                lastDate = nextDate
+                if (currentIx == -1 || isAlgorithmEnabled) {
+                    text += dateTemplate.format(nextDate)
+                }
+                resultList.add(text)
+                if (currentIx == -1 && currentTime < lastDate) {
+                    currentIx = lastStep - 2
+                }
                 lastDate = nextDate
             }
         }

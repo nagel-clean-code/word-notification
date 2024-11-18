@@ -2,6 +2,7 @@ package com.nagel.wordnotification.presentation
 
 import android.content.IntentFilter
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -17,6 +18,7 @@ import com.nagel.wordnotification.Constants.BOOT_COMPLETED
 import com.nagel.wordnotification.Constants.HTC_QUICKBOOT_POWERON
 import com.nagel.wordnotification.Constants.QUICKBOOT_POWERON
 import com.nagel.wordnotification.R
+import com.nagel.wordnotification.core.algorithms.NotificationAlgorithm
 import com.nagel.wordnotification.core.analytecs.Analytic
 import com.nagel.wordnotification.core.services.NotificationRestorerReceiver
 import com.nagel.wordnotification.data.firbase.RealtimeDbRepository
@@ -109,6 +111,10 @@ class MainActivity : AppCompatActivity(), Navigator {
         auth.signInAnonymously()
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
+                    task.result.user?.zzb()?.metadata?.creationTimestamp?.let {
+                        val date = NotificationAlgorithm.dateFormat.format(it)
+                        Log.d("DATA::: Дата регистрации:", date + " $it")
+                    }
                     Analytic.logEvent(
                         FirebaseAnalytics.Event.LOGIN,
                         FirebaseAnalytics.Param.METHOD,
