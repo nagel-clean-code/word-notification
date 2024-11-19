@@ -252,7 +252,7 @@ class RandomizingFragment : BaseFragment() {
         @JvmStatic
         fun newInstance() = RandomizingFragment()
 
-        private const val DURATION_PRESSING_BUTTON = 200L
+        private const val DURATION_PRESSING_BUTTON = 1000L
         private const val DURATION_SHOW_ANSWER = 800L
         const val EMPTY_WORD = "?"
     }

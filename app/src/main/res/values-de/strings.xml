@@ -102,5 +102,6 @@
     <string name="completed">Abgeschlossen</string>
     <string name="create_copy">Kopie erstellen</string>
     <string name="notifications_enabled">Benachrichtigungen enthalten</string>
+    <string name="learned">Gelernt:</string>
 
 </resources>

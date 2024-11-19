@@ -13,13 +13,11 @@ import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.data.settings.SettingsRepository
-import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import com.nagel.wordnotification.data.settings.room.entities.ModeDbEntity
 import java.text.SimpleDateFormat
 import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.math.abs
 
 
 @Singleton
@@ -45,7 +43,12 @@ class NotificationAlgorithm @Inject constructor(
 
         val mode = word.mode ?: return
         sessionRepository.saveCurrentWordNotification(word.idWord)
-        val nextDate = AlgorithmHelper.nextAvailableDate(word.nextDate!!, mode.toMode())
+
+        val currentTime = Date().time
+        var nextDate = AlgorithmHelper.nextAvailableDate(word.nextDate!!, mode.toMode())
+        if (nextDate < currentTime) {
+            nextDate = AlgorithmHelper.nextAvailableDate(currentTime, mode.toMode())
+        }
         Log.d(
             "CoroutineWorker:",
             "word.nextDate: ${dateFormat.format(Date(word.nextDate!!))} || nextDate: ${
@@ -54,7 +57,7 @@ class NotificationAlgorithm @Inject constructor(
         )
 
         val notification = createNotificationDto(word, nextDate)
-        if (nextDate < Date().time) {
+        if (nextDate < currentTime) {
             Log.d(
                 "CoroutineWorker:",
                 "nextDate: ${dateFormat.format(Date(nextDate))} || Date().time: ${
@@ -128,60 +131,6 @@ class NotificationAlgorithm @Inject constructor(
         }
     }
 
-    private fun getFreeTimeForNotification(
-        words: List<Word>,
-        minStartTime: Long,
-        mode: ModeSettingsDto,
-    ): Long {
-        if (words.isEmpty()) return minStartTime
-        var currentPosition = minStartTime
-        var lastDate = -1L
-        var arrayIx = 0
-
-        fun getCurrentDate(): Long {
-            return if (arrayIx < words.size) {
-                words[arrayIx++].lastDateMention
-            } else {
-                lastDate
-            }
-        }
-
-        while (true) {
-            val currentDate = getCurrentDate()
-            if (lastDate != -1L) {
-                if (abs(currentPosition - lastDate) >= MINIMUM_DISTANCE &&
-                    abs(currentPosition - currentDate) >= MINIMUM_DISTANCE
-                ) {
-                    if (AlgorithmHelper.checkOccurrenceInTimeInterval(currentPosition, mode)) {
-                        return currentPosition
-                    } else {
-                        val nextDate = AlgorithmHelper.nextAvailableDate(currentPosition, mode)
-                        val newWords = words.filter {
-                            it.lastDateMention >= minStartTime - MINIMUM_DISTANCE
-                        }
-                        return getFreeTimeForNotification(newWords, nextDate, mode)
-                    }
-                }
-                val newPos = lastDate + MINIMUM_DISTANCE
-                if (newPos >= currentPosition && abs(currentDate - newPos) >= MINIMUM_DISTANCE) {
-                    if (AlgorithmHelper.checkOccurrenceInTimeInterval(newPos, mode)) {
-                        return newPos
-                    } else {
-                        val nextDate = AlgorithmHelper.nextAvailableDate(newPos, mode)
-                        val newWords = words.filter {
-                            it.lastDateMention >= minStartTime - MINIMUM_DISTANCE
-                        }
-                        return getFreeTimeForNotification(newWords, nextDate, mode)
-                    }
-                }
-                if (currentDate + MINIMUM_DISTANCE > currentPosition) {
-                    currentPosition = currentDate + MINIMUM_DISTANCE
-                }
-            }
-            lastDate = currentDate
-        }
-    }
-
     private fun createNotificationDto(
         word: Word,
         nextTime: Long
@@ -217,10 +166,7 @@ class NotificationAlgorithm @Inject constructor(
         dictionaryRepository.updateWord(word)
     }
 
-
     companion object {
         val dateFormat = SimpleDateFormat("d, HH:mm:ss")
-
-        const val MINIMUM_DISTANCE = 60 * 1000L
     }
 }

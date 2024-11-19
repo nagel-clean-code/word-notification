@@ -281,7 +281,7 @@ class ModeSettingsFragment : BaseFragment() {
                 if (resetSteps) {
                     viewModel.dictionary?.wordList?.let { list ->
                         viewModel.resetStepsSetTimeToCurrentOne(list)
-                        viewModel.resetHistory(list)
+                        viewModel.resetHistory(list) //TODO не обязательно - выпилить и учитывать это в показе шагов
                     }
                 }
                 viewModel.tryReinstallNotification(newMode, prevMode) {

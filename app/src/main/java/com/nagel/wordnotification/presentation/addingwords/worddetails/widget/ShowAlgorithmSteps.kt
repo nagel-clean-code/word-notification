@@ -52,7 +52,7 @@ class ShowAlgorithmSteps(
     private val marginTop = radiusCircle * 2
     private val marginLeft = radiusCircle
     private val marginTextLeft = 20f
-    private var currentIx = -1
+    private var currentIx = 0
     private lateinit var textList: List<String>
     private val dateTemplate = SimpleDateFormat("(yyyy.MM.dd, HH:mm:ss)", Locale.getDefault())
 
@@ -114,42 +114,34 @@ class ShowAlgorithmSteps(
         val steps = dataForRendering!!.mode.selectedMode?.getCountSteps() ?: return listOf()
         val mode = dataForRendering!!.mode
         val resultList = mutableListOf<String>()
-        var lastStep = 0
         var lastDate = dataForRendering!!.lastDateMention
         val currentTime = Date().time
         for (i in 0 until steps) {
             if (i < historyList.size) {
+                if (i == historyList.size - 1) {
+                    currentIx = i
+                }
                 val current: NotificationHistoryItem = historyList[i]
                 var text = context.getString(R.string.step)
                 text += " №${current.learnStep + 1}   "
-                lastStep = current.learnStep + 1
-                if (currentIx == -1) {
-                    text += dateTemplate.format(current.dateMention)
-                } else if (isAlgorithmEnabled) {
-                    text += dateTemplate.format(current.dateMention)
-                }
+                text += dateTemplate.format(current.dateMention)
                 resultList.add(text)
-                if (currentIx == -1 && currentTime < current.dateMention) {
-                    currentIx = lastStep - 1
-                }
             } else {
-                var nextDate =
-                    dataForRendering!!.mode.selectedMode?.getNewDate(lastStep++, lastDate)
+                var nextDate = dataForRendering!!.mode.selectedMode?.getNewDate(i, lastDate)
                 if (nextDate == null) {
                     resultList.add(context.resources.getString(R.string.completed))
                     continue
                 }
                 nextDate = AlgorithmHelper.nextAvailableDate(nextDate, mode)
+                if (nextDate < currentTime) {
+                    nextDate = AlgorithmHelper.nextAvailableDate(currentTime, mode)
+                }
                 var text = context.getString(R.string.step)
-                text += " №${lastStep}   "
-                lastDate = nextDate
-                if (currentIx == -1 || isAlgorithmEnabled) {
+                text += " №${i + 1}   "
+                if (isAlgorithmEnabled) {
                     text += dateTemplate.format(nextDate)
                 }
                 resultList.add(text)
-                if (currentIx == -1 && currentTime < lastDate) {
-                    currentIx = lastStep - 2
-                }
                 lastDate = nextDate
             }
         }

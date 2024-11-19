@@ -45,7 +45,7 @@ object AlgorithmHelper {
         )
         var time = lastTime
         fun goBeginningDay() {
-            val c = Calendar.getInstance()      //Встаём в начало дня
+            val c = Calendar.getInstance()
             c.time = Date(time)
             val hours = c.get(Calendar.HOUR_OF_DAY)
             val minutes = c.get(Calendar.MINUTE)
@@ -53,10 +53,12 @@ object AlgorithmHelper {
             time -= (hours * 60 * 60 * 1000 + minutes * 60 * 1000 + seconds * 1000)
         }
         if (mode.sampleDays) {
+            var isChangedDay = false
             while (checkDays(mode, time).not()) {
+                isChangedDay = true
                 time += ONE_DAY_MLS
             }
-            goBeginningDay()
+            if (isChangedDay) goBeginningDay()
         }
 
         fun goNextDay(): Long {
