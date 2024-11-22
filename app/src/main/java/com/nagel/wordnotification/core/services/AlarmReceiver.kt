@@ -66,16 +66,16 @@ class AlarmReceiver : BroadcastReceiver() {
             notificationManager.createNotificationChannel(nc)
         }
 
-        val title = context.getString(R.string.memorization_step)
         val customNotification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.arrow)
-            .setContentTitle(title + (dto.step + 1).toString())
             .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_MAX)
 
+        val content = context.getString(R.string.memorization_step) + " ${dto.step + 1}"
         if (currentType == TYPE_ANSWER) {
             customNotification
-                .setContentText(dto.text)
+                .setContentTitle(dto.text)
+                .setContentText(content)
                 .setDeleteIntent(getAction(context, dto, TYPE_QUEST))
                 .addAction(
                     0,
@@ -85,7 +85,8 @@ class AlarmReceiver : BroadcastReceiver() {
         }
         if (currentType == TYPE_QUEST) {
             customNotification
-                .setContentText("${dto.text} - ${dto.translation}")
+                .setContentTitle("${dto.text} - ${dto.translation}")
+                .setContentText(content)
                 .setDeleteIntent(getAction(context, dto, TYPE_QUEST))
                 .addAction(
                     0,

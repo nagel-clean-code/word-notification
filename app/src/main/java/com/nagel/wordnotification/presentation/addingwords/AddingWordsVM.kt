@@ -28,6 +28,7 @@ import kotlinx.coroutines.withContext
 import me.bush.translator.Language
 import me.bush.translator.Translator
 import me.bush.translator.languageOf
+import java.util.Locale
 import javax.inject.Inject
 
 enum class TranslationWord {
@@ -56,16 +57,18 @@ class AddingWordsVM @Inject constructor(
     private val translator = Translator()
 
     var currentAutoTranslate: TranslationWord = TranslationWord.LAST_WORD
-    private var languageLastWord: Language = Language.ENGLISH
-    private var languageFirstWord: Language = Language.RUSSIAN
+    private var currentLanguage: Language = Language.ENGLISH
+    private var languageLocale: Language =
+        languageOf(Locale.getDefault().language) ?: Language.RUSSIAN
 
     val showTranslateLastWord = MutableStateFlow<String?>(null)
     val showTranslateFirstWord = MutableStateFlow<String?>(null)
 
 
     init {
-        setTranslateLang(sessionRepository.getTranslationLanguage())
-        setFirstWordTranslateLang(sessionRepository.getWordLanguage())
+        viewModelScope.launch(Dispatchers.Default) {
+            setTranslateLang(sessionRepository.getTranslationLanguage())
+        }
     }
 
     fun changeCurrentAutoTranslate() {
@@ -91,9 +94,9 @@ class AddingWordsVM @Inject constructor(
             }
             delay(500)
             val lang = if (typeTranslate == TranslationWord.LAST_WORD) {
-                languageLastWord
+                currentLanguage
             } else {
-                languageFirstWord
+                languageLocale
             }
             val translation = translator.translate(text, lang, Language.AUTO)
             if (typeTranslate == TranslationWord.LAST_WORD) {
@@ -104,12 +107,20 @@ class AddingWordsVM @Inject constructor(
         }
     }
 
-    fun setTranslateLang(lang: String) {
-        languageLastWord = languageOf(lang) ?: Language.ENGLISH
+    fun getCurrentLanguageTranslate(): Language {
+        return if (currentAutoTranslate == TranslationWord.LAST_WORD) {
+            currentLanguage
+        } else {
+            languageLocale
+        }
     }
 
-    fun setFirstWordTranslateLang(lang: String) {
-        languageFirstWord = languageOf(lang) ?: Language.RUSSIAN
+    fun setTranslateLang(lang: String) {
+        if (currentAutoTranslate == TranslationWord.LAST_WORD) {
+            currentLanguage = languageOf(lang) ?: Language.ENGLISH
+        } else {
+            languageLocale = languageOf(lang) ?: Language.ENGLISH
+        }
     }
 
     fun setAutoTranslation(isAuto: Boolean) {

@@ -30,8 +30,8 @@ class NotificationAlgorithm @Inject constructor(
     /**
      * @param wordNotification - на случай, если мы откатили текущее уведомление и запустили заново
      */
-    suspend fun createNotification(wordNotification: Word? = null) {
-        var word = prepareWord(wordNotification) ?: getNextWordNotification() ?: return
+    suspend fun createNotification() {
+        var word = getNextWordNotification() ?: return
         Log.d("CoroutineWorker:", "Выбрано - слово: $word")
 
         while (word.nextDate == null) {
@@ -46,9 +46,6 @@ class NotificationAlgorithm @Inject constructor(
 
         val currentTime = Date().time
         var nextDate = AlgorithmHelper.nextAvailableDate(word.nextDate!!, mode.toMode())
-        if (nextDate < currentTime) {
-            nextDate = AlgorithmHelper.nextAvailableDate(currentTime, mode.toMode())
-        }
         Log.d(
             "CoroutineWorker:",
             "word.nextDate: ${dateFormat.format(Date(word.nextDate!!))} || nextDate: ${
@@ -56,14 +53,15 @@ class NotificationAlgorithm @Inject constructor(
             }"
         )
 
-        val notification = createNotificationDto(word, nextDate)
-        if (nextDate < currentTime) {
+        if (nextDate <= currentTime) {
+            nextDate = AlgorithmHelper.nextAvailableDate(currentTime, mode.toMode())
             Log.d(
                 "CoroutineWorker:",
                 "nextDate: ${dateFormat.format(Date(nextDate))} || Date().time: ${
                     dateFormat.format(Date().time)
                 }"
             )
+            val notification = createNotificationDto(word, nextDate)
             val appContext = App.get()
             val newIntent = Intent(appContext, AlarmReceiver::class.java)
             val json = Gson().toJson(notification)
@@ -72,6 +70,7 @@ class NotificationAlgorithm @Inject constructor(
             appContext.sendBroadcast(newIntent)
             Log.d("CoroutineWorker:", "sendBroadcast AlarmReceiver: not:${notification}")
         } else {
+            val notification = createNotificationDto(word, nextDate)
             Log.d("CoroutineWorker:", "createAlarm notification: ${notification}")
             AlgorithmHelper.createAlarm(notification)
         }
@@ -112,23 +111,6 @@ class NotificationAlgorithm @Inject constructor(
                 it.nextDate!! - currentTime
             }
         }.getOrNull(0)
-    }
-
-    private suspend fun getOldData(word: Word): Long {
-        val list = dictionaryRepository.loadHistoryNotification(word.idWord, word.mode!!.idMode)
-        return list?.maxOfOrNull { it.dateMention } ?: Date().time
-    }
-
-    private suspend fun prepareWord(word: Word?): Word? {
-        word ?: return null
-        val oldData = getOldData(word)
-        return word.apply {
-            nextDate = getNewDate(
-                word.mode!!,    // mode уже должен быть готов в ModeSettingsVM
-                word.learnStep,
-                oldData
-            )
-        }
     }
 
     private fun createNotificationDto(

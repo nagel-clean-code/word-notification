@@ -116,11 +116,21 @@
                     android:layout_marginEnd="8dp"
                     android:background="?android:attr/selectableItemBackground"
                     android:src="@drawable/baseline_settings_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/editTextWord"
+                    app:layout_constraintEnd_toEndOf="@+id/editTextWord"
+                    app:layout_constraintTop_toTopOf="@+id/editTextWord" />
+
+                <ImageView
+                    android:id="@+id/microphoneWord"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:src="@drawable/baseline_mic_24"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="@+id/editTextWord"
                     app:layout_constraintEnd_toEndOf="@+id/editTextWord"
-                    app:layout_constraintTop_toTopOf="@+id/editTextWord"
-                    tools:visibility="visible" />
+                    app:layout_constraintTop_toTopOf="@+id/editTextWord" />
 
                 <ImageView
                     android:id="@+id/imageView3"
@@ -164,6 +174,18 @@
                     android:layout_marginEnd="8dp"
                     android:background="?android:attr/selectableItemBackground"
                     android:src="@drawable/baseline_settings_24"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/editTextTranslation"
+                    app:layout_constraintEnd_toEndOf="@+id/editTextTranslation"
+                    app:layout_constraintTop_toTopOf="@+id/editTextTranslation" />
+
+                <ImageView
+                    android:id="@+id/microphoneTranslation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:src="@drawable/baseline_mic_24"
                     app:layout_constraintBottom_toBottomOf="@+id/editTextTranslation"
                     app:layout_constraintEnd_toEndOf="@+id/editTextTranslation"
                     app:layout_constraintTop_toTopOf="@+id/editTextTranslation" />

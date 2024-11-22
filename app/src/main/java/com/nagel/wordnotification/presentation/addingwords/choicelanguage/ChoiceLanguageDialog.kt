@@ -22,6 +22,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ChoiceLanguageDialog(
     private val typeInputField: TranslationWord,
+    private val currentLanguage: String?,
     private val langSelected: (String?, Boolean) -> Unit
 ) : DialogFragment() {
 
@@ -39,11 +40,8 @@ class ChoiceLanguageDialog(
     ): View {
         binding = ChoiceLanguageBinding.inflate(inflater, container, false)
         setupTransparent()
-        languageSelected = if (typeInputField == TranslationWord.FIRST_WORD) {
-            sessionRepository.getWordLanguage()
-        } else {
-            sessionRepository.getTranslationLanguage()
-        }
+        languageSelected = currentLanguage ?: sessionRepository.getTranslationLanguage()
+
         binding.root.hideKeyboard()
         val currentLangText =
             requireContext().getString(R.string.current_language, languageSelected)
@@ -56,9 +54,7 @@ class ChoiceLanguageDialog(
         super.onViewCreated(view, savedInstanceState)
         binding.apply {
             done.setOnClickListener {
-                if (typeInputField == TranslationWord.FIRST_WORD) {
-                    sessionRepository.saveWordLanguage(languageSelected)
-                } else {
+                if (typeInputField == TranslationWord.LAST_WORD) {
                     sessionRepository.saveTranslationLanguage(languageSelected)
                 }
                 langSelected.invoke(languageSelected, autoTranslation.isChecked)

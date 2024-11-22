@@ -2,6 +2,7 @@ package com.nagel.wordnotification.presentation.addingwords
 
 import android.content.Intent
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -31,6 +32,7 @@ import com.nagel.wordnotification.utils.common.showToast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 @AndroidEntryPoint
 class AddingWordsFragment : BaseFragment() {
@@ -42,6 +44,7 @@ class AddingWordsFragment : BaseFragment() {
     override val viewModel: AddingWordsVM by viewModels()
     private lateinit var rotationAnimatorDoubleArrow: RotationAnimator
     private lateinit var rotationAnimatorReloadIcon: RotationAnimator
+    private lateinit var textToSpeech: TextToSpeech
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,15 +66,39 @@ class AddingWordsFragment : BaseFragment() {
             RotationAnimator(180, viewLifecycleOwner.lifecycleScope, binding.imageView3)
         rotationAnimatorReloadIcon =
             RotationAnimator(0, viewLifecycleOwner.lifecycleScope, binding.swapIcon)
+        textToSpeech = TextToSpeech(requireContext()) { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                changeLanguageTranslateSpeak()
+            }
+        }
+    }
+
+    private fun changeLanguageTranslateSpeak() {
+        val lang = viewModel.getCurrentLanguageTranslate()
+        textToSpeech.setLanguage(Locale(lang.code))
     }
 
     private fun initListeners() = with(binding) {
+        microphoneWord.setOnClickListener {
+            textToSpeech.speak(editTextWord.text.toString(), TextToSpeech.QUEUE_FLUSH, null, "")
+        }
+        microphoneTranslation.setOnClickListener {
+            textToSpeech.speak(
+                editTextTranslation.text.toString(),
+                TextToSpeech.QUEUE_FLUSH,
+                null,
+                ""
+            )
+        }
         imageView3.setOnClickListener {
-            choiceLanguageWord.isVisible = choiceLanguageWord.isVisible.not()
-            choiceLanguageTranslation.isVisible = choiceLanguageWord.isVisible.not()
+            choiceLanguageWord.isVisible = choiceLanguageTranslation.isVisible
+            choiceLanguageTranslation.isVisible = choiceLanguageTranslation.isVisible.not()
+            microphoneWord.isVisible = microphoneWord.isVisible.not()
+            microphoneTranslation.isVisible = microphoneTranslation.isVisible.not()
             viewModel.changeCurrentAutoTranslate()
             rotationAnimatorDoubleArrow.rotationRight()
-            toggleTranslate()
+            changeLanguageTranslateSpeak()
+            translateCurrentText()
         }
         swapIcon.setOnClickListener {
             viewModel.swapWordsInCurrentDictionary()
@@ -113,22 +140,23 @@ class AddingWordsFragment : BaseFragment() {
             }
         }
         choiceLanguageTranslation.setOnClickListener {
-            ChoiceLanguageDialog(viewModel.currentAutoTranslate) { lang, isAutoTranslation ->
-                viewModel.setAutoTranslation(isAutoTranslation)
-                lang?.let { viewModel.setTranslateLang(lang) }
+            ChoiceLanguageDialog(
+                viewModel.currentAutoTranslate,
+                viewModel.getCurrentLanguageTranslate().name
+            ) { lang, isAutoTranslation ->
+                changeLanguageTranslate(lang, isAutoTranslation)
                 viewModel.requestTranslation(
-                    editTextWord.text.toString(),
-                    TranslationWord.LAST_WORD
+                    editTextTranslation.text.toString(),
+                    TranslationWord.FIRST_WORD
                 )
             }.show(childFragmentManager, ChoiceLanguageDialog.TAG)
         }
         choiceLanguageWord.setOnClickListener {
-            ChoiceLanguageDialog(viewModel.currentAutoTranslate) { lang, isAutoTranslation ->
-                viewModel.setAutoTranslation(isAutoTranslation)
-                lang?.let { viewModel.setFirstWordTranslateLang(lang) }
+            ChoiceLanguageDialog(viewModel.currentAutoTranslate, null) { lang, isAutoTranslation ->
+                changeLanguageTranslate(lang, isAutoTranslation)
                 viewModel.requestTranslation(
-                    editTextTranslation.text.toString(),
-                    TranslationWord.FIRST_WORD
+                    editTextWord.text.toString(),
+                    TranslationWord.LAST_WORD
                 )
             }.show(childFragmentManager, ChoiceLanguageDialog.TAG)
         }
@@ -148,7 +176,13 @@ class AddingWordsFragment : BaseFragment() {
         })
     }
 
-    private fun toggleTranslate() = with(binding) {
+    private fun changeLanguageTranslate(lang: String?, isAutoTranslation: Boolean) {
+        viewModel.setAutoTranslation(isAutoTranslation)
+        lang?.let { viewModel.setTranslateLang(lang) }
+        changeLanguageTranslateSpeak()
+    }
+
+    private fun translateCurrentText() = with(binding) {
         if (viewModel.currentAutoTranslate == TranslationWord.LAST_WORD) {
             viewModel.requestTranslation(editTextWord.text.toString(), TranslationWord.LAST_WORD)
         } else {

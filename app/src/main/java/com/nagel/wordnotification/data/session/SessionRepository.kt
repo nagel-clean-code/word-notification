@@ -12,8 +12,6 @@ interface SessionRepository {
     fun getPreviewFlag(screenCode: String): Boolean
     fun getTranslationLanguage(): String
     fun saveTranslationLanguage(lang: String)
-    fun getWordLanguage(): String
-    fun saveWordLanguage(lang: String)
     fun getAutoTranslation(): Boolean
     fun saveAutoTranslation(isAuto: Boolean)
     fun saveCurrentWordNotification(idWord: Long)
