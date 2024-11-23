@@ -27,6 +27,7 @@ class AlarmReceiver : BroadcastReceiver() {
     private var currentType = 1
 
     override fun onReceive(context: Context, intent: Intent) {
+        Log.d("CoroutineWorker", "Intent: $intent")
         val notificationDto = Utils.getDtoFromJson(context, intent)
         currentType = intent.getIntExtra(TYPE, TYPE_ANSWER)
         notificationDto?.let {
@@ -116,5 +117,4 @@ class AlarmReceiver : BroadcastReceiver() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
     }
-
 }

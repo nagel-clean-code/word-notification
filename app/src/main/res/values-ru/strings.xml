@@ -103,5 +103,11 @@
     <string name="create_copy">Создать копию</string>
     <string name="notifications_enabled">Уведомления включены</string>
     <string name="learned">Выучено:</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="delete_s">Удалить %s?</string>
+    <string name="reset_algorithm">Сбросить алгоритм</string>
+    <string name="reset_text_algorithm">Все слова в этом словаре сбросятся до шага 0, сбрасывать?</string>
+    <string name="algorithm_has_been_reset">Алгоритм сброшен</string>
 
 </resources>

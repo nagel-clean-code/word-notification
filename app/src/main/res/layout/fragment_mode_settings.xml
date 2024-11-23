@@ -385,6 +385,7 @@
                                 android:textColor="@color/light_beige" />
                         </LinearLayout>
                     </LinearLayout>
+
                 </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton
@@ -395,6 +396,15 @@
                     android:layout_marginTop="30dp"
                     android:text="@string/save" />
 
+                <TextView
+                    android:id="@+id/resettingButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/reset_algorithm"
+                    android:textColor="@color/carrot"
+                    android:textSize="12sp" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

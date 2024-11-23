@@ -103,5 +103,11 @@
     <string name="create_copy">Kopie erstellen</string>
     <string name="notifications_enabled">Benachrichtigungen enthalten</string>
     <string name="learned">Gelernt:</string>
+    <string name="yes">Ja</string>
+    <string name="no">Nein</string>
+    <string name="delete_s">Möchten Sie das %s löschen?</string>
+    <string name="reset_algorithm">Algorithmus zurücksetzen</string>
+    <string name="reset_text_algorithm">Alle Wörter in diesem Wörterbuch werden auf Schritt 0 zurückgesetzt, abwerfen?</string>
+    <string name="algorithm_has_been_reset">Der Algorithmus wurde zurückgesetzt</string>
 
 </resources>

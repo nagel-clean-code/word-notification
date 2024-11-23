@@ -1,15 +1,18 @@
 package com.nagel.wordnotification.presentation.settings
 
 import androidx.lifecycle.viewModelScope
+import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.algorithms.Algorithm
 import com.nagel.wordnotification.core.algorithms.NotificationAlgorithm
 import com.nagel.wordnotification.core.algorithms.PlateauEffect
+import com.nagel.wordnotification.core.services.Utils
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.settings.SettingsRepository
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import com.nagel.wordnotification.presentation.base.BaseViewModel
+import com.nagel.wordnotification.presentation.navigator.NavigatorV2
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +25,8 @@ import javax.inject.Inject
 class ModeSettingsVM @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val dictionaryRepository: DictionaryRepository,
-    private val notificationAlgorithm: NotificationAlgorithm
+    private val notificationAlgorithm: NotificationAlgorithm,
+    private val navigator: NavigatorV2
 ) : BaseViewModel() {
 
     var idDictionary: Long = -1
@@ -50,6 +54,28 @@ class ModeSettingsVM @Inject constructor(
         }
         newList.forEach {
             dictionaryRepository.updateWord(it)
+        }
+    }
+
+    fun resettingAlgorithm() {
+        val currentTime = Date().time
+        viewModelScope.launch(Dispatchers.IO) {
+            dictionary?.apply {
+                resetHistory(wordList)
+                wordList.forEach { word ->
+                    val newWord = word.apply {
+                        lastDateMention = currentTime
+                        learnStep = 0
+                        allNotificationsCreated = false
+                    }
+                    dictionaryRepository.updateWord(newWord)
+                }
+                withContext(Dispatchers.Main) {
+                    Utils.deleteNotification(wordList)
+                    notificationAlgorithm.createNotification()
+                    navigator.toast(R.string.algorithm_has_been_reset)
+                }
+            }
         }
     }
 

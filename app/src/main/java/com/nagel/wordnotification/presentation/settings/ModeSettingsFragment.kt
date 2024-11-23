@@ -26,6 +26,7 @@ import com.nagel.wordnotification.core.algorithms.ForgetfulnessCurveShort
 import com.nagel.wordnotification.core.algorithms.PlateauEffect
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import com.nagel.wordnotification.databinding.FragmentModeSettingsBinding
+import com.nagel.wordnotification.presentation.ConfirmationDialog
 import com.nagel.wordnotification.presentation.base.BaseFragment
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import com.nagel.wordnotification.presentation.navigator.MainNavigator
@@ -95,28 +96,34 @@ class ModeSettingsFragment : BaseFragment() {
         }
     }
 
-    private fun initListeners() {
-        binding.time1.setOnClickListener {
-            getTimePiker(binding.time1)
+    private fun initListeners() = with(binding) {
+        resettingButton.setOnClickListener {
+            ConfirmationDialog(requireContext().getString(R.string.reset_text_algorithm)) {
+                viewModel.resettingAlgorithm()
+            }.show(parentFragmentManager, null)
         }
-        binding.time2.setOnClickListener {
-            getTimePiker(binding.time2)
+
+        time1.setOnClickListener {
+            getTimePiker(time1)
+        }
+        time2.setOnClickListener {
+            getTimePiker(time2)
         }
 
         initRadioButtons()
-        binding.saveButton.setOnClickListener {
+        saveButton.setOnClickListener {
             navigatorV2.whenActivityActive {
                 it.goBack()
             }
         }
-        binding.chainDaysWeek.children.forEachIndexed() { i, view: View ->
+        chainDaysWeek.children.forEachIndexed() { i, view: View ->
             if (view !is Flow) {
                 if (i < 5) {
                     view.tag = false
                 }
             }
         }
-        binding.infoButton.setOnClickListener {
+        infoButton.setOnClickListener {
             InformationDialog().show(childFragmentManager, InformationDialog.TAG)
         }
         initData()

@@ -103,5 +103,11 @@
     <string name="create_copy">Create a copy</string>
     <string name="notifications_enabled">Notifications are enabled</string>
     <string name="learned">Learned:</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="delete_s">Delete %s?</string>
+    <string name="reset_algorithm">Reset the algorithm</string>
+    <string name="reset_text_algorithm">All words in this dictionary will be reset to step 0, reset it?</string>
+    <string name="algorithm_has_been_reset">The algorithm has been reset</string>
 
 </resources>

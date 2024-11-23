@@ -24,6 +24,7 @@ import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.firbase.RealtimeDbRepository
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.databinding.FragmentChoosingDictionaryBinding
+import com.nagel.wordnotification.presentation.ConfirmationDialog
 import com.nagel.wordnotification.presentation.base.BaseFragment
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import com.nagel.wordnotification.presentation.navigator.navigator
@@ -133,7 +134,13 @@ class ChoosingDictionaryFragment : BaseFragment() {
             edit = ::showEditDictionaryDialog,
             copy = ::copyDictionary
         ) {
-            //TODO спрашивать действительно ли хотят удалить
+            showConfirmationDialog(dictionary)
+        }.show(parentFragmentManager, null)
+    }
+
+    private fun showConfirmationDialog(dictionary: Dictionary) {
+        val text = getString(R.string.delete_s, dictionary.name)
+        ConfirmationDialog(text) {
             viewModel.deleteDictionary(dictionary) {
                 Utils.deleteNotification(dictionary.wordList)
             }

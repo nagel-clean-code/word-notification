@@ -17,6 +17,7 @@ import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.databinding.PopupEditWordBinding
 import com.nagel.wordnotification.utils.GlobalFunction
+import com.nagel.wordnotification.utils.RotationAnimator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,6 +34,8 @@ class EditWordDialog(
 
     @Inject
     lateinit var dictionaryRepository: DictionaryRepository
+
+    private lateinit var rotationAnimatorReloadIcon: RotationAnimator
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,10 +58,16 @@ class EditWordDialog(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.apply {
+            rotationAnimatorReloadIcon =
+                RotationAnimator(0, viewLifecycleOwner.lifecycleScope, swapIcon)
+            swapIcon.setOnClickListener {
+                swapWords()
+                rotationAnimatorReloadIcon.rotationLeft()
+            }
             saveButton.setOnClickListener {
                 Utils.deleteNotification(word)
-                word.textFirst = binding.firstWord.text.toString()
-                word.textLast = binding.lastWord.text.toString()
+                word.textFirst = firstWord.text.toString()
+                word.textLast = lastWord.text.toString()
                 word.uniqueId = GlobalFunction.generateUniqueId()
                 progressBar.isVisible = true
                 lifecycleScope.launch(Dispatchers.IO) {
@@ -70,6 +79,12 @@ class EditWordDialog(
                 }
             }
         }
+    }
+
+    private fun swapWords() = with(binding) {
+        val buf = firstWord.text
+        firstWord.text = lastWord.text
+        lastWord.text = buf
     }
 
     /** Фокусировка на ввод текста и автоматическое появление клавиатуры для ввода */
