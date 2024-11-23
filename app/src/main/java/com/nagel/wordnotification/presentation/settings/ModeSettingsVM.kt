@@ -9,10 +9,12 @@ import com.nagel.wordnotification.core.services.Utils
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.dictionaries.entities.Word
+import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.data.settings.SettingsRepository
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import com.nagel.wordnotification.presentation.base.BaseViewModel
 import com.nagel.wordnotification.presentation.navigator.NavigatorV2
+import com.nagel.wordnotification.utils.GlobalFunction
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +28,8 @@ class ModeSettingsVM @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val dictionaryRepository: DictionaryRepository,
     private val notificationAlgorithm: NotificationAlgorithm,
-    private val navigator: NavigatorV2
+    private val navigator: NavigatorV2,
+    private var sessionRepository: SessionRepository
 ) : BaseViewModel() {
 
     var idDictionary: Long = -1
@@ -59,11 +62,16 @@ class ModeSettingsVM @Inject constructor(
 
     fun resettingAlgorithm() {
         val currentTime = Date().time
+        val idWord = sessionRepository.getCurrentWordIdNotification()
         viewModelScope.launch(Dispatchers.IO) {
             dictionary?.apply {
                 resetHistory(wordList)
                 wordList.forEach { word ->
                     val newWord = word.apply {
+                        if (this.idWord == idWord) {
+                            Utils.deleteNotification(this)
+                            uniqueId = GlobalFunction.generateUniqueId()
+                        }
                         lastDateMention = currentTime
                         learnStep = 0
                         allNotificationsCreated = false
@@ -71,7 +79,6 @@ class ModeSettingsVM @Inject constructor(
                     dictionaryRepository.updateWord(newWord)
                 }
                 withContext(Dispatchers.Main) {
-                    Utils.deleteNotification(wordList)
                     notificationAlgorithm.createNotification()
                     navigator.toast(R.string.algorithm_has_been_reset)
                 }

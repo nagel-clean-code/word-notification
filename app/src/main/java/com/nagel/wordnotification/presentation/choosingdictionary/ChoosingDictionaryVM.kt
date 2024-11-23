@@ -3,9 +3,9 @@ package com.nagel.wordnotification.presentation.choosingdictionary
 import androidx.lifecycle.viewModelScope
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.algorithms.NotificationAlgorithm
+import com.nagel.wordnotification.core.services.Utils
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
-import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.data.settings.SettingsRepository
 import com.nagel.wordnotification.presentation.base.BaseViewModel
@@ -25,7 +25,7 @@ class ChoosingDictionaryVM @Inject constructor(
     val settingsRepository: SettingsRepository,
     private var navigatorV2: NavigatorV2,
     private val notificationAlgorithm: NotificationAlgorithm,
-    private var sessionRepository: SessionRepository,
+    private var sessionRepository: SessionRepository
 ) : BaseViewModel() {
 
     var idAccount = -1L
@@ -36,16 +36,17 @@ class ChoosingDictionaryVM @Inject constructor(
 
     fun toggleActiveDictionary(
         active: Boolean,
-        dictionary: Dictionary,
-        deleteNotification: (Word) -> Unit
+        dictionary: Dictionary
     ) {
         viewModelScope.launch {
             dictionaryRepository.updateIncludeDictionary(active, dictionary.idDictionary)
             if (active == false) {
                 val idWord = sessionRepository.getCurrentWordIdNotification()
-                dictionary.wordList.forEach {
-                    if (it.idWord == idWord) {
-                        deleteNotification.invoke(it)
+                dictionary.wordList.forEach { word ->
+                    if (word.idWord == idWord) {
+                        Utils.deleteNotification(word)
+                        word.uniqueId = GlobalFunction.generateUniqueId()
+                        dictionaryRepository.updateWord(word)
                     }
                 }
             }

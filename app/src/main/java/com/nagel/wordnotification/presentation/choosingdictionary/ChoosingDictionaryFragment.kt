@@ -119,9 +119,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
     }
 
     private fun toggleActiveDictionary(dictionary: Dictionary, active: Boolean) {
-        viewModel.toggleActiveDictionary(active, dictionary) { word ->
-            Utils.deleteNotification(word)
-        }
+        viewModel.toggleActiveDictionary(active, dictionary)
     }
 
     private fun openModeSettings(idDictionary: Long) {

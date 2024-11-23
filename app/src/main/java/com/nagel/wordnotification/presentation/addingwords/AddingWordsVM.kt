@@ -14,6 +14,7 @@ import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.presentation.base.BaseViewModel
 import com.nagel.wordnotification.presentation.navigator.NavigatorV2
+import com.nagel.wordnotification.utils.GlobalFunction
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -259,9 +260,7 @@ class AddingWordsVM @Inject constructor(
     fun tryCreateNotification() {
         if (loadedDictionaryFlow.value?.include == true) {
             viewModelScope.launch {
-                loadedDictionaryFlow.value?.let {
-                    updateNotification()
-                }
+                notificationAlgorithm.createNotification()
             }
         }
     }
@@ -272,6 +271,8 @@ class AddingWordsVM @Inject constructor(
             val word = dictionaryRepository.getWordById(idWord)
             word?.let {
                 Utils.deleteNotification(word)
+                word.uniqueId = GlobalFunction.generateUniqueId()
+                dictionaryRepository.updateWord(word)
             }
         }
         notificationAlgorithm.createNotification()
