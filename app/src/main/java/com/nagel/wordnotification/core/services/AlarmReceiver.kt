@@ -27,14 +27,14 @@ class AlarmReceiver : BroadcastReceiver() {
     private var currentType = 1
 
     override fun onReceive(context: Context, intent: Intent) {
-        Log.d("CoroutineWorker", "Intent: $intent")
+        Log.d("CoroutineWorker", "Intent.extras: ${intent.extras}")
         val notificationDto = Utils.getDtoFromJson(context, intent)
         currentType = intent.getIntExtra(TYPE, TYPE_ANSWER)
         notificationDto?.let {
             Log.d("CoroutineWorker", "Сработал ${notificationDto.text}")
             newNotification(context, notificationDto)
         } ?: kotlin.run {
-            val json = intent.getStringExtra(Constants.TAKE_AWAY)
+            val json = intent.getStringExtra(TAKE_AWAY)
             Log.d("Json:", json.toString())
             Log.d("currentType:", currentType.toString())
             Utils.showError(context, "notificationDto = null")

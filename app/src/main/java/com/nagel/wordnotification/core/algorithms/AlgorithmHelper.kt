@@ -6,6 +6,7 @@ import android.content.Intent
 import android.util.Log
 import androidx.core.content.ContextCompat
 import com.google.gson.Gson
+import com.nagel.wordnotification.Constants.TAKE_AWAY
 import com.nagel.wordnotification.app.App
 import com.nagel.wordnotification.core.services.AlarmReceiver
 import com.nagel.wordnotification.core.services.NotificationDto
@@ -23,7 +24,7 @@ object AlgorithmHelper {
         val appContext = App.get()
         val intent = Intent(appContext, AlarmReceiver::class.java)
         val json = Gson().toJson(word)
-        intent.putExtra("TAKE_AWAY", json)
+        intent.putExtra(TAKE_AWAY, json)
         val pendingIntent = PendingIntent.getBroadcast(
             appContext,
             word.uniqueId + word.step,
@@ -39,10 +40,6 @@ object AlgorithmHelper {
     }
 
     fun nextAvailableDate(lastTime: Long, mode: ModeSettingsDto): Long {
-        Log.d(
-            "CoroutineWorker:",
-            "currentMode::: workingTimeInterval: ${mode.workingTimeInterval}"
-        )
         var time = lastTime
         fun goBeginningDay() {
             val c = Calendar.getInstance()

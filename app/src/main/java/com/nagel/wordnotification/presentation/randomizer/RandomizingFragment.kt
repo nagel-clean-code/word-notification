@@ -53,17 +53,24 @@ class RandomizingFragment : BaseFragment() {
     }
 
     private fun onClickAnswer() = with(binding) {
-        if (translation.text == EMPTY_WORD) {
-            translation.text = if (translation.tag as? Boolean != true) {
-                viewModel.currentWord.value?.textLast ?: ""
-            } else {
-                viewModel.currentWord.value?.textFirst ?: ""
-            }
-            root.postDelayed({
+        if (translation.tag as? Boolean != true) {
+            if (translation.text != EMPTY_WORD) {
                 viewModel.nextWord()
-            }, DURATION_SHOW_ANSWER)
+            } else {
+                translation.text = viewModel.currentWord.value?.textLast ?: ""
+                root.postDelayed({
+                    viewModel.nextWord()
+                }, DURATION_SHOW_ANSWER)
+            }
         } else {
-            viewModel.nextWord()
+            if (word.text != EMPTY_WORD) {
+                viewModel.nextWord()
+            } else {
+                word.text = viewModel.currentWord.value?.textFirst ?: ""
+                root.postDelayed({
+                    viewModel.nextWord()
+                }, DURATION_SHOW_ANSWER)
+            }
         }
     }
 
@@ -71,12 +78,13 @@ class RandomizingFragment : BaseFragment() {
         swapIcon.setOnClickListener {
             if (translation.tag as? Boolean != true) {
                 translation.tag = true
-                word.text = viewModel.currentWord.value?.textLast ?: ""
+                word.text = EMPTY_WORD
+                translation.text = viewModel.currentWord.value?.textLast ?: ""
             } else {
-                translation.tag = false
+                translation.text = EMPTY_WORD
                 word.text = viewModel.currentWord.value?.textFirst ?: ""
+                translation.tag = false
             }
-            translation.text = EMPTY_WORD
             rotationAnimatorReloadIcon.rotationLeft()
         }
         head.setOnClickListener {
@@ -133,12 +141,13 @@ class RandomizingFragment : BaseFragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.currentWord.collect() {
-                    word.text = if (translation.tag as? Boolean != true) {
-                        it?.textFirst
+                    if (translation.tag as? Boolean != true) {
+                        word.text = it?.textFirst
+                        translation.text = EMPTY_WORD
                     } else {
-                        it?.textLast
+                        word.text = EMPTY_WORD
+                        translation.text = it?.textLast
                     }
-                    translation.text = EMPTY_WORD
                     showDataCounter()
                 }
             }
@@ -184,16 +193,19 @@ class RandomizingFragment : BaseFragment() {
         binding.rememberTextView.text = "${viewModel.countRemember}"
     }
 
-    private fun openBookButtonClick() {
-        with(binding.translation) {
-            text = if (text.toString() == EMPTY_WORD) {
-                if (tag as? Boolean != true) {
-                    viewModel.currentWord.value?.textLast ?: ""
-                } else {
-                    viewModel.currentWord.value?.textFirst ?: ""
-                }
+    private fun openBookButtonClick() = with(binding) {
+        if (word.text.toString() != EMPTY_WORD && translation.text.toString() != EMPTY_WORD) {
+            if (translation.tag as? Boolean == true) {
+                word.text = EMPTY_WORD
             } else {
-                EMPTY_WORD
+                translation.text = EMPTY_WORD
+            }
+        } else {
+            if (word.text.toString() == EMPTY_WORD) {
+                word.text = viewModel.currentWord.value?.textFirst ?: ""
+            }
+            if (translation.text.toString() == EMPTY_WORD) {
+                translation.text = viewModel.currentWord.value?.textLast ?: ""
             }
         }
     }

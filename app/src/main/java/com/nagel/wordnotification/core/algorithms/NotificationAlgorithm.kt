@@ -86,22 +86,28 @@ class NotificationAlgorithm @Inject constructor(
             val mode = settingsRepository.getModeSettingsById(dic.idMode) ?: return null
             val dicWord = dic.wordList.filter {
                 !it.allNotificationsCreated
-            }.sortedBy { word ->
-                val nextDate = getNewDate(mode, word.learnStep, word.getLastDateMentionOrNull())
-                word.nextDate = nextDate
-                word.mode = mode
-                if (nextDate == null) { //Слово уже выучено
-                    Log.d("CoroutineWorker:", "Фильтрация: ${word.textFirst} || Long.MAX_VALUE")
-                    Long.MAX_VALUE
+            }.map { word ->
+                var nextDate = getNewDate(mode, word.learnStep, word.getLastDateMentionOrNull())
+                nextDate = if (nextDate != null) {
+                    AlgorithmHelper.nextAvailableDate(nextDate, mode.toMode())
                 } else {
-                    Log.d(
-                        "CoroutineWorker:",
-                        "Фильтрация: ${word.textFirst} || Мин:${(nextDate - currentTime) / 1000 / 60} STEP: ${word.learnStep}"
-                    )
-                    nextDate - currentTime
+                    null
                 }
+                word.apply {
+                    this.nextDate = nextDate
+                    this.mode = mode
+                }
+            }.sortedBy { word ->
+                Log.d(
+                    "CoroutineWorker:",
+                    "Фильтрация: ${word.textFirst} || Мин:${((word.nextDate ?: Long.MAX_VALUE) - currentTime) / 1000 / 60} STEP: ${word.learnStep}"
+                )
+                (word.nextDate ?: Long.MAX_VALUE) - currentTime
             }.getOrNull(0) //Берём слово с самой просроченной датой или самой ближайшей
-            Log.d("CoroutineWorker:", "ВЫБРАЛИ DICWORD: ${dicWord?.textFirst}")
+            Log.d(
+                "CoroutineWorker:",
+                "ВЫБРАЛИ в словаре ${dic.name}: ${dicWord?.textFirst} nextDate:${dicWord?.nextDate}"
+            )
             dicWord
         }.sortedBy {
             it ?: return@sortedBy null
