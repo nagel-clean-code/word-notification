@@ -206,7 +206,7 @@ class RandomizingFragment : BaseFragment() {
     private fun showDataCounter() = with(viewModel) {
         binding.notRememberTextView.text = "${getCountNotRemember()}"
         val counterWordsText =
-            "${getCountNotRemember() + getCountRemember()}/${listWord.size - getNumberOfMissed()}"
+            "${getCountNotRemember() + getCountRemember()}/${listWord.size - getNumberOfMissed() + 1}"
         binding.counterWords.text = counterWordsText
         binding.rememberTextView.text = "${getCountRemember()}"
     }

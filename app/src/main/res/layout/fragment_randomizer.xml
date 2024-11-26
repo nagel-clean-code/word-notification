@@ -197,6 +197,7 @@
             android:layout_gravity="end|bottom"
             android:layout_marginEnd="70dp"
             android:layout_marginBottom="110dp"
+            android:background="@android:color/transparent"
             android:rotation="90"
             android:src="@drawable/arrow" />
 
@@ -207,6 +208,7 @@
             android:layout_gravity="start|bottom"
             android:layout_marginStart="70dp"
             android:layout_marginBottom="110dp"
+            android:background="@android:color/transparent"
             android:rotation="270"
             android:src="@drawable/arrow" />
 

@@ -69,7 +69,7 @@ class RandomizingVM @Inject constructor(
     fun getCountNotRemember() = listPastIndexes.count { it.second == false }
 
     fun getNumberOfMissed(): Int = listPastIndexes.filterIndexed { index, pair ->
-        index < positionBack
+        index < positionBack+1
     }.count {
         it.second == null
     }
@@ -101,7 +101,11 @@ class RandomizingVM @Inject constructor(
         listPastIndexes[positionBack] = new
     }
 
-    private fun isFinish() = (listIndexes1.isEmpty() && (listPastIndexes.size > 0))
+    private fun isFinish(): Boolean{
+        println("getCountRemember: ${getCountRemember()}, getCountNotRemember:${getCountNotRemember()}, listWord.size: ${listWord.size}, getNumberOfMissed(): ${getNumberOfMissed()}")
+        return getCountRemember() + getCountNotRemember() == listWord.size - getNumberOfMissed()
+    }
+//    private fun isFinish() = (listIndexes1.isEmpty() && (listPastIndexes.size > 0) && positionBack + 1 >= listPastIndexes.size) //TODO  переделать
 
     fun nextWord() {
         if (listWord.isEmpty()) {
@@ -116,15 +120,15 @@ class RandomizingVM @Inject constructor(
             currentIx = -1
             positionBack = -1
         }
-        if (listIndexes1.isEmpty()) { //Я так понял тут достигли конца
+        ++positionBack
+        if (listIndexes1.isEmpty()) {
             initList1()
         }
         val randomIx = (0 until listIndexes1.size).random()
         val wordIx = listIndexes1[randomIx]
 
-        ++positionBack
         currentIx = wordIx
-        listPastIndexes.add(currentIx to null)
+        listPastIndexes.add(wordIx to null)
         showWord(listWord[wordIx])
         listIndexes1.removeAt(randomIx)
     }
