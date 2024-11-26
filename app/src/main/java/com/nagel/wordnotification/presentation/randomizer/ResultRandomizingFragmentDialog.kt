@@ -13,6 +13,7 @@ import com.nagel.wordnotification.databinding.ResultRandomizingDialogBinding
 class ResultRandomizingFragmentDialog(
     private val remembers: Int,
     private val countWords: Int,
+    private val closeDialog: () -> Unit
 ) : DialogFragment() {
 
     private lateinit var binding: ResultRandomizingDialogBinding
@@ -37,6 +38,10 @@ class ResultRandomizingFragmentDialog(
         initListeners()
     }
 
+    override fun onDestroy() {
+        closeDialog.invoke()
+        super.onDestroy()
+    }
 
     private fun initListeners() {
         binding.repeat.setOnClickListener {

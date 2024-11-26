@@ -75,6 +75,22 @@ class RandomizingFragment : BaseFragment() {
     }
 
     private fun initListeners() = with(binding) {
+        word.setOnClickListener {
+            if (word.text.toString() == EMPTY_WORD) {
+                openBookButtonClick()
+            }
+        }
+        translation.setOnClickListener {
+            if (translation.text.toString() == EMPTY_WORD) {
+                openBookButtonClick()
+            }
+        }
+        nextButton.setOnClickListener {
+            viewModel.missWord()
+        }
+        prevButton.setOnClickListener {
+            viewModel.goBackPreviousWord()
+        }
         swapIcon.setOnClickListener {
             if (translation.tag as? Boolean != true) {
                 translation.tag = true
@@ -167,9 +183,10 @@ class RandomizingFragment : BaseFragment() {
                         ResultRandomizingFragmentDialog(
                             it.first,
                             it.second
-                        ).show(parentFragmentManager, null)
-                        translation.text = EMPTY_WORD
-                        showDataCounter()
+                        ) {
+                            translation.text = EMPTY_WORD
+                            showDataCounter()
+                        }.show(parentFragmentManager, null)
                     }
                 }
             }
@@ -186,11 +203,12 @@ class RandomizingFragment : BaseFragment() {
         }
     }
 
-    private fun showDataCounter() {
-        binding.notRememberTextView.text = "${viewModel.countNotRemember}"
-        binding.counterWords.text =
-            "${viewModel.countNotRemember + viewModel.countRemember}/${viewModel.listWord.size}"
-        binding.rememberTextView.text = "${viewModel.countRemember}"
+    private fun showDataCounter() = with(viewModel) {
+        binding.notRememberTextView.text = "${getCountNotRemember()}"
+        val counterWordsText =
+            "${getCountNotRemember() + getCountRemember()}/${listWord.size - getNumberOfMissed()}"
+        binding.counterWords.text = counterWordsText
+        binding.rememberTextView.text = "${getCountRemember()}"
     }
 
     private fun openBookButtonClick() = with(binding) {

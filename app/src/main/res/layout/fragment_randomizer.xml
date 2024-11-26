@@ -190,6 +190,26 @@
                 android:src="@drawable/book_icon" />
         </FrameLayout>
 
+        <ImageView
+            android:id="@+id/nextButton"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_gravity="end|bottom"
+            android:layout_marginEnd="70dp"
+            android:layout_marginBottom="110dp"
+            android:rotation="90"
+            android:src="@drawable/arrow" />
+
+        <ImageView
+            android:id="@+id/prevButton"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_gravity="start|bottom"
+            android:layout_marginStart="70dp"
+            android:layout_marginBottom="110dp"
+            android:rotation="270"
+            android:src="@drawable/arrow" />
+
         <LinearLayout
             style="@style/width_match_parent_max_600"
             android:layout_height="wrap_content"

@@ -24,14 +24,15 @@ class RandomizingVM @Inject constructor(
     val loadingDictionaries = MutableStateFlow<List<Dictionary>?>(null)
     val listWord = mutableListOf<Word>()
     private val listIndexes1 = mutableListOf<Int>()
+    private val listPastIndexes = mutableListOf<Pair<Int, Boolean?>>()
     val selectedDictionarySet = mutableSetOf<String>()
-    var countRemember = 0
-    var countNotRemember = 0
+    private var currentIx: Int = -1
+    private var positionBack = -1
 
     init {
         viewModelScope.launch {
             val session = sessionRepository.getSession()
-            session?.account?.id?.let { id ->
+            session.account?.id?.let { id ->
                 dictionaryRepository.loadDictionariesFlow(id).collect() { dictionaries ->
                     dictionaries.forEach {
                         selectedDictionarySet.add(it.name)
@@ -44,9 +45,10 @@ class RandomizingVM @Inject constructor(
     }
 
     private fun initWords() {
-        countRemember = 0
-        countNotRemember = 0
+        currentIx = -1
+        positionBack = -1
         listIndexes1.clear()
+        listPastIndexes.clear()
         listWord.clear()
         loadingDictionaries.value?.forEach {
             if (selectedDictionarySet.contains(it.name)) {
@@ -62,6 +64,16 @@ class RandomizingVM @Inject constructor(
         }
     }
 
+    fun getCountRemember() = listPastIndexes.count { it.second == true }
+
+    fun getCountNotRemember() = listPastIndexes.count { it.second == false }
+
+    fun getNumberOfMissed(): Int = listPastIndexes.filterIndexed { index, pair ->
+        index < positionBack
+    }.count {
+        it.second == null
+    }
+
     fun selectedDictionary(name: String) {
         selectedDictionarySet.add(name)
         initWords()
@@ -73,18 +85,23 @@ class RandomizingVM @Inject constructor(
     }
 
     fun notRemember() {
-        if (!isFinish() || countRemember + countNotRemember < listWord.size) {
-            ++countNotRemember
+        if (!isFinish() || listPastIndexes.size - 1 < listWord.size) {
+            updateAnswer(false)
         }
     }
 
     fun remember() {
-        if (!isFinish() || countRemember + countNotRemember < listWord.size) {
-            ++countRemember
+        if (!isFinish() || listPastIndexes.size - 1 < listWord.size) {
+            updateAnswer(true)
         }
     }
 
-    private fun isFinish() = (listIndexes1.isEmpty() && (countRemember > 0 || countNotRemember > 0))
+    private fun updateAnswer(isRemember: Boolean) {
+        val new = listPastIndexes[positionBack].copy(second = isRemember)
+        listPastIndexes[positionBack] = new
+    }
+
+    private fun isFinish() = (listIndexes1.isEmpty() && (listPastIndexes.size > 0))
 
     fun nextWord() {
         if (listWord.isEmpty()) {
@@ -92,19 +109,43 @@ class RandomizingVM @Inject constructor(
             return
         }
         if (isFinish()) {
-            val result = Pair(countRemember, listWord.size)
-            countRemember = 0
-            countNotRemember = 0
+            val result = Pair(getCountRemember(), listWord.size - getNumberOfMissed())
             showResult.value = result
             showResult.value = null
+            listPastIndexes.clear()
+            currentIx = -1
+            positionBack = -1
         }
-        if (listIndexes1.isEmpty()) {
+        if (listIndexes1.isEmpty()) { //Я так понял тут достигли конца
             initList1()
         }
         val randomIx = (0 until listIndexes1.size).random()
         val wordIx = listIndexes1[randomIx]
+
+        ++positionBack
+        currentIx = wordIx
+        listPastIndexes.add(currentIx to null)
         showWord(listWord[wordIx])
         listIndexes1.removeAt(randomIx)
+    }
+
+    fun missWord() {
+        if (positionBack + 1 >= listPastIndexes.size) {
+            nextWord()
+        } else {
+            val pos = listPastIndexes[++positionBack].first
+            showWord(listWord[pos])
+        }
+    }
+
+    fun goBackPreviousWord() {
+        if (listWord.isEmpty()) {
+            showWord(Word(0, EMPTY_WORD, EMPTY_WORD))
+            return
+        }
+        if (listPastIndexes.isEmpty() || positionBack <= 0) return
+        val lastIx = listPastIndexes[--positionBack]
+        showWord(listWord[lastIx.first])
     }
 
     private fun showWord(word: Word) {
