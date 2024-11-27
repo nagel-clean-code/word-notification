@@ -77,5 +77,7 @@ data class Word(
 
     companion object {
         const val THERE_IS_NO_DATE_MENTION = -1L
+
+        fun createEmptyWord(): Word = Word(-1, "", "")
     }
 }

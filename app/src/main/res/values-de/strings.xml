@@ -110,4 +110,23 @@
     <string name="reset_text_algorithm">Alle Wörter in diesem Wörterbuch werden auf Schritt 0 zurückgesetzt, abwerfen?</string>
     <string name="algorithm_has_been_reset">Der Algorithmus wurde zurückgesetzt</string>
 
+    <string name="in_25_seconds">In 25 Sekunden</string>
+    <string name="in_one_minute">Nach 1 Minute</string>
+    <string name="in_2_minutes">In 2 Minuten</string>
+    <string name="in_5_minutes">In 5 Minuten</string>
+    <string name="in_10_minutes">In 10 Minuten</string>
+    <string name="in_20_minute">In 20 Minuten</string>
+    <string name="in_30_minute">Nach 30 Minuten</string>
+    <string name="after_1_hour">Nach 1 Stunde</string>
+    <string name="after_5_hour">In 5 Stunden</string>
+    <string name="after_8_hours">Nach 8 Stunden</string>
+    <string name="after_1_day">Nach 1 Tag</string>
+    <string name="after_5_day">In 5 Tagen</string>
+    <string name="after_25_day">Nach 25 Tagen</string>
+    <string name="after_21_days">Nach 21 Tagen</string>
+    <string name="after_4_months">Nach 4 Monaten</string>
+    <string name="after_6_months">Nach 6 Monaten</string>
+
+    <string name="show_intervals">Intervalle anzeigen</string>
+
 </resources>

@@ -8,8 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import androidx.fragment.app.DialogFragment
+import com.nagel.wordnotification.core.algorithms.Algorithm
+import com.nagel.wordnotification.core.algorithms.ForgetfulnessCurveLong
+import com.nagel.wordnotification.core.algorithms.ForgetfulnessCurveShort
+import com.nagel.wordnotification.core.algorithms.PlateauEffect
 import com.nagel.wordnotification.data.dictionaries.entities.Word
+import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import com.nagel.wordnotification.databinding.InformationDialogBinding
+import com.nagel.wordnotification.presentation.addingwords.worddetails.WordDetailsDialog
 
 class InformationDialog() : DialogFragment() {
 
@@ -33,12 +39,27 @@ class InformationDialog() : DialogFragment() {
         initListeners()
     }
 
-    private fun initListeners() {
-        binding.apply {
-            okButton.setOnClickListener {
-                dismiss()
-            }
+    private fun initListeners() = with(binding) {
+        okButton.setOnClickListener {
+            dismiss()
         }
+        showIntervals1.setOnClickListener {
+            showWordDetailsDialog(ForgetfulnessCurveShort)
+        }
+        showIntervals2.setOnClickListener {
+            showWordDetailsDialog(ForgetfulnessCurveLong)
+        }
+        showIntervals3.setOnClickListener {
+            showWordDetailsDialog(PlateauEffect)
+        }
+    }
+
+    private fun showWordDetailsDialog(algorithm: Algorithm) {
+        WordDetailsDialog(
+            word = Word.createEmptyWord(),
+            isAlgorithmEnabled = true,
+            modeSettingsDto = ModeSettingsDto.createEmptyModeSettingsDto(algorithm)
+        ).show(childFragmentManager, WordDetailsDialog.TAG)
     }
 
     companion object {

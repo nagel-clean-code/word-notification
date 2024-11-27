@@ -12,6 +12,13 @@ object ForgetfulnessCurveShort : Algorithm {
         4 to 24 * 60 * 60,
     )
 
+    private val mapDateText = mapOf(
+        1 to R.string.in_one_minute,
+        2 to R.string.in_20_minute,
+        3 to R.string.after_8_hours,
+        4 to R.string.after_1_day
+    )
+
     override fun getNewDate(lastStep: Int, currentTime: Long): Long? {
         val move = mapDate[lastStep + 1]
         return if (move != null) {
@@ -20,6 +27,8 @@ object ForgetfulnessCurveShort : Algorithm {
             null
         }
     }
+
+    override fun getDateText(lastStep: Int): Int? = mapDateText[lastStep]
 
     override fun getCountSteps(): Int = mapDate.size
 

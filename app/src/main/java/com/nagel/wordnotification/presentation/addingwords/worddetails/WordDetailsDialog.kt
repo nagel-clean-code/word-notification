@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
@@ -30,12 +31,15 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class WordDetailsDialog(
     private val word: Word,
-    private val idMode: Long,
-    private val isAlgorithmEnabled: Boolean
+    private val idMode: Long? = null,
+    private val isAlgorithmEnabled: Boolean,
+    private val modeSettingsDto: ModeSettingsDto? = null
 ) : DialogFragment() {
 
     private lateinit var binding: WordDetailsDialogBinding
     private val viewModel: WordDetailsVM by viewModels()
+
+    private fun isDemonstrationOfIntervals() = idMode == null
 
     @SuppressLint("SetTextI18n")
     override fun onCreateView(
@@ -47,44 +51,70 @@ class WordDetailsDialog(
         dialog?.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         setStyle(STYLE_NO_FRAME, android.R.style.Theme)
-
-        binding.name.text = word.textFirst + " - " + word.textLast
+        if (isDemonstrationOfIntervals()) {
+            binding.name.isVisible = false
+            binding.convertDatesIcon.isVisible = false
+        } else {
+            binding.name.text = word.textFirst + " - " + word.textLast
+        }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initListeners()
-        viewModel.loadMode(idMode)
+        if (isDemonstrationOfIntervals()) {
+            modeSettingsDto?.let {
+                initDate(modeSettingsDto)
+            }
+        } else {
+            idMode?.let { viewModel.loadMode(idMode) }
+        }
     }
 
-    private fun initListeners() {
-        binding.apply {
-            okButton.setOnClickListener {
-                dismiss()
+    private fun initListeners() = with(binding) {
+        convertDatesIcon.setOnClickListener {
+            val icon = if (convertDatesIcon.tag as? Boolean == true) {
+                convertDatesIcon.tag = false
+                ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.transition_icon1 //TODO заменить на SVG иконку
+                )
+            } else {
+                convertDatesIcon.tag = true
+                ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.transition_icon1
+                )
             }
-            viewModel.loadModeStatus.observe(viewLifecycleOwner) { status ->
-                when (status) {
-                    is PendingResult -> {
-                        progressBar.isVisible = true
-                        showSteps.isVisible = false
-                    }
+            convertDatesIcon.setImageDrawable(icon)
 
-                    is ErrorResult -> {
-                        Log.e(TAG, status.exception.toString(), status.exception)
+            showSteps.displayStepsIn(isWords = convertDatesIcon.tag as? Boolean == true)
+        }
+        okButton.setOnClickListener {
+            dismiss()
+        }
+        viewModel.loadModeStatus.observe(viewLifecycleOwner) { status ->
+            when (status) {
+                is PendingResult -> {
+                    progressBar.isVisible = true
+                    showSteps.isVisible = false
+                }
+
+                is ErrorResult -> {
+                    Log.e(TAG, status.exception.toString(), status.exception)
+                    showMessage(R.string.first_set_up_mode)
+                    dismiss()
+                }
+
+                is SuccessResult -> {
+                    if (status.data != null) {
+                        initDate(status.data)
+                        progressBar.isVisible = false
+                        showSteps.isVisible = true
+                    } else {
                         showMessage(R.string.first_set_up_mode)
                         dismiss()
-                    }
-
-                    is SuccessResult -> {
-                        if (status.data != null) {
-                            initDate(status.data)
-                            progressBar.isVisible = false
-                            showSteps.isVisible = true
-                        } else {
-                            showMessage(R.string.first_set_up_mode)
-                            dismiss()
-                        }
                     }
                 }
             }
@@ -99,7 +129,13 @@ class WordDetailsDialog(
             binding.algorithmName.text = algorithmName
         }
         val historyFlow = viewModel.loadNotificationHistory(word.idWord, mode.idMode)
-        initShowSteps(data, historyFlow)
+        if (isDemonstrationOfIntervals().not()) {
+            initShowSteps(data, historyFlow)
+        } else {
+            data.historyList = emptyList()
+            binding.showSteps.setData(data, isAlgorithmEnabled)
+            binding.showSteps.displayStepsIn(true)
+        }
     }
 
     private fun initShowSteps(

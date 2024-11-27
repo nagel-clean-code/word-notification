@@ -109,12 +109,21 @@ class ShowAlgorithmSteps(
         requestLayout()
     }
 
-    private fun generationText(): List<String> {
-        val historyList = dataForRendering!!.historyList
-        val steps = dataForRendering!!.mode.selectedMode?.getCountSteps() ?: return listOf()
-        val mode = dataForRendering!!.mode
+    /**
+     * @param isWords = true - отображаем даты шагов словами
+     *                  false - даты датами
+     */
+    fun displayStepsIn(isWords: Boolean) {
+        textList = generationText(isWords)
+        requestLayout()
+    }
+
+    private fun generationText(isWords: Boolean = false): List<String> {
+        val historyList = dataForRendering?.historyList ?: emptyList()
+        val steps = dataForRendering?.mode?.selectedMode?.getCountSteps() ?: return listOf()
+        val mode = dataForRendering?.mode ?: return listOf()
         val resultList = mutableListOf<String>()
-        var lastDate = dataForRendering!!.lastDateMention
+        var lastDate = dataForRendering?.lastDateMention ?: -1
         val currentTime = Date().time
         for (i in 0 until steps) {
             if (i < historyList.size) {
@@ -124,7 +133,13 @@ class ShowAlgorithmSteps(
                 val current: NotificationHistoryItem = historyList[i]
                 var text = context.getString(R.string.step)
                 text += " №${current.learnStep + 1}   "
-                text += dateTemplate.format(current.dateMention)
+                if (isWords) {
+                    mode.selectedMode?.getDateText(i + 1)?.let {
+                        text += context?.resources?.getString(it)
+                    }
+                } else {
+                    text += dateTemplate.format(current.dateMention)
+                }
                 resultList.add(text)
             } else {
                 var nextDate = dataForRendering!!.mode.selectedMode?.getNewDate(i, lastDate)
@@ -138,8 +153,13 @@ class ShowAlgorithmSteps(
                 }
                 var text = context.getString(R.string.step)
                 text += " №${i + 1}   "
-                if (isAlgorithmEnabled) {
+                if (isAlgorithmEnabled && !isWords) {
                     text += dateTemplate.format(nextDate)
+                }
+                if (isWords) {
+                    mode.selectedMode?.getDateText(i + 1)?.let {
+                        text += context?.resources?.getString(it)
+                    }
                 }
                 resultList.add(text)
                 lastDate = nextDate

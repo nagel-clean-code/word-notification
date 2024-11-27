@@ -19,6 +19,20 @@ object PlateauEffect : Algorithm {
         11 to 4 * 30 * 24 * 60 * 60,
     )
 
+    private val mapDateText = mapOf(
+        1 to R.string.in_one_minute,
+        2 to R.string.in_5_minutes,
+        3 to R.string.in_25_seconds,
+        4 to R.string.in_2_minutes,
+        5 to R.string.in_10_minutes,
+        6 to R.string.after_1_hour,
+        7 to R.string.after_5_hour,
+        8 to R.string.after_1_day,
+        9 to R.string.after_5_day,
+        10 to R.string.after_25_day,
+        11 to R.string.after_4_months
+    )
+
     override fun getNewDate(lastStep: Int, currentTime: Long): Long? {
         val move = mapDate[lastStep + 1]
         return if (move != null) {
@@ -27,6 +41,8 @@ object PlateauEffect : Algorithm {
             null
         }
     }
+
+    override fun getDateText(lastStep: Int): Int? = mapDateText[lastStep]
 
     override fun getCountSteps(): Int = mapDate.size
 

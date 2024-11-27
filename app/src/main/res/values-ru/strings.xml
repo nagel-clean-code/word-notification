@@ -110,4 +110,22 @@
     <string name="reset_text_algorithm">Все слова в этом словаре сбросятся до шага 0, сбрасывать?</string>
     <string name="algorithm_has_been_reset">Алгоритм сброшен</string>
 
+    <string name="in_25_seconds">Через 25 секунд</string>
+    <string name="in_one_minute">Через 1 минуту</string>
+    <string name="in_2_minutes">Через 2 минуты</string>
+    <string name="in_5_minutes">Через 5 минут</string>
+    <string name="in_10_minutes">Через 10 минут</string>
+    <string name="in_20_minute">Через 20 минут</string>
+    <string name="in_30_minute">Через 30 минут</string>
+    <string name="after_1_hour">Через 1 час</string>
+    <string name="after_5_hour">Через 5 часов</string>
+    <string name="after_8_hours">Через 8 часов</string>
+    <string name="after_1_day">Через 1 день</string>
+    <string name="after_5_day">Через 5 дней</string>
+    <string name="after_25_day">Через 25 дней</string>
+    <string name="after_21_days">Через 21 день</string>
+    <string name="after_4_months">Через 4 месяца</string>
+    <string name="after_6_months">Через 6 месяцев</string>
+
+    <string name="show_intervals">Показать интервалы</string>
 </resources>

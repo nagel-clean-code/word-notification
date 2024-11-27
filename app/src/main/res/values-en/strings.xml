@@ -110,4 +110,23 @@
     <string name="reset_text_algorithm">All words in this dictionary will be reset to step 0, reset it?</string>
     <string name="algorithm_has_been_reset">The algorithm has been reset</string>
 
+    <string name="in_25_seconds">After 25 seconds</string>
+    <string name="in_one_minute">After 1 minute</string>
+    <string name="in_2_minutes">After 2 minutes</string>
+    <string name="in_5_minutes">After 5 minutes</string>
+    <string name="in_10_minutes">After 10 minutes</string>
+    <string name="in_20_minute">In 20 minutes</string>
+    <string name="in_30_minute">After 30 minutes</string>
+    <string name="after_1_hour">After 1 hour</string>
+    <string name="after_5_hour">After 5 hours</string>
+    <string name="after_8_hours">After 8 hours</string>
+    <string name="after_1_day">After 1 day</string>
+    <string name="after_5_day">After 5 days</string>
+    <string name="after_25_day">After 25 days</string>
+    <string name="after_21_days">After 21 days</string>
+    <string name="after_4_months">After 4 months</string>
+    <string name="after_6_months">After 6 months</string>
+
+    <string name="show_intervals">Show intervals</string>
+
 </resources>

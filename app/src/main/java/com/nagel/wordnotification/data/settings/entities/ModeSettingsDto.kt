@@ -36,6 +36,18 @@ data class ModeSettingsDto(
         return IntervalsDto(sIHour, sIMinutes, eIHour, eIMinutes)
     }
 
+    companion object {
+        fun createEmptyModeSettingsDto(algorithm: Algorithm? = null): ModeSettingsDto {
+            return ModeSettingsDto(
+                idDictionary = -1,
+                selectedMode = algorithm,
+                sampleDays = false,
+                days = emptyList(),
+                timeIntervals = false,
+                workingTimeInterval = Pair("10:00", "21:30")
+            )
+        }
+    }
 }
 
 data class IntervalsDto(val sIHour: Int, val sIMinutes: Int, val eIHour: Int, val eIMinutes: Int) {
