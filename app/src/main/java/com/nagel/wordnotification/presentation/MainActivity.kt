@@ -9,10 +9,12 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
+import com.anotherdev.firebase.auth.FirebaseAuth
+import com.anotherdev.firebase.auth.FirebaseAuthRest
 import com.google.firebase.Firebase
+import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.analytics
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.nagel.wordnotification.Constants.BOOT_COMPLETED
 import com.nagel.wordnotification.Constants.HTC_QUICKBOOT_POWERON
@@ -40,6 +42,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), Navigator {
 
@@ -58,7 +61,7 @@ class MainActivity : AppCompatActivity(), Navigator {
 
     private val viewModel: MainActivityVM by viewModels()
     private lateinit var commonFirebaseAnalytics: FirebaseAnalytics
-    private lateinit var auth: FirebaseAuth
+    private lateinit var auth: com.google.firebase.auth.FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_WordNotification)
@@ -107,27 +110,44 @@ class MainActivity : AppCompatActivity(), Navigator {
 
     private fun initFirebase() {
         commonFirebaseAnalytics = Firebase.analytics
+
         auth = com.google.firebase.ktx.Firebase.auth
-        auth.signInAnonymously()
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    task.result.user?.zzb()?.metadata?.creationTimestamp?.let {
-                        val date = NotificationAlgorithm.dateFormat.format(it)
-                        Log.d("DATA::: Дата регистрации:", date + " $it")
-                    }
-                    Analytic.logEvent(
-                        FirebaseAnalytics.Event.LOGIN,
-                        FirebaseAnalytics.Param.METHOD,
-                        "successful"
-                    )
-                } else {
-                    Analytic.logEvent(
-                        FirebaseAnalytics.Event.LOGIN,
-                        FirebaseAnalytics.Param.METHOD,
-                        "fails"
-                    )
+        auth.signInAnonymously().addOnCompleteListener(this) { task ->
+            if (task.isSuccessful) {
+                task.result.user?.zzb()?.metadata?.creationTimestamp?.let {
+                    val date = NotificationAlgorithm.dateFormat.format(it)
+                    Log.d("DATA::: Дата регистрации:", date + " $it")
                 }
+                Analytic.logEvent(
+                    FirebaseAnalytics.Event.LOGIN,
+                    FirebaseAnalytics.Param.METHOD,
+                    "successful"
+                )
+            } else {
+                Analytic.logEvent(
+                    FirebaseAnalytics.Event.LOGIN,
+                    FirebaseAnalytics.Param.METHOD,
+                    "fails"
+                )
+                hmsFrbAuth() //TODO нужно сразу определять HMS или gms
             }
+        }
+
+    }
+
+    private fun hmsFrbAuth() {
+        val app = FirebaseApp.getInstance()
+        val auth = FirebaseAuthRest.getInstance(app)
+
+        auth.authStateChanges()
+            .doOnNext { auth: FirebaseAuth? ->
+                Log.i(
+                    "FAR",
+                    "user has signed in / out!"
+                )
+            }
+            .subscribe()
+        auth.signInAnonymously().subscribe()
     }
 
     override fun onPause() {
