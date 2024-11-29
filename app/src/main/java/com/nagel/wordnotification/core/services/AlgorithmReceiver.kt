@@ -45,13 +45,13 @@ class AlgorithmReceiver : BroadcastReceiver() {
                 val notificationDto = Utils.getDtoFromJson(context, intent)
                 if (notificationDto != null) {
                     if (type == TYPE_ANSWER) {
-                        updateCurrentWord(notificationDto)
                         val newIntent = Intent(context, AlarmReceiver::class.java)
                         newIntent.putExtra(TAKE_AWAY, json)
                         newIntent.putExtra(TYPE, TYPE_QUEST)
                         context.sendBroadcast(newIntent)
                         return@launch
                     } else {
+                        updateCurrentWord(notificationDto)
                         saveNotificationHistoryItem(notificationDto)
                         notificationAlgorithm.createNotification()
                     }
