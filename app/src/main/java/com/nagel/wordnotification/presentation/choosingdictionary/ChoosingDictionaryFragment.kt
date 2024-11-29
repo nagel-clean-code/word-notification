@@ -21,7 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.services.Utils
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
-import com.nagel.wordnotification.data.firbase.RealtimeDbRepository
+import com.nagel.wordnotification.data.firbase.RemoteDbRepository
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.databinding.FragmentChoosingDictionaryBinding
 import com.nagel.wordnotification.presentation.ConfirmationDialog
@@ -52,7 +52,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
     lateinit var fileReader: ImportInDb
 
     @Inject
-    lateinit var realtimeDb: RealtimeDbRepository
+    lateinit var realtimeDb: RemoteDbRepository
 
     private val fileImportIntentLauncher =
         registerForActivityResult(

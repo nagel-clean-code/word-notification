@@ -21,7 +21,7 @@ import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.algorithms.NotificationAlgorithm
 import com.nagel.wordnotification.core.analytecs.Analytic
 import com.nagel.wordnotification.core.services.NotificationRestorerReceiver
-import com.nagel.wordnotification.data.firbase.RealtimeDbRepository
+import com.nagel.wordnotification.data.firbase.RemoteDbRepository
 import com.nagel.wordnotification.databinding.ActivityMainBinding
 import com.nagel.wordnotification.presentation.addingwords.AddingWordsFragment
 import com.nagel.wordnotification.presentation.choosingdictionary.ChoosingDictionaryFragment
@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity(), Navigator {
     lateinit var navigator: MainNavigator
 
     @Inject
-    lateinit var realtimeDb: RealtimeDbRepository
+    lateinit var realtimeDb: RemoteDbRepository
 
     @Inject
     lateinit var fileReader: ImportInDb

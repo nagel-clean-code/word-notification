@@ -4,7 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
-import com.nagel.wordnotification.data.firbase.RealtimeDbRepository
+import com.nagel.wordnotification.data.firbase.RemoteDbRepository
 import com.nagel.wordnotification.presentation.base.BaseViewModel
 import com.nagel.wordnotification.presentation.navigator.NavigatorV2
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LibraryDictionariesVM @Inject constructor(
     private val dictionaryRepository: DictionaryRepository,
-    private val realtimeDb: RealtimeDbRepository,
+    private val realtimeDb: RemoteDbRepository,
     private var navigatorV2: NavigatorV2
 ) : BaseViewModel() {
 
@@ -43,7 +43,7 @@ class LibraryDictionariesVM @Inject constructor(
     }
 
     private fun combineStates(
-        state1: RealtimeDbRepository.DictionariesLibraryState,
+        state1: RemoteDbRepository.DictionariesLibraryState,
         state2: DictionariesLibraryScreenState
     ): DictionariesLibraryScreenState {
         if (state2.isLoading || state1.isLoading) {

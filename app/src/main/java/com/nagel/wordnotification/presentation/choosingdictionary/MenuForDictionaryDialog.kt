@@ -16,7 +16,7 @@ import com.nagel.wordnotification.R
 import com.nagel.wordnotification.app.App
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
-import com.nagel.wordnotification.data.firbase.RealtimeDbRepository
+import com.nagel.wordnotification.data.firbase.RemoteDbRepository
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.databinding.MenuForDictionaryBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -43,7 +43,7 @@ class MenuForDictionaryDialog(
     lateinit var sessionRepository: SessionRepository
 
     @Inject
-    lateinit var realtimeDb: RealtimeDbRepository
+    lateinit var realtimeDb: RemoteDbRepository
 
     private var idAuthorUUID: String? = null
     private var accountId: Long? = null

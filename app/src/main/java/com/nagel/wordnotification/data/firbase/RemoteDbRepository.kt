@@ -2,11 +2,6 @@ package com.nagel.wordnotification.data.firbase
 
 import android.content.ContentValues
 import android.util.Log
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
@@ -21,45 +16,19 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class RealtimeDbRepository @Inject constructor(
+class RemoteDbRepository @Inject constructor(
     private val navigator: MainNavigator
 ) {
     private val fireStore: FirebaseFirestore by lazy { Firebase.firestore }
-    private val realtimeDatabase: DatabaseReference by lazy {
-        FirebaseDatabase
-            .getInstance("https://notifire-7d04d-default-rtdb.europe-west1.firebasedatabase.app/")
-            .reference
-    }
 
     //    private var testing = Date().time < 1704300235000
     private var testing = false
     private var _state = MutableStateFlow(DictionariesLibraryState())
     var state = _state.asStateFlow()
 
-    private val observerForCurrentVersion = object : ValueEventListener {
-        override fun onDataChange(dataSnapshot: DataSnapshot) {
-            dataSnapshot.getValue(Int::class.java)?.let {
-                Log.d(ContentValues.TAG, "Текущея версия приложения: $it")
-                if (it > BuildConfig.VERSION_CODE) {
-                    showUpdateAppDialog()
-                }
-            }
-        }
-
-        override fun onCancelled(databaseError: DatabaseError) {
-            Log.w(
-                ContentValues.TAG,
-                "Отмена чтения текущей версии приложения",
-                databaseError.toException()
-            )
-        }
-    }
-
     init {
         requestGetDictionaries()
-        realtimeDatabase
-            .child("current_version_code")
-            .addValueEventListener(observerForCurrentVersion)
+        requestActualVersionApp()
     }
 
     fun requestGetDictionaries() {
@@ -85,15 +54,14 @@ class RealtimeDbRepository @Inject constructor(
             }
     }
 
-    private fun showUpdateAppDialog() {
+    private fun requestActualVersionApp() {
         fireStore.collection("current_viersion_app")
             .document("data")
             .get()
             .addOnSuccessListener { documentSnapshot ->
                 try {
-                    val result = documentSnapshot.toObject<CurrentVersionData>()!!
-                    navigator.whenActivityActive { mainActivity ->
-                        mainActivity.showUpdateAppDialog(result.mandatory, result.link)
+                    documentSnapshot.toObject<CurrentVersionData>()?.let {
+                        checkCurrentVersionApp(it)
                     }
                 } catch (e: Exception) {
                     Log.w(ContentValues.TAG, "Error getting documents: ", e)
@@ -104,13 +72,27 @@ class RealtimeDbRepository @Inject constructor(
             }
     }
 
+    private fun checkCurrentVersionApp(currentVersionData: CurrentVersionData) {
+        val option = currentVersionData.optionalUpdates.contains(BuildConfig.VERSION_CODE)
+        val mandatoryUpdates =
+            currentVersionData.mandatoryUpdates.contains(BuildConfig.VERSION_CODE)
+        if (option || mandatoryUpdates) {
+            navigator.whenActivityActive { mainActivity ->
+                mainActivity.showUpdateAppDialog(mandatoryUpdates, currentVersionData.link)
+            }
+        }
+    }
+
     fun isTesting() = testing
 
     internal data class CurrentVersionData(
         val link: String,
-        val mandatory: Boolean
+        val mandatory: Boolean,
+        val mandatoryUpdates: List<Int>,
+        val noUpdateNeeded: List<Int>,
+        val optionalUpdates: List<Int>
     ) {
-        constructor() : this("", false)
+        constructor() : this("", false, emptyList(), emptyList(), emptyList())
     }
 
     data class DictionariesLibrary(
