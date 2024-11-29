@@ -66,6 +66,7 @@ dependencies {
     implementation('com.google.firebase:firebase-auth-ktx') {
         exclude module: "play-services-safetynet"
     }
+    implementation 'com.github.anotherdev:firebase-auth-rest:0.1.8.1'
     implementation 'com.google.firebase:firebase-crashlytics:18.6.2'
 
     def lifecycle_version = "2.6.2"
