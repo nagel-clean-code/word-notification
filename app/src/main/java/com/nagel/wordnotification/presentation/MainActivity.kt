@@ -9,19 +9,16 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
-import com.anotherdev.firebase.auth.FirebaseAuth
-import com.anotherdev.firebase.auth.FirebaseAuthRest
-import com.google.firebase.Firebase
-import com.google.firebase.FirebaseApp
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.analytics
+import com.google.android.gms.common.GoogleApiAvailability
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import com.huawei.hms.push.HmsMessaging
 import com.nagel.wordnotification.Constants.BOOT_COMPLETED
 import com.nagel.wordnotification.Constants.HTC_QUICKBOOT_POWERON
 import com.nagel.wordnotification.Constants.QUICKBOOT_POWERON
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.algorithms.NotificationAlgorithm
-import com.nagel.wordnotification.core.analytecs.Analytic
 import com.nagel.wordnotification.core.services.NotificationRestorerReceiver
 import com.nagel.wordnotification.data.firbase.RemoteDbRepository
 import com.nagel.wordnotification.databinding.ActivityMainBinding
@@ -60,8 +57,7 @@ class MainActivity : AppCompatActivity(), Navigator {
     lateinit var fileReader: ImportInDb
 
     private val viewModel: MainActivityVM by viewModels()
-    private lateinit var commonFirebaseAnalytics: FirebaseAnalytics
-    private lateinit var auth: com.google.firebase.auth.FirebaseAuth
+    private var auth: FirebaseAuth? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_WordNotification)
@@ -69,7 +65,13 @@ class MainActivity : AppCompatActivity(), Navigator {
         navigatorInstance = navigator
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        initFirebase()
+
+        if(areGoogleServicesAvailable()) {
+            initFirebase()
+        }else{
+            setAutoInitHmsPushEnabled()
+        }
+
         binding.bottomNavigationView.setOnItemSelectedListener {
             val screen = when (it.itemId) {
                 R.id.add_in_dictionaries -> AddingWordsFragment.Screen()
@@ -95,6 +97,11 @@ class MainActivity : AppCompatActivity(), Navigator {
         viewModel.startNotification()
     }
 
+    private fun areGoogleServicesAvailable(): Boolean {
+        val availability = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this)
+        return availability == com.google.android.gms.common.ConnectionResult.SUCCESS
+    }
+
     private fun initReceiver() {
         val intentFilter = IntentFilter()
         intentFilter.addAction(BOOT_COMPLETED)
@@ -109,45 +116,21 @@ class MainActivity : AppCompatActivity(), Navigator {
     }
 
     private fun initFirebase() {
-        commonFirebaseAnalytics = Firebase.analytics
-
-        auth = com.google.firebase.ktx.Firebase.auth
-        auth.signInAnonymously().addOnCompleteListener(this) { task ->
+        auth = Firebase.auth
+        auth?.signInAnonymously()?.addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
                 task.result.user?.zzb()?.metadata?.creationTimestamp?.let {
                     val date = NotificationAlgorithm.dateFormat.format(it)
                     Log.d("DATA::: Дата регистрации:", date + " $it")
                 }
-                Analytic.logEvent(
-                    FirebaseAnalytics.Event.LOGIN,
-                    FirebaseAnalytics.Param.METHOD,
-                    "successful"
-                )
             } else {
-                Analytic.logEvent(
-                    FirebaseAnalytics.Event.LOGIN,
-                    FirebaseAnalytics.Param.METHOD,
-                    "fails"
-                )
-                hmsFrbAuth() //TODO нужно сразу определять HMS или gms
+                Log.d("Ошибка", "входа в fb")
             }
         }
-
     }
 
-    private fun hmsFrbAuth() {
-        val app = FirebaseApp.getInstance()
-        val auth = FirebaseAuthRest.getInstance(app)
-
-        auth.authStateChanges()
-            .doOnNext { auth: FirebaseAuth? ->
-                Log.i(
-                    "FAR",
-                    "user has signed in / out!"
-                )
-            }
-            .subscribe()
-        auth.signInAnonymously().subscribe()
+    private fun setAutoInitHmsPushEnabled() {
+        HmsMessaging.getInstance(this).isAutoInitEnabled = true
     }
 
     override fun onPause() {
