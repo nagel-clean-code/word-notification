@@ -73,7 +73,7 @@ class RoomDictionaryRepository @Inject constructor(
         val currentDictionary = dictionaryDbEntity?.toDictionary()
         currentDictionary?.wordList =
             getWords(currentDictionary!!.idDictionary).map { it.toWord() }.toMutableList()
-        return currentDictionary
+        return currentDictionary!!
     }
 
     override suspend fun loadDictionaryById(idDictionary: Long): Dictionary? {

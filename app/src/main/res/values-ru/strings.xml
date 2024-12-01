@@ -128,4 +128,13 @@
     <string name="after_6_months">Через 6 месяцев</string>
 
     <string name="show_intervals">Показать интервалы</string>
+
+    <string name="one_month">1 месяц</string>
+    <string name="one_year">1 год</string>
+    <string name="forever">Навсегда</string>
+    <string name="rub_x">%d₽</string>
+    <string name="get_premium">Получить PREMIUM</string>
+
+    <string name="purchases_not_available">На данный момент покупки не доступны, попробуйте позже</string>
+
 </resources>

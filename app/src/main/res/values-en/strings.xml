@@ -128,5 +128,12 @@
     <string name="after_6_months">After 6 months</string>
 
     <string name="show_intervals">Show intervals</string>
+    <string name="one_month">1 month</string>
+    <string name="one_year">1 year</string>
+    <string name="forever">Forever</string>
+    <string name="rub_x">%d₽</string>
+    <string name="get_premium">Get PREMIUM</string>
+
+    <string name="purchases_not_available">Purchases are not available at the moment, try again later</string>
 
 </resources>

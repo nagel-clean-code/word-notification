@@ -78,13 +78,13 @@ class WordDetailsDialog(
                 convertDatesIcon.tag = false
                 ContextCompat.getDrawable(
                     requireContext(),
-                    R.drawable.transition_icon1 //TODO заменить на SVG иконку
+                    R.drawable.swop_right
                 )
             } else {
                 convertDatesIcon.tag = true
                 ContextCompat.getDrawable(
                     requireContext(),
-                    R.drawable.transition_icon1
+                    R.drawable.swop_left
                 )
             }
             convertDatesIcon.setImageDrawable(icon)

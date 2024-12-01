@@ -8,6 +8,8 @@ import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import com.nagel.wordnotification.BuildConfig
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
+import com.nagel.wordnotification.data.firbase.entity.CurrentPrices
+import com.nagel.wordnotification.data.firbase.entity.FeatureToggles
 import com.nagel.wordnotification.presentation.navigator.MainNavigator
 import com.nagel.wordnotification.presentation.reader.ImportInCash
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +22,8 @@ class RemoteDbRepository @Inject constructor(
     private val navigator: MainNavigator
 ) {
     private val fireStore: FirebaseFirestore by lazy { Firebase.firestore }
+    private var currentPrices: CurrentPrices? = null
+    private var featureToggles: FeatureToggles? = null
 
     //    private var testing = Date().time < 1704300235000
     private var testing = false
@@ -27,8 +31,36 @@ class RemoteDbRepository @Inject constructor(
     var state = _state.asStateFlow()
 
     init {
+        getFeatureToggles()
+        requestPremiumInformation()
         requestGetDictionaries()
         requestActualVersionApp()
+    }
+
+    fun getFeatureToggles(
+        success: (FeatureToggles) -> Unit = {},
+        error: () -> Unit = {}
+    ) {
+        featureToggles?.let {
+            success(it)
+            return
+        }
+        fireStore.collection("featureToggle")
+            .document("toggles")
+            .get()
+            .addOnSuccessListener { documentSnapshot ->
+                try {
+                    featureToggles = documentSnapshot.toObject<FeatureToggles>()
+                    featureToggles?.let { success(it) }
+                } catch (e: Exception) {
+                    error.invoke()
+                    Log.w(ContentValues.TAG, "Error getting documents: ", e)
+                    return@addOnSuccessListener
+                }
+            }.addOnFailureListener { exception ->
+                error.invoke()
+                Log.w(ContentValues.TAG, "Error getting documents: ", exception)
+            }
     }
 
     fun requestGetDictionaries() {
@@ -50,6 +82,32 @@ class RemoteDbRepository @Inject constructor(
                 }
             }.addOnFailureListener { exception ->
                 _state.value = _state.value.copy(isError = true)
+                Log.w(ContentValues.TAG, "Error getting documents: ", exception)
+            }
+    }
+
+    fun requestPremiumInformation(
+        success: (CurrentPrices) -> Unit = {},
+        error: () -> Unit = {}
+    ) {
+        currentPrices?.let {
+            success(it)
+            return
+        }
+        fireStore.collection("premium")
+            .document("currentPrices")
+            .get()
+            .addOnSuccessListener { documentSnapshot ->
+                try {
+                    currentPrices = documentSnapshot.toObject<CurrentPrices>()
+                    currentPrices?.let { success(it) }
+                } catch (e: Exception) {
+                    error()
+                    Log.w(ContentValues.TAG, "Error getting documents: ", e)
+                    return@addOnSuccessListener
+                }
+            }.addOnFailureListener { exception ->
+                error()
                 Log.w(ContentValues.TAG, "Error getting documents: ", exception)
             }
     }

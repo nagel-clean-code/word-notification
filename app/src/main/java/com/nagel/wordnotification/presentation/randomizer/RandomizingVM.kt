@@ -69,7 +69,7 @@ class RandomizingVM @Inject constructor(
     fun getCountNotRemember() = listPastIndexes.count { it.second == false }
 
     fun getNumberOfMissed(): Int = listPastIndexes.filterIndexed { index, pair ->
-        index < positionBack+1
+        index < positionBack + 1
     }.count {
         it.second == null
     }
@@ -85,12 +85,14 @@ class RandomizingVM @Inject constructor(
     }
 
     fun notRemember() {
+        if (listWord.isEmpty()) return
         if (!isFinish() || listPastIndexes.size - 1 < listWord.size) {
             updateAnswer(false)
         }
     }
 
     fun remember() {
+        if (listWord.isEmpty()) return
         if (!isFinish() || listPastIndexes.size - 1 < listWord.size) {
             updateAnswer(true)
         }
@@ -101,8 +103,7 @@ class RandomizingVM @Inject constructor(
         listPastIndexes[positionBack] = new
     }
 
-    private fun isFinish(): Boolean{
-        println("getCountRemember: ${getCountRemember()}, getCountNotRemember:${getCountNotRemember()}, listWord.size: ${listWord.size}, getNumberOfMissed(): ${getNumberOfMissed()}")
+    private fun isFinish(): Boolean {
         return getCountRemember() + getCountNotRemember() == listWord.size - getNumberOfMissed()
     }
 //    private fun isFinish() = (listIndexes1.isEmpty() && (listPastIndexes.size > 0) && positionBack + 1 >= listPastIndexes.size) //TODO  переделать
