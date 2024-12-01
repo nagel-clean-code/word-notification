@@ -94,6 +94,7 @@
     <string name="automatic_translation">Automatische Übersetzung</string>
     <string name="apply">Anwenden</string>
     <string name="import_s">Importieren</string>
+    <string name="exports_s">Exportieren</string>
     <string name="dictionary">Wörterbuch</string>
     <string name="library">Bibliotheken</string>
     <string name="in_process_implementation">In der Vorverarbeitung</string>

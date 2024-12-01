@@ -2,8 +2,9 @@
     <dimen name="fab_margin">10dp</dimen>
     <dimen name="child_fab_margin">17dp</dimen>
     <dimen name="standard_12">15dp</dimen>
-    <dimen name="standard_23">10dp</dimen>
-    <dimen name="standard_75">75dp</dimen>
-    <dimen name="standard_120">120dp</dimen>
-    <dimen name="standard_165">165dp</dimen>
+    <dimen name="standard_30">30dp</dimen>
+    <dimen name="standard_75">60dp</dimen>
+    <dimen name="standard_120">110dp</dimen>
+    <dimen name="standard_165">160dp</dimen>
+    <dimen name="standard_210">210dp</dimen>
 </resources>

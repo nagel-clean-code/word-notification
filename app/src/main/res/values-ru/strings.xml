@@ -94,6 +94,7 @@
     <string name="automatic_translation">Автоперевод</string>
     <string name="apply">Применить</string>
     <string name="import_s">Импортировать</string>
+    <string name="exports_s">Экспортировать</string>
     <string name="dictionary">Словарь</string>
     <string name="library">Библиотека</string>
     <string name="in_process_implementation">В процессе реализации</string>

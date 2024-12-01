@@ -73,7 +73,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="@dimen/child_fab_margin"
-        android:layout_marginBottom="@dimen/standard_23"
+        android:layout_marginBottom="@dimen/standard_30"
         android:clipToPadding="false"
         android:gravity="center_vertical"
         android:padding="@dimen/standard_12"
@@ -105,7 +105,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="@dimen/child_fab_margin"
-        android:layout_marginBottom="@dimen/standard_23"
+        android:layout_marginBottom="@dimen/standard_30"
         android:clipToPadding="false"
         android:gravity="center_vertical"
         android:padding="@dimen/standard_12"
@@ -138,7 +138,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="@dimen/child_fab_margin"
-        android:layout_marginBottom="@dimen/standard_23"
+        android:layout_marginBottom="@dimen/standard_30"
         android:clipToPadding="false"
         android:gravity="center_vertical"
         android:padding="@dimen/standard_12"
@@ -161,6 +161,39 @@
             app:elevation="6dp"
             app:fabSize="mini"
             app:srcCompat="@drawable/import_icon"
+            app:tint="@color/gray_3" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/exportLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="@dimen/child_fab_margin"
+        android:layout_marginBottom="@dimen/standard_30"
+        android:clipToPadding="false"
+        android:gravity="center_vertical"
+        android:padding="@dimen/standard_12"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/text_background"
+            android:paddingHorizontal="10dp"
+            android:text="@string/exports_s"
+            android:textColor="@color/gray_3" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/exportButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            app:borderWidth="0dp"
+            app:elevation="6dp"
+            app:fabSize="mini"
+            app:srcCompat="@drawable/export_icon"
             app:tint="@color/gray_3" />
     </LinearLayout>
 

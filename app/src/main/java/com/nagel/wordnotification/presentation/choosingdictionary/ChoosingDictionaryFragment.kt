@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.FileProvider
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -18,8 +19,11 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.nagel.wordnotification.BuildConfig
 import com.nagel.wordnotification.R
+import com.nagel.wordnotification.app.App
 import com.nagel.wordnotification.core.services.Utils
+import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.firbase.RemoteDbRepository
 import com.nagel.wordnotification.data.session.SessionRepository
@@ -34,8 +38,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import javax.inject.Inject
-
 
 @AndroidEntryPoint
 class ChoosingDictionaryFragment : BaseFragment() {
@@ -53,6 +57,13 @@ class ChoosingDictionaryFragment : BaseFragment() {
 
     @Inject
     lateinit var realtimeDb: RemoteDbRepository
+
+    @Inject
+    lateinit var repository: DictionaryRepository
+
+    private var idAuthorUUID: String? = null
+    private var accountId: Long? = null
+    private var deleteFile: File? = null
 
     private val fileImportIntentLauncher =
         registerForActivityResult(
@@ -88,6 +99,10 @@ class ChoosingDictionaryFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        lifecycleScope.launch {
+            idAuthorUUID = sessionRepository.getSession().account?.idAuthorUUID
+            accountId = sessionRepository.getSession().account?.id
+        }
         initListeners()
         initAdapter()
     }
@@ -130,10 +145,79 @@ class ChoosingDictionaryFragment : BaseFragment() {
         MenuForDictionaryDialog(
             dictionary = dictionary,
             edit = ::showEditDictionaryDialog,
-            copy = ::copyDictionary
+            copy = ::copyDictionary,
+            exportDictionary = ::exportDictionary,
+            exportAllDictionary = ::exportAll,
         ) {
             showConfirmationDialog(dictionary)
         }.show(parentFragmentManager, null)
+    }
+
+    private fun exportDictionary(dictionary: Dictionary) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val file = createFile(dictionary)
+            writeDictionaries(listOf(dictionary), file)
+            withContext(Dispatchers.Main) {
+                sendFile(file)
+            }
+        }
+    }
+
+    private fun exportAll() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val file = createFile()
+            val dictionaries = repository.loadDictionaries(accountId!!)
+            writeDictionaries(dictionaries, file)
+            withContext(Dispatchers.Main) {
+                sendFile(file)
+            }
+        }
+    }
+
+    private fun createFile(dictionary: Dictionary? = null): File {
+        val name = dictionary?.name ?: requireContext().getString(R.string.my_dictionaries)
+        val file = File(App.get().filesDir, "$name.fire")
+        deleteFile = file
+        return file
+    }
+
+    private fun writeDictionaries(dictionaries: List<Dictionary>, file: File) {
+        file.printWriter().use { out ->
+            dictionaries.forEach() { current ->
+                out.print("{|${current.name}||$idAuthorUUID|}~")
+                current.wordList.forEach {
+                    it.apply {
+                        out.print("|$uniqueId||$textFirst||$textLast|~")
+                    }
+                }
+            }
+        }
+    }
+
+    private fun sendFile(file: File) {
+        try {
+            if (file.exists()) {
+                val uri = FileProvider.getUriForFile(
+                    requireContext(),
+                    BuildConfig.APPLICATION_ID + ".provider",
+                    file
+                )
+                val intent = Intent(Intent.ACTION_SEND)
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                intent.type = "*/*"
+                intent.putExtra(Intent.EXTRA_STREAM, uri)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK;
+                startActivity(intent)
+            }
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        deleteFile?.delete()
     }
 
     private fun showConfirmationDialog(dictionary: Dictionary) {
@@ -162,27 +246,25 @@ class ChoosingDictionaryFragment : BaseFragment() {
         navigator()?.showAddingWordsFragment()
     }
 
-    private fun initListeners() {
-        binding.apply {
-            fab.setOnClickListener {
-                if (View.GONE == fabBGLayout.visibility) {
-                    showFABMenu()
-                } else {
-                    closeFABMenu()
-                }
+    private fun initListeners() = with(binding) {
+        fab.setOnClickListener {
+            if (View.GONE == fabBGLayout.visibility) {
+                showFABMenu()
+            } else {
+                closeFABMenu()
             }
-
-            fabBGLayout.setOnClickListener { closeFABMenu() }
         }
-        binding.addButton.setOnClickListener {
+
+        fabBGLayout.setOnClickListener { closeFABMenu() }
+        addButton.setOnClickListener {
             showAddDictionaryDialog()
             closeFABMenu()
         }
-        binding.openLibrary.setOnClickListener {
+        openLibrary.setOnClickListener {
             navigator()?.showLibraryDictionariesFragment()
             closeFABMenu()
         }
-        binding.importButton.setOnClickListener {
+        importButton.setOnClickListener {
             if (realtimeDb.isTesting()) return@setOnClickListener
             try {
                 val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
@@ -193,6 +275,9 @@ class ChoosingDictionaryFragment : BaseFragment() {
             } catch (e: ActivityNotFoundException) {
                 e.printStackTrace()
             }
+        }
+        exportButton.setOnClickListener() {
+            exportAll()
         }
     }
 
@@ -215,11 +300,13 @@ class ChoosingDictionaryFragment : BaseFragment() {
             fabLayout1.visibility = View.VISIBLE
             fabLayout2.visibility = View.VISIBLE
             importLayout.visibility = View.VISIBLE
+            exportLayout.visibility = View.VISIBLE
             fabBGLayout.visibility = View.VISIBLE
             fab.animate().rotationBy(180F)
             fabLayout1.animate().translationY(-resources.getDimension(R.dimen.standard_75))
             fabLayout2.animate().translationY(-resources.getDimension(R.dimen.standard_120))
             importLayout.animate().translationY(-resources.getDimension(R.dimen.standard_165))
+            exportLayout.animate().translationY(-resources.getDimension(R.dimen.standard_210))
         }
     }
 
@@ -230,7 +317,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
             fabLayout1.animate().translationY(0f)
             fabLayout2.animate().translationY(0f)
             importLayout.animate().translationY(0f)
-            importLayout.animate().translationY(0f)
+            exportLayout.animate().translationY(0f)
                 .setListener(object : Animator.AnimatorListener {
                     override fun onAnimationStart(animator: Animator) {}
                     override fun onAnimationEnd(animator: Animator) {
@@ -238,6 +325,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
                             fabLayout1.visibility = View.GONE
                             fabLayout2.visibility = View.GONE
                             importLayout.visibility = View.GONE
+                            exportLayout.visibility = View.GONE
                         }
                     }
 
