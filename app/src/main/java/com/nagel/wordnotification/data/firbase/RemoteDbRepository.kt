@@ -45,13 +45,15 @@ class RemoteDbRepository @Inject constructor(
             success(it)
             return
         }
+
         fireStore.collection("featureToggle")
-            .document("toggles")
+            .document("allVersions")
             .get()
             .addOnSuccessListener { documentSnapshot ->
                 try {
-                    featureToggles = documentSnapshot.toObject<FeatureToggles>()
-                    featureToggles?.let { success(it) }
+                    documentSnapshot.toObject<FeatureToggles>()?.let {
+                        getTogglesCurrentVersion(it, success)
+                    }
                 } catch (e: Exception) {
                     error.invoke()
                     Log.w(ContentValues.TAG, "Error getting documents: ", e)
@@ -60,6 +62,30 @@ class RemoteDbRepository @Inject constructor(
             }.addOnFailureListener { exception ->
                 error.invoke()
                 Log.w(ContentValues.TAG, "Error getting documents: ", exception)
+            }
+    }
+
+    private fun getTogglesCurrentVersion(
+        mergeToggles: FeatureToggles,
+        success: (FeatureToggles) -> Unit,
+    ) {
+        fireStore.collection("featureToggle")
+            .document(BuildConfig.VERSION_NAME)
+            .get()
+            .addOnSuccessListener { documentSnapshot ->
+                try {
+                    featureToggles =
+                        documentSnapshot.toObject<FeatureToggles>()?.merge(mergeToggles)
+                    if (featureToggles == null) {
+                        featureToggles = mergeToggles
+                    }
+                    featureToggles?.let(success)
+                } catch (e: Exception) {
+                    success(mergeToggles)
+                    return@addOnSuccessListener
+                }
+            }.addOnFailureListener {
+                success(mergeToggles)
             }
     }
 
