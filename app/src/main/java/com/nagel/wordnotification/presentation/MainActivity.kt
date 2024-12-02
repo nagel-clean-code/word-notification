@@ -1,5 +1,6 @@
 package com.nagel.wordnotification.presentation
 
+import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
@@ -36,6 +37,7 @@ import com.nagel.wordnotification.presentation.reader.ImportInDb
 import com.nagel.wordnotification.presentation.settings.ModeSettingsFragment
 import com.nagel.wordnotification.utils.common.MessageUtils
 import dagger.hilt.android.AndroidEntryPoint
+import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -67,6 +69,9 @@ class MainActivity : AppCompatActivity(), Navigator {
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_WordNotification)
         super.onCreate(savedInstanceState)
+        if (savedInstanceState == null) {
+            AppMetrica.reportAppOpen(this)
+        }
         navigatorInstance = navigator
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -100,6 +105,11 @@ class MainActivity : AppCompatActivity(), Navigator {
         }
         initReceiver()
         viewModel.startNotification()
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        AppMetrica.reportAppOpen(intent)
     }
 
     private fun areGoogleServicesAvailable(): Boolean {

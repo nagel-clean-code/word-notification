@@ -49,10 +49,10 @@ android {
 
     buildTypes {
         debug {
-            signingConfig signingConfigs.config
+        //    signingConfig signingConfigs.config
         }
         release {
-            signingConfig signingConfigs.config
+          //  signingConfig signingConfigs.config //todo проверить прокатит иои нет для hms
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
