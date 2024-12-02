@@ -26,6 +26,7 @@ android {
                 arg("room.schemaLocation", "$projectDir/schemas")
             }
         }
+        resValue "string", "APP_METRICA_API_KEY", "$appMetricaApiKey"
     }
 
     signingConfigs {

@@ -24,6 +24,7 @@ import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.algorithms.ForgetfulnessCurveLong
 import com.nagel.wordnotification.core.algorithms.ForgetfulnessCurveShort
 import com.nagel.wordnotification.core.algorithms.PlateauEffect
+import com.nagel.wordnotification.core.analytecs.AppMetricaAnalyticPlatform
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import com.nagel.wordnotification.databinding.FragmentModeSettingsBinding
 import com.nagel.wordnotification.presentation.ConfirmationDialog
@@ -34,6 +35,7 @@ import com.nagel.wordnotification.presentation.navigator.NavigatorV2
 import com.nagel.wordnotification.presentation.premiumdialog.PremiumDialog
 import com.nagel.wordnotification.utils.common.showToast
 import dagger.hilt.android.AndroidEntryPoint
+import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -48,6 +50,10 @@ class ModeSettingsFragment : BaseFragment() {
 
     @Inject
     lateinit var navigatorV2: NavigatorV2
+
+    @Inject
+    lateinit var appMetrica: AppMetricaAnalyticPlatform
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -73,6 +79,7 @@ class ModeSettingsFragment : BaseFragment() {
             .addCallback(requireActivity(), object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     if (isEnabled) {
+                        AppMetrica.reportEvent("start_algorithm_on_back_press")
                         isEnabled = false
                         saveMode()
                     }
@@ -82,6 +89,7 @@ class ModeSettingsFragment : BaseFragment() {
     }
 
     private fun checkPermissions() {
+        //TODO переделать
         if (Build.VERSION.SDK_INT >= 33) {
             if (ContextCompat.checkSelfPermission(
                     requireContext(),
@@ -93,6 +101,8 @@ class ModeSettingsFragment : BaseFragment() {
                     arrayOf(POST_NOTIFICATIONS),
                     101
                 )
+//                appMetrica.changeStatusNotification(true) //TODO доделать
+
             }
         }
     }
@@ -127,6 +137,7 @@ class ModeSettingsFragment : BaseFragment() {
 
         initRadioButtons()
         saveButton.setOnClickListener {
+            AppMetrica.reportEvent("start_algorithm_button")
             navigatorV2.whenActivityActive {
                 it.goBack()
             }

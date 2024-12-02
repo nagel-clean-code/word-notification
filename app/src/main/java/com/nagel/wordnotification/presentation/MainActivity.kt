@@ -19,6 +19,7 @@ import com.nagel.wordnotification.Constants.HTC_QUICKBOOT_POWERON
 import com.nagel.wordnotification.Constants.QUICKBOOT_POWERON
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.algorithms.NotificationAlgorithm
+import com.nagel.wordnotification.core.analytecs.AppMetricaAnalyticPlatform
 import com.nagel.wordnotification.core.services.NotificationRestorerReceiver
 import com.nagel.wordnotification.data.firbase.RemoteDbRepository
 import com.nagel.wordnotification.databinding.ActivityMainBinding
@@ -56,6 +57,9 @@ class MainActivity : AppCompatActivity(), Navigator {
 
     @Inject
     lateinit var fileReader: ImportInDb
+
+    @Inject
+    lateinit var appMetrica: AppMetricaAnalyticPlatform
 
     private val viewModel: MainActivityVM by viewModels()
     private var auth: FirebaseAuth? = null
@@ -100,7 +104,9 @@ class MainActivity : AppCompatActivity(), Navigator {
 
     private fun areGoogleServicesAvailable(): Boolean {
         val availability = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this)
-        return availability == com.google.android.gms.common.ConnectionResult.SUCCESS
+        val isGms = availability == com.google.android.gms.common.ConnectionResult.SUCCESS
+        appMetrica.changeIsGmsBuild(isGms)
+        return isGms
     }
 
     private fun initReceiver() {

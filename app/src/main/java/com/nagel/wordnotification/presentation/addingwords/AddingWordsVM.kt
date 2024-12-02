@@ -17,6 +17,7 @@ import com.nagel.wordnotification.presentation.base.BaseViewModel
 import com.nagel.wordnotification.presentation.navigator.NavigatorV2
 import com.nagel.wordnotification.utils.GlobalFunction
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -216,6 +217,7 @@ class AddingWordsVM @Inject constructor(
 
     private suspend fun createNewUser() {
         val account = createAndSaveAccountInDb()
+        AppMetrica.setUserProfileID(account.idAuthorUUID)
         sessionRepository.saveAccount(account)
     }
 
