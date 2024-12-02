@@ -4,8 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
-import com.nagel.wordnotification.core.analytecs.Analytic
-import com.nagel.wordnotification.core.analytecs.ParametersAnalytics
 import java.util.UUID
 
 object GlobalFunction {
@@ -25,10 +23,6 @@ object GlobalFunction {
             startActivity(intent)
         } catch (e: Exception) {
             Log.e("PopupUpdateAppDialog", "Не удалось открыть ссылку", e)
-            Analytic.logEvent(
-                ParametersAnalytics.EXCEPTION,
-                ParametersAnalytics.EXCEPTION_OPEN_LINK, e.toString()
-            )
         }
     }
 }
