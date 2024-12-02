@@ -142,4 +142,13 @@
     <string name="copying_dictionaries_is_available">Das Kopieren von Wörterbüchern ist nur in einem PREMIUM-Abonnement verfügbar</string>
     <string name="it_is_available_to_configure_time_intervals">Sie können die Zeitintervalle nur in einem PREMIUM-Abonnement konfigurieren</string>
     <string name="randomizer_limit_text">Sie haben das Limit für die Verwendung des Randomizers pro Tag erreicht, kaufen PREMIUM oder schauen Sie sich Werbung für 5 zusätzliche Verwendungen an</string>
+
+    <string name="dictionary_export_is_available">Das Speichern des Algorithmus ist nur in einem PREMIUM-Abonnement verfügbar</string>
+    <string name="enable_state_of_algorithm">Den Status des Algorithmus in einer Datei speichern</string>
+    <string name="automatic_backup_to_google_disk">Automatische Sicherung auf Google Disk</string>
+    <string name="include">Einschließen</string>
+    <string name="export">Wörterbücher exportieren</string>
+    <string name="it_will_be_available_only_in_premium">Wird nur in einem PREMIUM-Abonnement verfügbar sein</string>
+
+    <string name="recommendation_list_2">1. Wenn Sie den Status des Algorithmus beibehalten, können Sie eine vollständige Sicherung Ihrer Wörterbücher erstellen. Wenn Sie dies nicht angeben, werden alle Ihre Algorithmen beim Export vom ersten Schritt an ausgeführt.\n\n2.Wenn Sie auf Google Disk sichern, können Sie Ihre Wörterbücher auch dann speichern, wenn Sie Ihr Telefon verloren haben.\n\n3.Sie können eine Importdatei manuell auf Ihrem Computer erstellen, um dies zu tun, erstellen Sie eine Formatdatei .txt und schreiben Sie Wörter im Format [Wort;Übersetzung] hinein</string>
 </resources>

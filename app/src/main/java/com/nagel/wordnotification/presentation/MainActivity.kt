@@ -25,6 +25,7 @@ import com.nagel.wordnotification.databinding.ActivityMainBinding
 import com.nagel.wordnotification.presentation.addingwords.AddingWordsFragment
 import com.nagel.wordnotification.presentation.choosingdictionary.ChoosingDictionaryFragment
 import com.nagel.wordnotification.presentation.choosingdictionary.library.LibraryDictionariesFragment
+import com.nagel.wordnotification.presentation.exportdictionaries.ExportFragment
 import com.nagel.wordnotification.presentation.navigator.MainNavigator
 import com.nagel.wordnotification.presentation.navigator.Navigator
 import com.nagel.wordnotification.presentation.profile.ProfileFragment
@@ -66,9 +67,9 @@ class MainActivity : AppCompatActivity(), Navigator {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if(areGoogleServicesAvailable()) {
+        if (areGoogleServicesAvailable()) {
             initFirebase()
-        }else{
+        } else {
             setAutoInitHmsPushEnabled()
         }
 
@@ -161,6 +162,10 @@ class MainActivity : AppCompatActivity(), Navigator {
 
     override fun showLibraryDictionariesFragment() {
         navigator.launchFragment(this, LibraryDictionariesFragment.Screen())
+    }
+
+    override fun showExportDictionariesFragment() {
+        navigator.launchFragment(this, ExportFragment.Screen())
     }
 
     override fun showModeSettingsFragment(idDictionary: Long) {

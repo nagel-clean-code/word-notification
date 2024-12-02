@@ -144,4 +144,13 @@
     <string name="copying_dictionaries_is_available">Copying dictionaries is only available in a PREMIUM subscription</string>
     <string name="it_is_available_to_configure_time_intervals">Time intervals can only be configured in a PREMIUM subscription</string>
     <string name="randomizer_limit_text">You have reached the daily usage limit of the randomizer, buy PREMIUM or watch ads for 5 additional uses</string>
+
+    <string name="dictionary_export_is_available">Saving the algorithm is only available in a PREMIUM subscription</string>
+    <string name="enable_state_of_algorithm">Save the state of the algorithm to a file</string>
+    <string name="automatic_backup_to_google_disk">Automatic backup to Google Disk</string>
+    <string name="include">Include</string>
+    <string name="export">Dictionary export</string>
+    <string name="it_will_be_available_only_in_premium">Will be available only in PREMIUM subscription</string>
+
+    <string name="recommendation_list_2">1. Saving the state of the algorithm allows you to create a full backup of your dictionaries. If you do not specify it, all your algorithms will start working from the first step when exporting.\n\n2.Backup to Google Disk will allow you to save your dictionaries even if you lose your phone.\n\n3.You can create an import file manually on your computer. To do this, create a format file.txt and write words into it in the format [Word;Translation]</string>
 </resources>

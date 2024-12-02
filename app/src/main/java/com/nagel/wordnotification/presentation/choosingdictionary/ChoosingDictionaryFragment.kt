@@ -285,7 +285,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
             }
         }
         exportButton.setOnClickListener() {
-            exportAll()
+            navigator()?.showExportDictionariesFragment()
         }
     }
 

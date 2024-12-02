@@ -10,6 +10,7 @@ interface Navigator {
     fun showAddingWordsFragment()
     fun showRandomizingFragment()
     fun showLibraryDictionariesFragment()
+    fun showExportDictionariesFragment()
     fun showModeSettingsFragment(idDictionary: Long)
     fun showChoosingDictionaryFragment()
     fun showProfileFragment()

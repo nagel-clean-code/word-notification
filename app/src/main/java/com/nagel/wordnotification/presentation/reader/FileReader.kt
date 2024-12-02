@@ -60,7 +60,7 @@ open class FileReader(
             while (true) {
                 val head = readHead(str)
                 val dictionary =
-                    dictionaryRepository.createDictionary(head.name + "(ex)", myIdAccount!!)
+                    dictionaryRepository.createDictionary(head.name + "(new)", myIdAccount!!)
                 val words = readWords(str, dictionary.idDictionary)
                 words.forEach { word ->
                     dictionaryRepository.addWord(word)

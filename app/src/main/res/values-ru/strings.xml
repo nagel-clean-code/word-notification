@@ -69,7 +69,7 @@
     <string name="algorithm">Алгоритм:</string>
     <string name="step">Шаг</string>
     <string name="add_an_association">Добавить ассоциацию</string>
-    <string name="export_dictionary">Отправить словарь</string>
+    <string name="export_dictionary">Поделиться словарём</string>
     <string name="export_all">Отправить все</string>
     <string name="my_dictionaries">Мои словари</string>
     <string name="could_not_open_file">Не удалось прочитать файл</string>
@@ -141,7 +141,15 @@
     <string name="copying_dictionaries_is_available">Копирование словарей доступно только в PREMIUM подписке</string>
     <string name="it_is_available_to_configure_time_intervals">Настраивать временные интервалы можно только в PREMIUM подписке</string>
     <string name="randomizer_limit_text">Вы достигли лимита использования рандомайзера на день, купите PREMIUM или посмотрите рекламу за 5 дополнительных использований</string>
-
     <string name="purchases_not_available">На данный момент покупки не доступны, попробуйте позже</string>
+
+    <string name="dictionary_export_is_available">Сохранение алгоритма доступно только в PREMIUM подписке</string>
+    <string name="enable_state_of_algorithm">Сохранить состояние алгоритма в файл</string>
+    <string name="automatic_backup_to_google_disk">Автоматическое резервное копирование на Google Disk</string>
+    <string name="include">Включить</string>
+    <string name="export">Экспорт словарей</string>
+    <string name="it_will_be_available_only_in_premium">Будет доступно только в PREMIUM подписке</string>
+
+    <string name="recommendation_list_2">1. Сохранение состояния алгоритма позволяет создать полную резервную копию ваших словарей. Если не указать - все ваши алгоритмы при экспорте начнут работу с первого шага.\n\n2. Резервное копирование на Google Disk позволит сохранить ваши словари даже вслучае утери телефона.\n\n3. Вы можете создать файл импорта вручную на компьютере для этого создайте файл формата .txt и записывайте слова в него в формате [Слово;Перевод]</string>
 
 </resources>
