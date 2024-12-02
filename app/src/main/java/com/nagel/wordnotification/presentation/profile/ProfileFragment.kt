@@ -15,6 +15,7 @@ import com.nagel.wordnotification.presentation.base.BaseFragment
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import com.nagel.wordnotification.utils.GlobalFunction.openUrl
 import com.nagel.wordnotification.utils.Toggles
+import com.nagel.wordnotification.utils.common.showToast
 import dagger.hilt.android.AndroidEntryPoint
 import io.appmetrica.analytics.AppMetrica
 import javax.inject.Inject
@@ -86,8 +87,33 @@ class ProfileFragment : BaseFragment() {
         saleButton2.title.text = currentPrices.button2Title
         saleButton3.title.text = currentPrices.button3Title
 
+        saleButton1.root.setOnClickListener {
+            AppMetrica.reportEvent("sale_button_1_click")
+            openLink(currentPrices.linkButton1)
+        }
+        saleButton2.root.setOnClickListener {
+            AppMetrica.reportEvent("sale_button_2_click")
+            openLink(currentPrices.linkButton2)
+        }
+        saleButton3.root.setOnClickListener {
+            AppMetrica.reportEvent("sale_button_3_click")
+            openLink(currentPrices.linkButton3)
+        }
+        getPremiumButton.setOnClickListener {
+            AppMetrica.reportEvent("get_premium_button_click")
+            openLink(currentPrices.linkGetPremiumButton)
+        }
+
         linearLayout3.isVisible = true
         saleTextImg.isVisible = true
+    }
+
+    private fun openLink(link: String) {
+        if (link.isNotBlank()) {
+            requireContext().openUrl(link)
+        } else {
+            requireActivity().showToast(R.string.purchases_not_available)
+        }
     }
 
     private fun loadingInformationPremium() = with(binding) {
@@ -106,23 +132,6 @@ class ProfileFragment : BaseFragment() {
             requireContext().openUrl("https://ok.ru/group/70000004748309")
         }
         telegramButton.setOnClickListener {
-            requireContext().openUrl("https://t.me/notifier2023")
-        }
-
-        saleButton1.root.setOnClickListener {
-            AppMetrica.reportEvent("sale_button_1_click")
-            requireContext().openUrl("https://t.me/notifier2023")
-        }
-        saleButton2.root.setOnClickListener {
-            AppMetrica.reportEvent("sale_button_2_click")
-            requireContext().openUrl("https://t.me/notifier2023")
-        }
-        saleButton3.root.setOnClickListener {
-            AppMetrica.reportEvent("sale_button_3_click")
-            requireContext().openUrl("https://t.me/notifier2023")
-        }
-        getPremiumButton.setOnClickListener {
-            AppMetrica.reportEvent("get_premium_button_click")
             requireContext().openUrl("https://t.me/notifier2023")
         }
     }

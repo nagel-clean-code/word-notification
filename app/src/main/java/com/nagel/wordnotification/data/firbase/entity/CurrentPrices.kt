@@ -7,6 +7,10 @@ data class CurrentPrices(
     val button2Title: String,
     val button3Price: Int,
     val button3Title: String,
+    val linkButton1: String,
+    val linkButton2: String,
+    val linkButton3: String,
+    val linkGetPremiumButton: String
 ) {
-    constructor() : this(0, "", 0, "", 0, "")
+    constructor() : this(0, "", 0, "", 0, "", "", "", "", "")
 }

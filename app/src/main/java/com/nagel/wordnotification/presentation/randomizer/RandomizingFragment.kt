@@ -187,8 +187,8 @@ class RandomizingFragment : BaseFragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.showResult.collect() {
-                    AppMetrica.reportEvent("show_result_randomizer")
                     it?.let {
+                        AppMetrica.reportEvent("show_result_randomizer")
                         ResultRandomizingFragmentDialog(
                             it.first,
                             it.second
