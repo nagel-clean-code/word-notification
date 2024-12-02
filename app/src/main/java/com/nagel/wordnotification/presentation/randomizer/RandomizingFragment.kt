@@ -18,6 +18,7 @@ import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import com.nagel.wordnotification.presentation.premiumdialog.PremiumDialog
 import com.nagel.wordnotification.utils.RotationAnimator
 import dagger.hilt.android.AndroidEntryPoint
+import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.launch
 
 
@@ -93,6 +94,7 @@ class RandomizingFragment : BaseFragment() {
             viewModel.goBackPreviousWord()
         }
         swapIcon.setOnClickListener {
+            AppMetrica.reportEvent("swap_icon_randomizer")
             if (translation.tag as? Boolean != true) {
                 translation.tag = true
                 word.text = EMPTY_WORD
@@ -105,6 +107,7 @@ class RandomizingFragment : BaseFragment() {
             rotationAnimatorReloadIcon.rotationLeft()
         }
         head.setOnClickListener {
+            AppMetrica.reportEvent("head_click_randomizer")
             if (head.tag as? Boolean == true) {
                 head.tag = false
                 updateHead(viewModel.currentDictionary.value)
@@ -184,6 +187,7 @@ class RandomizingFragment : BaseFragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.showResult.collect() {
+                    AppMetrica.reportEvent("show_result_randomizer")
                     it?.let {
                         ResultRandomizingFragmentDialog(
                             it.first,

@@ -109,12 +109,15 @@ class ModeSettingsFragment : BaseFragment() {
 
     private fun initListeners() = with(binding) {
         resettingButton.setOnClickListener {
+            AppMetrica.reportEvent("resetting_button_click")
             ConfirmationDialog(requireContext().getString(R.string.reset_text_algorithm)) {
+                AppMetrica.reportEvent("resetting_algorithm")
                 viewModel.resettingAlgorithm()
             }.show(parentFragmentManager, null)
         }
 
         time1.setOnClickListener {
+            AppMetrica.reportEvent("choice_time1_click")
             if (viewModel.isStarted.get()) {
                 getTimePiker(time1)
             } else {
@@ -125,6 +128,7 @@ class ModeSettingsFragment : BaseFragment() {
             }
         }
         time2.setOnClickListener {
+            AppMetrica.reportEvent("choice_time2_click")
             if (viewModel.isStarted.get()) {
                 getTimePiker(time2)
             } else {
@@ -133,6 +137,14 @@ class ModeSettingsFragment : BaseFragment() {
                     isChoiceAdvertisement = false,
                 ).show(childFragmentManager, PremiumDialog.TAG)
             }
+        }
+
+        timeIntervals.setOnCheckedChangeListener { _, isChecked ->
+            AppMetrica.reportEvent("time_interval_checkbox", mapOf("isChecked" to isChecked))
+        }
+
+        sampleDays.setOnCheckedChangeListener { _, isChecked ->
+            AppMetrica.reportEvent("sample_days_checkbox", mapOf("isChecked" to isChecked))
         }
 
         initRadioButtons()
@@ -150,6 +162,7 @@ class ModeSettingsFragment : BaseFragment() {
             }
         }
         infoButton.setOnClickListener {
+            AppMetrica.reportEvent("info_button_click")
             InformationDialog().show(childFragmentManager, InformationDialog.TAG)
         }
         initData()
@@ -312,6 +325,10 @@ class ModeSettingsFragment : BaseFragment() {
             val statusNotification = viewModel.getStatusNotificationDictionary()
             viewModel.saveNewSettings(newMode) {
                 if (resetSteps) {
+                    AppMetrica.reportEvent(
+                        "selected_mode",
+                        mapOf("mode_name" to newMode.selectedMode?.getName(requireContext()))
+                    )
                     viewModel.dictionary?.wordList?.let { list ->
                         viewModel.resetStepsSetTimeToCurrentOne(list)
                         viewModel.resetHistory(list) //TODO не обязательно - выпилить и учитывать это в показе шагов

@@ -12,6 +12,7 @@ import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.firbase.RemoteDbRepository
 import com.nagel.wordnotification.databinding.MenuForDictionaryBinding
 import dagger.hilt.android.AndroidEntryPoint
+import io.appmetrica.analytics.AppMetrica
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -56,10 +57,12 @@ class MenuForDictionaryDialog(
             dismiss()
         }
         exportDictionary.setOnClickListener {
+            AppMetrica.reportEvent("export_on_dictionary_click")
             if (realtimeDb.isTesting()) return@setOnClickListener
             this@MenuForDictionaryDialog.exportDictionary.invoke(dictionary)
         }
         exportAll.setOnClickListener {
+            AppMetrica.reportEvent("export_all_dictionaries_click")
             if (realtimeDb.isTesting()) return@setOnClickListener
             this@MenuForDictionaryDialog.exportAllDictionary()
         }

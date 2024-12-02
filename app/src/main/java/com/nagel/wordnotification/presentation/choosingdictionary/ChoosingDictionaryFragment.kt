@@ -36,6 +36,7 @@ import com.nagel.wordnotification.presentation.premiumdialog.PremiumDialog
 import com.nagel.wordnotification.presentation.reader.ImportInDb
 import com.nagel.wordnotification.utils.common.showToast
 import dagger.hilt.android.AndroidEntryPoint
+import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -135,6 +136,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
     }
 
     private fun toggleActiveDictionary(dictionary: Dictionary, active: Boolean) {
+        AppMetrica.reportEvent("toggle_active_dictionary")
         viewModel.toggleActiveDictionary(active, dictionary)
     }
 
@@ -143,6 +145,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
     }
 
     private fun showMenuActionOnDictionary(dictionary: Dictionary, position: Int) {
+        AppMetrica.reportEvent("show_menu_action_on_dictionary")
         MenuForDictionaryDialog(
             dictionary = dictionary,
             edit = ::showEditDictionaryDialog,
@@ -257,6 +260,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
     private fun initListeners() = with(binding) {
         fab.setOnClickListener {
             if (View.GONE == fabBGLayout.visibility) {
+                AppMetrica.reportEvent("click_plus_dictionaries_screen")
                 showFABMenu()
             } else {
                 closeFABMenu()
@@ -269,10 +273,12 @@ class ChoosingDictionaryFragment : BaseFragment() {
             closeFABMenu()
         }
         openLibrary.setOnClickListener {
+            AppMetrica.reportEvent("open_library_click")
             navigator()?.showLibraryDictionariesFragment()
             closeFABMenu()
         }
         importButton.setOnClickListener {
+            AppMetrica.reportEvent("import_button_click")
             if (realtimeDb.isTesting()) return@setOnClickListener
             try {
                 val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
@@ -285,6 +291,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
             }
         }
         exportButton.setOnClickListener() {
+            AppMetrica.reportEvent("export_button_click")
             navigator()?.showExportDictionariesFragment()
         }
     }

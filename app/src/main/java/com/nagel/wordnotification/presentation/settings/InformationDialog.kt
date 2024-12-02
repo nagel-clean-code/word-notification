@@ -16,6 +16,7 @@ import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import com.nagel.wordnotification.databinding.InformationDialogBinding
 import com.nagel.wordnotification.presentation.addingwords.worddetails.WordDetailsDialog
+import io.appmetrica.analytics.AppMetrica
 
 class InformationDialog() : DialogFragment() {
 
@@ -44,12 +45,15 @@ class InformationDialog() : DialogFragment() {
             dismiss()
         }
         showIntervals1.setOnClickListener {
+            AppMetrica.reportEvent("show_intervals_instruction_1")
             showWordDetailsDialog(ForgetfulnessCurveShort)
         }
         showIntervals2.setOnClickListener {
+            AppMetrica.reportEvent("show_intervals_instruction_2")
             showWordDetailsDialog(ForgetfulnessCurveLong)
         }
         showIntervals3.setOnClickListener {
+            AppMetrica.reportEvent("show_intervals_instruction_3")
             showWordDetailsDialog(PlateauEffect)
         }
     }

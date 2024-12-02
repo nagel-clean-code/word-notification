@@ -12,6 +12,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import com.nagel.wordnotification.databinding.PremiumAskDialogBinding
 import com.nagel.wordnotification.utils.GlobalFunction.openUrl
+import io.appmetrica.analytics.AppMetrica
 
 class PremiumDialog(
     private val text: String,
@@ -48,10 +49,12 @@ class PremiumDialog(
         }
         watchAdsButton.setOnClickListener {
             //TODO реализовать просмотр рекламы
+            AppMetrica.reportEvent("watch_ads_button_click")
             advertisementWasViewed.invoke()
             dismiss()
         }
         getPremiumButton.setOnClickListener {
+            AppMetrica.reportEvent("get_premium_button_click")
             requireContext().openUrl("https://t.me/notifier2023") //TODO добавить ссылку на получение PREMIUM
         }
     }
