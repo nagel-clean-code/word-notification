@@ -26,6 +26,7 @@ import com.nagel.wordnotification.presentation.base.BaseFragment
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import com.nagel.wordnotification.presentation.navigator.navigator
 import com.nagel.wordnotification.presentation.onboard.OnboardingActivity
+import com.nagel.wordnotification.presentation.premiumdialog.PremiumDialog
 import com.nagel.wordnotification.utils.RotationAnimator
 import com.nagel.wordnotification.utils.common.hideKeyboard
 import com.nagel.wordnotification.utils.common.showToast
@@ -83,12 +84,19 @@ class AddingWordsFragment : BaseFragment() {
             textToSpeech.speak(editTextWord.text.toString(), TextToSpeech.QUEUE_FLUSH, null, "")
         }
         microphoneTranslation.setOnClickListener {
-            textToSpeech.speak(
-                editTextTranslation.text.toString(),
-                TextToSpeech.QUEUE_FLUSH,
-                null,
-                ""
-            )
+            if (viewModel.isStarted.get()) {
+                textToSpeech.speak(
+                    editTextTranslation.text.toString(),
+                    TextToSpeech.QUEUE_FLUSH,
+                    null,
+                    ""
+                )
+            } else {
+                PremiumDialog(
+                    text = resources.getString(R.string.voice_acting),
+                    isChoiceAdvertisement = false,
+                ).show(childFragmentManager, PremiumDialog.TAG)
+            }
         }
         imageView3.setOnClickListener {
             choiceLanguageWord.isVisible = choiceLanguageTranslation.isVisible
@@ -266,31 +274,45 @@ class AddingWordsFragment : BaseFragment() {
 
     private fun initButtons() = with(binding) {
         addWordButton.setOnClickListener {
-            val textFirst = editTextWord.text.toString().trim()
-            val textLast = editTextTranslation.text.toString().trim()
-            if (textFirst.isBlank() || textLast.isBlank()) return@setOnClickListener
-            val word = Word(
-                idDictionary = viewModel.loadedDictionaryFlow.value!!.idDictionary,
-                textFirst = textFirst,
-                textLast = textLast
-            )
-            lifecycleScope.launch(Dispatchers.IO) { //TODO перенести в VM
-                val idWord = viewModel.addWord(word)
-                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
-                    word.idWord = idWord
-                    viewModel.loadedDictionaryFlow.value?.wordList?.add(word)
-                    listWordsRecyclerView.scrollToPosition(0)
-                    editTextTranslation.setText("")
-                    editTextWord.setText("")
-                    editTextWord.requestFocus()
-                    viewModel.tryCreateNotification()
-                }
-            }
+            addButtonListener()
         }
     }
 
-    companion object {
-        @JvmStatic
-        fun newInstance() = AddingWordsFragment()
+    private fun addButtonListener() {
+        val textFirst = binding.editTextWord.text.toString().trim()
+        val textLast = binding.editTextTranslation.text.toString().trim()
+        if (textFirst.isBlank() || textLast.isBlank()) return
+        val word = Word(
+            idDictionary = viewModel.loadedDictionaryFlow.value!!.idDictionary,
+            textFirst = textFirst,
+            textLast = textLast
+        )
+        if (viewModel.accessibilityOfAddOn().not()) {
+            PremiumDialog(
+                text = resources.getString(R.string.suggestion_of_additional_words),
+                isChoiceAdvertisement = true,
+                advertisementWasViewed = {
+                    viewModel.addFreeWords()
+                    addWord(word)
+                }
+            ).show(childFragmentManager, PremiumDialog.TAG)
+        } else {
+            addWord(word)
+        }
+    }
+
+    private fun addWord(word: Word) = with(binding) {
+        lifecycleScope.launch(Dispatchers.IO) { //TODO перенести в VM
+            val idWord = viewModel.addWord(word)
+            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+                word.idWord = idWord
+                viewModel.loadedDictionaryFlow.value?.wordList?.add(word)
+                listWordsRecyclerView.scrollToPosition(0)
+                editTextTranslation.setText("")
+                editTextWord.setText("")
+                editTextWord.requestFocus()
+                viewModel.tryCreateNotification()
+            }
+        }
     }
 }

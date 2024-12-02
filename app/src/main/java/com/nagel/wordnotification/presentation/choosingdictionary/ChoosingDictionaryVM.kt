@@ -17,6 +17,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,6 +34,13 @@ class ChoosingDictionaryVM @Inject constructor(
         dictionaryRepository.loadDictionariesFlow(idAccount)
     }
     var listDictionary: List<Dictionary>? = null
+    var isStarted = AtomicBoolean(false)
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            isStarted.set(sessionRepository.getIsStarted())
+        }
+    }
 
     fun toggleActiveDictionary(
         active: Boolean,

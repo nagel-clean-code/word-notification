@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@drawable/rounded_background_settings"
+    android:orientation="vertical"
+    android:paddingHorizontal="50dp"
+    android:paddingTop="40dp"
+    android:paddingBottom="30dp">
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:textSize="16sp"
+        tools:text="@string/suggestion_of_additional_words" />
+
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="25dp" />
+
+    <Button
+        android:id="@+id/watchAdsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom"
+        android:layout_marginTop="25dp"
+        android:text="@string/watch_ads"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/getPremiumButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom"
+        android:layout_marginTop="5dp"
+        android:text="@string/get_premium"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/cancelButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom"
+        android:layout_marginTop="5dp"
+        android:text="@string/cancel"
+        android:textSize="16sp" />
+</LinearLayout>

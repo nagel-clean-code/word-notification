@@ -15,6 +15,7 @@ import com.nagel.wordnotification.R
 import com.nagel.wordnotification.databinding.FragmentRandomizerBinding
 import com.nagel.wordnotification.presentation.base.BaseFragment
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
+import com.nagel.wordnotification.presentation.premiumdialog.PremiumDialog
 import com.nagel.wordnotification.utils.RotationAnimator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -114,7 +115,9 @@ class RandomizingFragment : BaseFragment() {
         }
         with(notRememberButton) {
             setOnClickListener {
-                if (runable == null) {
+                if (viewModel.checkAvailableRandomizer().not()) {
+                    showPremium()
+                } else if (runable == null) {
                     setBackgroundResource(R.drawable.background_selected_not_remember)
                     viewModel.notRemember()
                     onClickAnswer()
@@ -127,7 +130,9 @@ class RandomizingFragment : BaseFragment() {
 
         with(rememberButton) {
             setOnClickListener {
-                if (runable == null) {
+                if (viewModel.checkAvailableRandomizer().not()) {
+                    showPremium()
+                } else if (runable == null) {
                     setBackgroundResource(R.drawable.background_selected_remember)
                     viewModel.remember()
                     onClickAnswer()
@@ -191,6 +196,14 @@ class RandomizingFragment : BaseFragment() {
                 }
             }
         }
+    }
+
+    private fun showPremium() {
+        PremiumDialog(
+            text = resources.getString(R.string.randomizer_limit_text),
+            isChoiceAdvertisement = true,
+            advertisementWasViewed = viewModel::addFreeUse
+        ).show(childFragmentManager, PremiumDialog.TAG)
     }
 
     private fun updateHead(dictionaryName: String?) = with(binding) {

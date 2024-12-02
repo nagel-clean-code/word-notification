@@ -1,6 +1,7 @@
 package com.nagel.wordnotification.presentation.randomizer
 
 import androidx.lifecycle.viewModelScope
+import com.nagel.wordnotification.Constants.COUNT_FREE_USE_RANDOMIZER
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.dictionaries.entities.Word
@@ -8,8 +9,12 @@ import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.presentation.base.BaseViewModel
 import com.nagel.wordnotification.presentation.randomizer.RandomizingFragment.Companion.EMPTY_WORD
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,9 +33,15 @@ class RandomizingVM @Inject constructor(
     val selectedDictionarySet = mutableSetOf<String>()
     private var currentIx: Int = -1
     private var positionBack = -1
+    private var isStarted = AtomicBoolean(false)
+    private var limit = AtomicInteger(-1)
 
     init {
         viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                isStarted.set(sessionRepository.getIsStarted())
+                limit.set(sessionRepository.getLimitRandomizer())
+            }
             val session = sessionRepository.getSession()
             session.account?.id?.let { id ->
                 dictionaryRepository.loadDictionariesFlow(id).collect() { dictionaries ->
@@ -42,6 +53,21 @@ class RandomizingVM @Inject constructor(
                 }
             }
         }
+    }
+
+    fun checkAvailableRandomizer(): Boolean {
+        return isStarted.get() || limit.get() > 0
+    }
+
+    fun addFreeUse() {
+        limit.set(COUNT_FREE_USE_RANDOMIZER)
+        sessionRepository.changLimitRandomizer(COUNT_FREE_USE_RANDOMIZER)
+    }
+
+    private fun incrementFreeUseCount() {
+        if (isStarted.get()) return
+        val newLimit = limit.decrementAndGet()
+        sessionRepository.changLimitRandomizer(newLimit)
     }
 
     private fun initWords() {
@@ -120,6 +146,7 @@ class RandomizingVM @Inject constructor(
             listPastIndexes.clear()
             currentIx = -1
             positionBack = -1
+            incrementFreeUseCount()
         }
         ++positionBack
         if (listIndexes1.isEmpty()) {

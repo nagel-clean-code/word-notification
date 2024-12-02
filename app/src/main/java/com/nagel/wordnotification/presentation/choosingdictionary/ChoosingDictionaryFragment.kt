@@ -32,6 +32,7 @@ import com.nagel.wordnotification.presentation.ConfirmationDialog
 import com.nagel.wordnotification.presentation.base.BaseFragment
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import com.nagel.wordnotification.presentation.navigator.navigator
+import com.nagel.wordnotification.presentation.premiumdialog.PremiumDialog
 import com.nagel.wordnotification.presentation.reader.ImportInDb
 import com.nagel.wordnotification.utils.common.showToast
 import dagger.hilt.android.AndroidEntryPoint
@@ -230,14 +231,21 @@ class ChoosingDictionaryFragment : BaseFragment() {
     }
 
     private fun copyDictionary(dictionary: Dictionary) {
-        viewModel.copyDictionary(dictionary) {
-            with(binding) {
-                dictionariesList.layoutManager?.smoothScrollToPosition(
-                    dictionariesList,
-                    RecyclerView.State(),
-                    0
-                )
+        if (viewModel.isStarted.get()) {
+            viewModel.copyDictionary(dictionary) {
+                with(binding) {
+                    dictionariesList.layoutManager?.smoothScrollToPosition(
+                        dictionariesList,
+                        RecyclerView.State(),
+                        0
+                    )
+                }
             }
+        } else {
+            PremiumDialog(
+                text = resources.getString(R.string.copying_dictionaries_is_available),
+                isChoiceAdvertisement = false,
+            ).show(childFragmentManager, PremiumDialog.TAG)
         }
     }
 

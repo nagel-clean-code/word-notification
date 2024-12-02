@@ -31,6 +31,7 @@ import com.nagel.wordnotification.presentation.base.BaseFragment
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import com.nagel.wordnotification.presentation.navigator.MainNavigator
 import com.nagel.wordnotification.presentation.navigator.NavigatorV2
+import com.nagel.wordnotification.presentation.premiumdialog.PremiumDialog
 import com.nagel.wordnotification.utils.common.showToast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -104,10 +105,24 @@ class ModeSettingsFragment : BaseFragment() {
         }
 
         time1.setOnClickListener {
-            getTimePiker(time1)
+            if (viewModel.isStarted.get()) {
+                getTimePiker(time1)
+            } else {
+                PremiumDialog(
+                    text = resources.getString(R.string.it_is_available_to_configure_time_intervals),
+                    isChoiceAdvertisement = false,
+                ).show(childFragmentManager, PremiumDialog.TAG)
+            }
         }
         time2.setOnClickListener {
-            getTimePiker(time2)
+            if (viewModel.isStarted.get()) {
+                getTimePiker(time2)
+            } else {
+                PremiumDialog(
+                    text = resources.getString(R.string.it_is_available_to_configure_time_intervals),
+                    isChoiceAdvertisement = false,
+                ).show(childFragmentManager, PremiumDialog.TAG)
+            }
         }
 
         initRadioButtons()

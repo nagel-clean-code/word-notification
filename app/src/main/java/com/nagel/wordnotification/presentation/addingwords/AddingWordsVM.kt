@@ -2,6 +2,7 @@ package com.nagel.wordnotification.presentation.addingwords
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.nagel.wordnotification.Constants.NUMBER_OF_FREE_WORDS_PER_ADVERTISEMENT
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.algorithms.NotificationAlgorithm
 import com.nagel.wordnotification.core.services.Utils
@@ -30,6 +31,7 @@ import me.bush.translator.Language
 import me.bush.translator.Translator
 import me.bush.translator.languageOf
 import java.util.Locale
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
 enum class TranslationWord {
@@ -65,11 +67,37 @@ class AddingWordsVM @Inject constructor(
     val showTranslateLastWord = MutableStateFlow<String?>(null)
     val showTranslateFirstWord = MutableStateFlow<String?>(null)
 
+    var isStarted = AtomicBoolean(false)
+    private var countAllWords = -1
 
     init {
         viewModelScope.launch(Dispatchers.Default) {
             setTranslateLang(sessionRepository.getTranslationLanguage())
         }
+        getDictionaries()
+        viewModelScope.launch(Dispatchers.IO) {
+            isStarted.set(sessionRepository.getIsStarted())
+        }
+    }
+
+    private fun getDictionaries() {
+        viewModelScope.launch(Dispatchers.IO) {
+            dictionaryRepository.getAllWordsFlow().collect() {
+                withContext(Dispatchers.Main) {
+                    countAllWords = it.size
+                }
+            }
+        }
+    }
+
+    fun accessibilityOfAddOn(): Boolean {
+        if (isStarted.get()) return true
+        return countAllWords < sessionRepository.getLimitWord()
+    }
+
+    fun addFreeWords() {
+        val count = sessionRepository.getLimitWord()
+        sessionRepository.changLimitWords(count + NUMBER_OF_FREE_WORDS_PER_ADVERTISEMENT)
     }
 
     fun changeCurrentAutoTranslate() {

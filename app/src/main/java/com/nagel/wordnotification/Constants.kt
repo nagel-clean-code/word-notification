@@ -12,4 +12,7 @@ object Constants {
     const val QUICKBOOT_POWERON = "android.intent.action.QUICKBOOT_POWERON"
     const val HTC_QUICKBOOT_POWERON = "com.htc.intent.action.QUICKBOOT_POWERON"
 
+    const val NUMBER_OF_FREE_WORDS = 25
+    const val COUNT_FREE_USE_RANDOMIZER = 5
+    const val NUMBER_OF_FREE_WORDS_PER_ADVERTISEMENT = 3
 }

@@ -136,5 +136,10 @@
     <string name="get_premium">PREMIUM erhalten</string>
 
     <string name="purchases_not_available">Momentan sind keine Käufe verfügbar, versuchen Sie es später</string>
-
+    <string name="watch_ads">Anzeigen ansehen</string>
+    <string name="suggestion_of_additional_words">Das Wortlimit ist erschöpft, Sie erhalten PREMIUM oder Sie erhalten 3 zusätzliche Wörter pro Anzeige</string>
+    <string name="voice_acting">Audio ist nur in PREMIUM verfügbar</string>
+    <string name="copying_dictionaries_is_available">Das Kopieren von Wörterbüchern ist nur in einem PREMIUM-Abonnement verfügbar</string>
+    <string name="it_is_available_to_configure_time_intervals">Sie können die Zeitintervalle nur in einem PREMIUM-Abonnement konfigurieren</string>
+    <string name="randomizer_limit_text">Sie haben das Limit für die Verwendung des Randomizers pro Tag erreicht, kaufen PREMIUM oder schauen Sie sich Werbung für 5 zusätzliche Verwendungen an</string>
 </resources>

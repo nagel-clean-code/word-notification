@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Date
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,6 +37,14 @@ class ModeSettingsVM @Inject constructor(
     var selectedMode: Algorithm? = PlateauEffect
     val loadingMode = MutableStateFlow<ModeSettingsDto?>(null)
     var dictionary: Dictionary? = null
+
+    var isStarted = AtomicBoolean(false)
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            isStarted.set(sessionRepository.getIsStarted())
+        }
+    }
 
     fun preload(idDictionary: Long) {
         this.idDictionary = idDictionary
