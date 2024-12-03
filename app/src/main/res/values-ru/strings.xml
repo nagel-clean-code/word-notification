@@ -70,7 +70,6 @@
     <string name="step">Шаг</string>
     <string name="add_an_association">Добавить ассоциацию</string>
     <string name="export_dictionary">Поделиться словарём</string>
-    <string name="export_all">Отправить все</string>
     <string name="my_dictionaries">Мои словари</string>
     <string name="could_not_open_file">Не удалось прочитать файл</string>
     <string name="import_success">Импорт успешно завершён</string>

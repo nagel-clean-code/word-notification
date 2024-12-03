@@ -1,6 +1,5 @@
 package com.nagel.wordnotification.data.settings.room
 
-import android.util.Log
 import com.nagel.wordnotification.data.dictionaries.room.DictionaryDao
 import com.nagel.wordnotification.data.settings.SettingsRepository
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
@@ -18,7 +17,6 @@ class RoomModeRepository @Inject constructor(
 
     private val mutex = Mutex()
     override suspend fun saveModeSettings(data: ModeSettingsDto): Long {
-        Log.d("saveModeSettings", "idDictionary: ${data.idDictionary}")
         val dto = ModeDbEntity.createMode(data)
         val mode = modeDao.getMode(data.idDictionary, dto.selectedMode)
         mutex.withLock {

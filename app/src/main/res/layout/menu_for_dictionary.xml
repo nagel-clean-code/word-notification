@@ -9,22 +9,16 @@
     android:paddingVertical="30dp">
 
     <Button
-        android:id="@+id/exportAll"
+        android:id="@+id/edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/export_all" />
+        android:text="@string/edit" />
 
     <Button
         android:id="@+id/exportDictionary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/export_dictionary" />
-
-    <Button
-        android:id="@+id/edit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/edit" />
 
     <Button
         android:id="@+id/copyDictionary"

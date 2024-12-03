@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.FileProvider
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -19,9 +18,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.nagel.wordnotification.BuildConfig
 import com.nagel.wordnotification.R
-import com.nagel.wordnotification.app.App
 import com.nagel.wordnotification.core.services.Utils
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
@@ -30,17 +27,17 @@ import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.databinding.FragmentChoosingDictionaryBinding
 import com.nagel.wordnotification.presentation.ConfirmationDialog
 import com.nagel.wordnotification.presentation.base.BaseFragment
+import com.nagel.wordnotification.presentation.exportAndImport.FileReader
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import com.nagel.wordnotification.presentation.navigator.navigator
 import com.nagel.wordnotification.presentation.premiumdialog.PremiumDialog
-import com.nagel.wordnotification.presentation.reader.ImportInDb
+import com.nagel.wordnotification.utils.common.sendFile
 import com.nagel.wordnotification.utils.common.showToast
 import dagger.hilt.android.AndroidEntryPoint
 import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -55,7 +52,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
     lateinit var sessionRepository: SessionRepository
 
     @Inject
-    lateinit var fileReader: ImportInDb
+    lateinit var fileReader: FileReader
 
     @Inject
     lateinit var realtimeDb: RemoteDbRepository
@@ -65,7 +62,6 @@ class ChoosingDictionaryFragment : BaseFragment() {
 
     private var idAuthorUUID: String? = null
     private var accountId: Long? = null
-    private var deleteFile: File? = null
 
     private val fileImportIntentLauncher =
         registerForActivityResult(
@@ -150,78 +146,14 @@ class ChoosingDictionaryFragment : BaseFragment() {
             dictionary = dictionary,
             edit = ::showEditDictionaryDialog,
             copy = ::copyDictionary,
-            exportDictionary = ::exportDictionary,
-            exportAllDictionary = ::exportAll,
+            exportDictionary = ::exportDictionary
         ) {
             showConfirmationDialog(dictionary)
         }.show(parentFragmentManager, null)
     }
 
     private fun exportDictionary(dictionary: Dictionary) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            val file = createFile(dictionary)
-            writeDictionaries(listOf(dictionary), file)
-            withContext(Dispatchers.Main) {
-                sendFile(file)
-            }
-        }
-    }
-
-    private fun exportAll() {
-        lifecycleScope.launch(Dispatchers.IO) {
-            val file = createFile()
-            val dictionaries = repository.loadDictionaries(accountId!!)
-            writeDictionaries(dictionaries, file)
-            withContext(Dispatchers.Main) {
-                sendFile(file)
-            }
-        }
-    }
-
-    private fun createFile(dictionary: Dictionary? = null): File {
-        val name = dictionary?.name ?: requireContext().getString(R.string.my_dictionaries)
-        val file = File(App.get().filesDir, "$name.fire")
-        deleteFile = file
-        return file
-    }
-
-    private fun writeDictionaries(dictionaries: List<Dictionary>, file: File) {
-        file.printWriter().use { out ->
-            dictionaries.forEach() { current ->
-                out.print("{|${current.name}||$idAuthorUUID|}~")
-                current.wordList.forEach {
-                    it.apply {
-                        out.print("|$uniqueId||$textFirst||$textLast|~")
-                    }
-                }
-            }
-        }
-    }
-
-    private fun sendFile(file: File) {
-        try {
-            if (file.exists()) {
-                val uri = FileProvider.getUriForFile(
-                    requireContext(),
-                    BuildConfig.APPLICATION_ID + ".provider",
-                    file
-                )
-                val intent = Intent(Intent.ACTION_SEND)
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                intent.type = "*/*"
-                intent.putExtra(Intent.EXTRA_STREAM, uri)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK;
-                startActivity(intent)
-            }
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
-        }
-    }
-
-
-    override fun onDestroy() {
-        super.onDestroy()
-        deleteFile?.delete()
+        viewModel.exportDictionary(dictionary, requireActivity()::sendFile)
     }
 
     private fun showConfirmationDialog(dictionary: Dictionary) {

@@ -70,7 +70,6 @@
     <string name="step">Step</string>
     <string name="add_an_association">Add an association</string>
     <string name="export_dictionary">Send a dictionary</string>
-    <string name="export_all">Send all</string>
     <string name="my_dictionaries">My dictionaries</string>
     <string name="could_not_open_file">The file could not be read</string>
     <string name="import_success">Import completed successfully</string>

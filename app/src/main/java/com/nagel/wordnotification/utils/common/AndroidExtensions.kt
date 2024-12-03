@@ -31,6 +31,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.core.os.BundleCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -40,6 +41,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
+import com.nagel.wordnotification.BuildConfig
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -47,9 +49,31 @@ import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.io.File
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.math.roundToInt
+
+
+fun Activity.sendFile(file: File) {
+    try {
+        if (file.exists()) {
+            val uri = FileProvider.getUriForFile(
+                this,
+                BuildConfig.APPLICATION_ID + ".provider",
+                file
+            )
+            val intent = Intent(Intent.ACTION_SEND)
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            intent.type = "*/*"
+            intent.putExtra(Intent.EXTRA_STREAM, uri)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK;
+            startActivity(intent)
+        }
+    } catch (e: java.lang.Exception) {
+        e.printStackTrace()
+    }
+}
 
 fun Int.dp() = TypedValue.applyDimension(
     TypedValue.COMPLEX_UNIT_DIP,

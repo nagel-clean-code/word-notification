@@ -10,6 +10,7 @@ import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.data.settings.SettingsRepository
 import com.nagel.wordnotification.presentation.base.BaseViewModel
 import com.nagel.wordnotification.presentation.navigator.NavigatorV2
+import com.nagel.wordnotification.presentation.exportAndImport.ExportGenerator
 import com.nagel.wordnotification.utils.GlobalFunction
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -17,6 +18,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
@@ -26,7 +28,8 @@ class ChoosingDictionaryVM @Inject constructor(
     val settingsRepository: SettingsRepository,
     private var navigatorV2: NavigatorV2,
     private val notificationAlgorithm: NotificationAlgorithm,
-    private var sessionRepository: SessionRepository
+    private var sessionRepository: SessionRepository,
+    private val exportGenerator: ExportGenerator
 ) : BaseViewModel() {
 
     var idAccount = -1L
@@ -140,5 +143,19 @@ class ChoosingDictionaryVM @Inject constructor(
                 success.invoke()
             }
         }
+    }
+
+    fun exportDictionary(dictionary: Dictionary, sendFile: (File) -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val file = exportGenerator.writeOneDictionary(dictionary)
+            withContext(Dispatchers.Main) {
+                sendFile(file)
+            }
+        }
+    }
+
+    override fun onCleared() {
+        exportGenerator.deleteLastFile()
+        super.onCleared()
     }
 }

@@ -12,6 +12,7 @@ import com.nagel.wordnotification.databinding.FragmentExportDictionariesBinding
 import com.nagel.wordnotification.presentation.base.BaseFragment
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import com.nagel.wordnotification.presentation.premiumdialog.PremiumDialog
+import com.nagel.wordnotification.utils.common.sendFile
 import com.nagel.wordnotification.utils.common.showToast
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -62,7 +63,7 @@ class ExportFragment : BaseFragment() {
             }
         }
         exportButton.setOnClickListener {
-
+            viewModel.writeDictionaries(saveAlgorithm.isChecked, requireActivity()::sendFile)
         }
     }
 

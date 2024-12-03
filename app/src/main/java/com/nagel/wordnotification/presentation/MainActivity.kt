@@ -10,7 +10,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
-import com.google.android.gms.common.GoogleApiAvailability
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -33,9 +32,10 @@ import com.nagel.wordnotification.presentation.navigator.Navigator
 import com.nagel.wordnotification.presentation.profile.ProfileFragment
 import com.nagel.wordnotification.presentation.profile.evalution.EvaluationAppDialog
 import com.nagel.wordnotification.presentation.randomizer.RandomizingFragment
-import com.nagel.wordnotification.presentation.reader.ImportInDb
+import com.nagel.wordnotification.presentation.exportAndImport.FileReader
 import com.nagel.wordnotification.presentation.settings.ModeSettingsFragment
 import com.nagel.wordnotification.utils.common.MessageUtils
+import com.nagel.wordnotification.utils.common.SystemUtils.Companion.isGooglePlayServicesAvailable
 import dagger.hilt.android.AndroidEntryPoint
 import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.Dispatchers
@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity(), Navigator {
     lateinit var realtimeDb: RemoteDbRepository
 
     @Inject
-    lateinit var fileReader: ImportInDb
+    lateinit var fileReader: FileReader
 
     @Inject
     lateinit var appMetrica: AppMetricaAnalyticPlatform
@@ -76,11 +76,13 @@ class MainActivity : AppCompatActivity(), Navigator {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if (areGoogleServicesAvailable()) {
+        val isGms = isGooglePlayServicesAvailable(this)
+        if (isGms) {
             initFirebase()
         } else {
             setAutoInitHmsPushEnabled()
         }
+        appMetrica.changeIsGmsBuild(isGms)
 
         binding.bottomNavigationView.setOnItemSelectedListener {
             val screen = when (it.itemId) {
@@ -110,13 +112,6 @@ class MainActivity : AppCompatActivity(), Navigator {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         AppMetrica.reportAppOpen(intent)
-    }
-
-    private fun areGoogleServicesAvailable(): Boolean {
-        val availability = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this)
-        val isGms = availability == com.google.android.gms.common.ConnectionResult.SUCCESS
-        appMetrica.changeIsGmsBuild(isGms)
-        return isGms
     }
 
     private fun initReceiver() {

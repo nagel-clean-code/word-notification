@@ -14,9 +14,9 @@ import com.nagel.wordnotification.data.firbase.RemoteDbRepository
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.databinding.FragmentLibraryDictionariesBinding
 import com.nagel.wordnotification.presentation.base.BaseFragment
+import com.nagel.wordnotification.presentation.exportAndImport.CashReader
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import com.nagel.wordnotification.presentation.navigator.NavigatorV2
-import com.nagel.wordnotification.presentation.reader.ImportInCash
 import com.nagel.wordnotification.utils.common.collectStarted
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -38,7 +38,7 @@ class LibraryDictionariesFragment : BaseFragment() {
     lateinit var sessionRepository: SessionRepository
 
     @Inject
-    lateinit var dataReader: ImportInCash
+    lateinit var dataReader: CashReader
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

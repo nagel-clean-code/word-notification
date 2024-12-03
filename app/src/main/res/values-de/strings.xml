@@ -70,7 +70,6 @@
     <string name="step">Schritt</string>
     <string name="add_an_association">Assoziation hinzufügen</string>
     <string name="export_dictionary">Wörterbuch senden</string>
-    <string name="export_all">Alles senden</string>
     <string name="my_dictionaries">Meine Wörterbücher</string>
     <string name="could_not_open_file">Die Datei konnte nicht gelesen werden</string>
     <string name="import_success">Import erfolgreich abgeschlossen</string>

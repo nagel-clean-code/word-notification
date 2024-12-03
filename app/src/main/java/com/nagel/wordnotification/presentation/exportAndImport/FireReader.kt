@@ -1,0 +1,161 @@
+package com.nagel.wordnotification.presentation.exportAndImport
+
+import com.nagel.wordnotification.R
+import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
+import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
+import com.nagel.wordnotification.data.dictionaries.entities.NotificationHistoryItem
+import com.nagel.wordnotification.data.dictionaries.entities.Word
+import com.nagel.wordnotification.data.session.SessionRepository
+import com.nagel.wordnotification.data.settings.SettingsRepository
+import com.nagel.wordnotification.data.settings.room.entities.ModeDbEntity
+import com.nagel.wordnotification.presentation.navigator.NavigatorV2
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import java.io.IOException
+import javax.inject.Inject
+
+class FireReader @Inject constructor(
+    private val dictionaryRepository: DictionaryRepository,
+    private val settingsRepository: SettingsRepository,
+    private val sessionRepository: SessionRepository,
+    private val navigatorV2: NavigatorV2,
+) {
+
+    private val myIdAccount: Long? by lazy { sessionRepository.getSession().account?.id }
+    private lateinit var currentDictionariesNames: List<String>
+
+    init {
+        MainScope().launch(Dispatchers.IO) {
+            myIdAccount?.let { id ->
+                currentDictionariesNames = dictionaryRepository.loadDictionaries(id).map { it.name }
+            }
+        }
+    }
+
+    private var pos = 0
+
+    suspend fun fireReader(content: String) {
+        if (myIdAccount == null) return
+        while (pos + 1 < content.length - 1) {
+            var name = readDictionaryName(content)
+            name = name.ifBlank { navigatorV2.getString(R.string.dictionary) }
+            while (currentDictionariesNames.contains(name)) {
+                name += "(new)"
+            }
+            val dictionary = dictionaryRepository.createDictionary(name, myIdAccount!!)
+            val isAlgorithm = content[pos++] == 'a'
+            if (isAlgorithm) {
+                val mode = readAlgorithm(content, dictionary.idDictionary)
+                dictionary.idMode = settingsRepository.saveModeSettings(mode.toMode())
+            }
+            val words = readWords(content, dictionary, isAlgorithm)
+            words.forEach { word ->
+                word.idWord = dictionaryRepository.addWord(word)
+                word.notifications?.forEach { item ->
+                    item.idWord = word.idWord
+                    item.idMode = dictionary.idMode
+                    dictionaryRepository.saveNotificationHistoryItem(item)
+                }
+            }
+        }
+    }
+
+    private fun readAlgorithm(str: String, idDictionary: Long): ModeDbEntity {
+        val selectedMode = readWord(str)
+        val sampleDays = readWord(str).toBoolean()
+        val daysInJson = readWord(str)
+        val timeIntervals = readWord(str).toBoolean()
+        val timeIntervalsFirst = readWord(str)
+        val timeIntervalsSecond = readWord(str)
+        return ModeDbEntity(
+            idMode = 0,
+            idDictionary = idDictionary,
+            selectedMode = selectedMode,
+            sampleDays = sampleDays,
+            daysInJson = daysInJson,
+            timeIntervals = timeIntervals,
+            timeIntervalsFirst = timeIntervalsFirst,
+            timeIntervalsSecond = timeIntervalsSecond
+        )
+    }
+
+    private fun readWords(str: String, dictionary: Dictionary, isAlgorithm: Boolean): List<Word> {
+        val wordList = mutableListOf<Word>()
+        while (str[pos++] == 'w' && pos < str.length - 1) {
+            val textFirst = readWord(str)
+            val textLast = readWord(str)
+            if (isAlgorithm) {
+                val word = readFullDataWord(str, dictionary.idDictionary, textFirst, textLast)
+                if (str[pos] == 'h') {
+                    word.notifications = readHistoryNotification(str, dictionary.idMode)
+                }
+                wordList.add(word)
+            } else {
+                wordList.add(Word(dictionary.idDictionary, textFirst, textLast))
+            }
+        }
+        --pos
+        return wordList
+    }
+
+    private fun readHistoryNotification(str: String, idMode: Long): List<NotificationHistoryItem> {
+        val notifications = mutableListOf<NotificationHistoryItem>()
+        while (str[pos++] == 'h') {
+            val dateMention = readWord(str).toLong()
+            val learnStep = readWord(str).toInt()
+            notifications.add(
+                NotificationHistoryItem(
+                    idWord = -1,
+                    dateMention = dateMention,
+                    idMode = idMode,
+                    learnStep = learnStep
+                )
+            )
+        }
+        --pos
+        return notifications
+    }
+
+    private fun readFullDataWord(
+        str: String,
+        idDictionary: Long,
+        textFirst: String,
+        textLast: String
+    ): Word {
+        val allNotificationsCreated = readWord(str).toBoolean()
+        val learnStep = readWord(str).toInt()
+        val lastDateMention = readWord(str).toLong()
+        val uniqueId = readWord(str).toInt()
+        return Word(
+            idDictionary = idDictionary,
+            textFirst = textFirst,
+            textLast = textLast,
+            allNotificationsCreated = allNotificationsCreated,
+            learnStep = learnStep,
+            lastDateMention = lastDateMention,
+            uniqueId = uniqueId
+        )
+    }
+
+    private fun readDictionaryName(str: String): String {
+        if (str[pos++] != '{') throw IOException()
+        val name = readWord(str)
+        if (str[pos++] != '}') throw IOException()
+        return name
+    }
+
+    private fun readWord(str: String): String {
+        var word = ""
+        if (str[pos++] != '|') throw IOException("${str[pos - 1]}, " + str.substring(0, pos - 1))
+        var char = str[pos++]
+        while (char != '|') {
+            word += char
+            if (pos >= str.length - 1) {
+                throw IOException()
+            }
+            char = str[pos++]
+        }
+        return word.trim()
+    }
+}

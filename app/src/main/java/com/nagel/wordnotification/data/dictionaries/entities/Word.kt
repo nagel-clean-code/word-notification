@@ -22,6 +22,8 @@ data class Word(
     var nextDate: Long? = null
     var mode: ModeDbEntity? = null
 
+    var notifications: List<NotificationHistoryItem>? = null
+
     fun getLastDateMentionOrNull(): Long? {
         return if (lastDateMention == THERE_IS_NO_DATE_MENTION) null else lastDateMention
     }

@@ -21,7 +21,6 @@ class MenuForDictionaryDialog(
     private val edit: ((Dictionary) -> Unit)? = null,
     private val copy: (Dictionary) -> Unit,
     private val exportDictionary: (Dictionary) -> Unit,
-    private val exportAllDictionary: () -> Unit,
     private val delete: () -> Unit,
 ) : DialogFragment() {
 
@@ -60,11 +59,6 @@ class MenuForDictionaryDialog(
             AppMetrica.reportEvent("export_on_dictionary_click")
             if (realtimeDb.isTesting()) return@setOnClickListener
             this@MenuForDictionaryDialog.exportDictionary.invoke(dictionary)
-        }
-        exportAll.setOnClickListener {
-            AppMetrica.reportEvent("export_all_dictionaries_click")
-            if (realtimeDb.isTesting()) return@setOnClickListener
-            this@MenuForDictionaryDialog.exportAllDictionary()
         }
         copyDictionary.setOnClickListener {
             copy.invoke(dictionary)

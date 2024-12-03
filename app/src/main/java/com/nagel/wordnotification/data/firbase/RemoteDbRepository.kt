@@ -10,8 +10,8 @@ import com.nagel.wordnotification.BuildConfig
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.firbase.entity.CurrentPrices
 import com.nagel.wordnotification.data.firbase.entity.FeatureToggles
+import com.nagel.wordnotification.presentation.exportAndImport.CashReader
 import com.nagel.wordnotification.presentation.navigator.MainNavigator
-import com.nagel.wordnotification.presentation.reader.ImportInCash
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
@@ -184,9 +184,8 @@ class RemoteDbRepository @Inject constructor(
     ) {
         constructor() : this("")
 
-        suspend fun getDictionaries(dataReader: ImportInCash): List<Dictionary> {
-            dataReader.readStringAndCreateDictionaries(contents)
-            return dataReader.dictionaryRepository.getDictionaries()
+        fun getDictionaries(dataReader: CashReader): List<Dictionary> {
+            return dataReader.fireReader(contents)
         }
     }
 
