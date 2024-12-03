@@ -42,7 +42,7 @@ class ExportGenerator @Inject constructor(
                 }
                 val mode = settingsRepository.getModeSettingsById(dictionary.idMode)
                 mode?.apply {
-                    out.print("a|$selectedMode||$sampleDays||$daysInJson||$timeIntervals|$timeIntervalsFirst|$timeIntervalsSecond|")
+                    out.print("a|$selectedMode||$sampleDays||$daysInJson||$timeIntervals||$timeIntervalsFirst||$timeIntervalsSecond|")
                 }
                 dictionary.wordList.forEach { word ->
                     word.apply {
