@@ -70,7 +70,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
             closeFABMenu()
             if (result.resultCode == Activity.RESULT_OK) {
                 val intent = result.data
-                lifecycleScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch(Dispatchers.Default) {
                     fileReader.handleIntent(intent?.data) { msgId ->
                         withContext(Dispatchers.Main) {
                             activity?.showToast(msgId)

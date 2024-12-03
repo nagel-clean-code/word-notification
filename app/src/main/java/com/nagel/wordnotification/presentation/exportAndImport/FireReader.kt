@@ -37,17 +37,16 @@ class FireReader @Inject constructor(
 
     suspend fun fireReader(content: String) {
         if (myIdAccount == null) return
-        while (pos + 1 < content.length - 1) {
-            var name = readDictionaryName(content)
-            name = name.ifBlank { navigatorV2.getString(R.string.dictionary) }
-            while (currentDictionariesNames.contains(name)) {
-                name += "(new)"
-            }
-            val dictionary = dictionaryRepository.createDictionary(name, myIdAccount!!)
+        while (content[pos] == '{' && pos + 1 < content.length - 1) {
+            val dictionary = readDictionary(content)
+            val idDictionary = dictionaryRepository.saveDictionary(dictionary)
+            dictionary.idDictionary = idDictionary
             val isAlgorithm = content[pos++] == 'a'
             if (isAlgorithm) {
                 val mode = readAlgorithm(content, dictionary.idDictionary)
                 dictionary.idMode = settingsRepository.saveModeSettings(mode.toMode())
+            } else {
+                --pos
             }
             val words = readWords(content, dictionary, isAlgorithm)
             words.forEach { word ->
@@ -138,11 +137,29 @@ class FireReader @Inject constructor(
         )
     }
 
-    private fun readDictionaryName(str: String): String {
+    private fun readDictionary(str: String): Dictionary {
         if (str[pos++] != '{') throw IOException()
-        val name = readWord(str)
+        var name = readWord(str)
+        val dateCreated = readWord(str).toLong()
+        val idFolder = readWord(str).toLong()
+        val include = readWord(str).toBoolean()
+
+        name = name.ifBlank { navigatorV2.getString(R.string.dictionary) }
+        while (currentDictionariesNames.contains(name)) {
+            name += "(new)"
+        }
+
+        val newDictionary = Dictionary(
+            idDictionary = 0,
+            idAuthor = myIdAccount!!,
+            name = name,
+            dateCreated = dateCreated,
+            idFolder = idFolder,
+            idMode = 0,
+            include = include
+        )
         if (str[pos++] != '}') throw IOException()
-        return name
+        return newDictionary
     }
 
     private fun readWord(str: String): String {

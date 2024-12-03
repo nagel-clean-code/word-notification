@@ -29,6 +29,10 @@ class MainActivityVM @Inject constructor(
         }
     }
 
+    fun saveIsStarted() {
+        sessionRepository.saveIsStarted(true)
+    }
+
     companion object {
         private const val BEGINNING_OF_SHOW = 3 * 24 * 60 * 60 * 1000L
 

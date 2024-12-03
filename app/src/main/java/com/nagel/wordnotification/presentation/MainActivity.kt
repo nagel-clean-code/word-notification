@@ -18,7 +18,6 @@ import com.nagel.wordnotification.Constants.BOOT_COMPLETED
 import com.nagel.wordnotification.Constants.HTC_QUICKBOOT_POWERON
 import com.nagel.wordnotification.Constants.QUICKBOOT_POWERON
 import com.nagel.wordnotification.R
-import com.nagel.wordnotification.core.algorithms.NotificationAlgorithm
 import com.nagel.wordnotification.core.analytecs.AppMetricaAnalyticPlatform
 import com.nagel.wordnotification.core.services.NotificationRestorerReceiver
 import com.nagel.wordnotification.data.firbase.RemoteDbRepository
@@ -26,13 +25,13 @@ import com.nagel.wordnotification.databinding.ActivityMainBinding
 import com.nagel.wordnotification.presentation.addingwords.AddingWordsFragment
 import com.nagel.wordnotification.presentation.choosingdictionary.ChoosingDictionaryFragment
 import com.nagel.wordnotification.presentation.choosingdictionary.library.LibraryDictionariesFragment
+import com.nagel.wordnotification.presentation.exportAndImport.FileReader
 import com.nagel.wordnotification.presentation.exportdictionaries.ExportFragment
 import com.nagel.wordnotification.presentation.navigator.MainNavigator
 import com.nagel.wordnotification.presentation.navigator.Navigator
 import com.nagel.wordnotification.presentation.profile.ProfileFragment
 import com.nagel.wordnotification.presentation.profile.evalution.EvaluationAppDialog
 import com.nagel.wordnotification.presentation.randomizer.RandomizingFragment
-import com.nagel.wordnotification.presentation.exportAndImport.FileReader
 import com.nagel.wordnotification.presentation.settings.ModeSettingsFragment
 import com.nagel.wordnotification.utils.common.MessageUtils
 import com.nagel.wordnotification.utils.common.SystemUtils.Companion.isGooglePlayServicesAvailable
@@ -132,8 +131,9 @@ class MainActivity : AppCompatActivity(), Navigator {
         auth?.signInAnonymously()?.addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
                 task.result.user?.zzb()?.metadata?.creationTimestamp?.let {
-                    val date = NotificationAlgorithm.dateFormat.format(it)
-                    Log.d("DATA::: Дата регистрации:", date + " $it")
+                    if (it < NEW_YEARS_GIFT) {
+                        viewModel.saveIsStarted()
+                    }
                 }
             } else {
                 Log.d("Ошибка", "входа в fb")
@@ -211,5 +211,6 @@ class MainActivity : AppCompatActivity(), Navigator {
 
     companion object {
         var navigatorInstance: MainNavigator? = null
+        private const val NEW_YEARS_GIFT = 1735664399000L
     }
 }

@@ -37,15 +37,17 @@ class ExportGenerator @Inject constructor(
         val file = createFile("dictionaries$FILE_FORMAT_FIRE")
         file.printWriter().use { out ->
             dictionaries.forEach() { dictionary ->
-                out.print("{|${dictionary.name}|}")
+                with(dictionary) {
+                    out.print("{|$name||$dateCreated||$idFolder||$include|}")
+                }
                 val mode = settingsRepository.getModeSettingsById(dictionary.idMode)
                 mode?.apply {
                     out.print("a|$selectedMode||$sampleDays||$daysInJson||$timeIntervals|$timeIntervalsFirst|$timeIntervalsSecond|")
                 }
                 dictionary.wordList.forEach { word ->
                     word.apply {
-                        out.print("w|$$textFirst||$textLast|")
-                        if (isAlgorithm) {
+                        out.print("w|$textFirst||$textLast|")
+                        if (isAlgorithm && mode != null) {
                             writeAlgorithm(out, word, dictionary.idMode)
                         }
                     }
