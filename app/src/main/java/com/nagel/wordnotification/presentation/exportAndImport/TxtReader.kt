@@ -20,6 +20,7 @@ class TxtReader @Inject constructor(
     private val myIdAccount: Long? by lazy { sessionRepository.getSession().account?.id }
     private lateinit var currentDictionariesNames: List<String>
     private var pos = 0
+    private val charactersToSkip = listOf(' ', '\n', '\r', ',', ';', '.')
 
     init {
         MainScope().launch(Dispatchers.IO) {
@@ -29,11 +30,11 @@ class TxtReader @Inject constructor(
         }
     }
 
-    suspend fun txtReader(content: String, dictionaryName: String) {
+    suspend fun txtReader(content: String) {
         if (myIdAccount == null) return
-        var name = dictionaryName.ifBlank { navigatorV2.getString(R.string.dictionary) }
+        var name = navigatorV2.getString(R.string.dictionary)
         while (currentDictionariesNames.contains(name)) {
-            name += "(new)"
+            name += " (new)"
         }
         val dictionary = dictionaryRepository.createDictionary(name, myIdAccount!!)
         val words = readWordsTxt(content, dictionary.idDictionary)
@@ -44,10 +45,16 @@ class TxtReader @Inject constructor(
 
     private fun readWordsTxt(str: String, idDictionary: Long): List<Word> {
         val words = mutableListOf<Word>()
-        while ((str[pos] == '[') && pos < str.length) {
+        while (pos < str.length && charactersToSkip.contains(str[pos])) {
+            ++pos
+        }
+        while (pos < str.length && str[pos] == '[') {
             val textFirst = readTextFirst(str)
             val textLast = readTextLast(str)
             words.add(Word(idDictionary, textFirst, textLast))
+            while (pos < str.length && charactersToSkip.contains(str[pos])) {
+                ++pos
+            }
         }
         return words
     }
@@ -58,7 +65,7 @@ class TxtReader @Inject constructor(
         var char = str[pos++]
         while (char != ';') {
             word += char
-            if (pos >= str.length - 1) {
+            if (pos >= str.length) {
                 throw IOException()
             }
             char = str[pos++]
@@ -68,11 +75,10 @@ class TxtReader @Inject constructor(
 
     private fun readTextLast(str: String): String {
         var word = ""
-        if (str[pos] != ';') throw IOException("${str[pos - 1]}, " + str.substring(0, pos - 1))
         var char = str[pos++]
         while (char != ']') {
             word += char
-            if (pos >= str.length - 1) {
+            if (pos >= str.length) {
                 throw IOException()
             }
             char = str[pos++]

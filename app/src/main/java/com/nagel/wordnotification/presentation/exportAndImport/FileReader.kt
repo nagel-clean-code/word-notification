@@ -6,7 +6,9 @@ import com.nagel.wordnotification.R
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.presentation.exportAndImport.ExportGenerator.Companion.FILE_FORMAT_TXT
+import com.nagel.wordnotification.presentation.navigator.NavigatorV2
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -22,7 +24,7 @@ open class FileReader @Inject constructor(
     private val sessionRepository: SessionRepository,
     @ApplicationContext private val context: Context,
     private val txtReader: TxtReader,
-    private val fireReader: FireReader,
+    private val fireReader: FireReader
 ) {
     private val myIdAccount: Long? by lazy { sessionRepository.getSession().account?.id }
     private lateinit var currentDictionariesNames: List<String>
@@ -36,7 +38,8 @@ open class FileReader @Inject constructor(
     }
 
     private var pos = 0
-
+//        content://com.google.android.apps.docs.storage/document/acc%3D6%3Bdoc%3Dencoded%3DP08W0w1KJIPtQWkXc0QWg-eDA2dcLW6wzik-ijD0K76j4S4QSnxiJpA%3D
+//        content://org.telegram.messenger.provider/media/Android/data/org.telegram.messenger/files/Telegram/Telegram%20Documents/2_5366432581174712772.txt
     suspend fun handleIntent(uri: Uri?, showResult: suspend (Int) -> Unit) {
         if (uri == null) return
         pos = 0
@@ -45,10 +48,16 @@ open class FileReader @Inject constructor(
             val inputStream = context.contentResolver.openInputStream(uri)
             content = getStringFromInputStream(inputStream)
             if (content.isBlank()) return
-            if (uri.path?.contains(FILE_FORMAT_TXT) == true) {
-                txtReader.txtReader(content, uri.fragment ?: "СЛОВАРЬ") //TODO проверить на тесте
-            } else {
-                fireReader.fireReader(content)
+            try {
+                if (uri.path?.contains(FILE_FORMAT_TXT) == true) {
+                    txtReader.txtReader(content)
+                } else {
+                    fireReader.fireReader(content)
+                }
+            } catch (e: Exception) {
+                AppMetrica.reportEvent("file_reader_error_event")
+                AppMetrica.reportEvent("file_reader_error", mapOf("content" to content))
+                throw e
             }
             showResult(R.string.import_success)
         } catch (e: FileNotFoundException) {

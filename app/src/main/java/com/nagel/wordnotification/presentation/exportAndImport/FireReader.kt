@@ -41,6 +41,7 @@ class FireReader @Inject constructor(
             val dictionary = readDictionary(content)
             val idDictionary = dictionaryRepository.saveDictionary(dictionary)
             dictionary.idDictionary = idDictionary
+            if (pos >= content.length) return
             val isAlgorithm = content[pos++] == 'a'
             if (isAlgorithm) {
                 val mode = readAlgorithm(content, dictionary.idDictionary)
@@ -81,7 +82,7 @@ class FireReader @Inject constructor(
 
     private fun readWords(str: String, dictionary: Dictionary, isAlgorithm: Boolean): List<Word> {
         val wordList = mutableListOf<Word>()
-        while (str[pos++] == 'w' && pos < str.length - 1) {
+        while (pos < str.length && str[pos++] == 'w') {
             val textFirst = readWord(str)
             val textLast = readWord(str)
             if (isAlgorithm) {
@@ -100,7 +101,7 @@ class FireReader @Inject constructor(
 
     private fun readHistoryNotification(str: String, idMode: Long): List<NotificationHistoryItem> {
         val notifications = mutableListOf<NotificationHistoryItem>()
-        while (str[pos++] == 'h') {
+        while (pos < str.length && str[pos++] == 'h') {
             val dateMention = readWord(str).toLong()
             val learnStep = readWord(str).toInt()
             notifications.add(
@@ -146,7 +147,7 @@ class FireReader @Inject constructor(
 
         name = name.ifBlank { navigatorV2.getString(R.string.dictionary) }
         while (currentDictionariesNames.contains(name)) {
-            name += "(new)"
+            name += " (new)"
         }
 
         val newDictionary = Dictionary(
@@ -168,7 +169,7 @@ class FireReader @Inject constructor(
         var char = str[pos++]
         while (char != '|') {
             word += char
-            if (pos >= str.length - 1) {
+            if (pos > str.length - 1) {
                 throw IOException()
             }
             char = str[pos++]
