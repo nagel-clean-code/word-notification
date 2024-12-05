@@ -16,8 +16,8 @@ android {
         applicationId "com.nagel.wordnotification"
         minSdk 24
         targetSdk 34
-        versionCode 441
-        versionName "1.5.6"
+        versionCode 442
+        versionName "1.5.7"
 
         resConfigs "en", "ru", "de"
 

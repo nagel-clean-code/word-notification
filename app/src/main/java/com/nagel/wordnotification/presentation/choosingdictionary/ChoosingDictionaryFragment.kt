@@ -32,12 +32,13 @@ import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import com.nagel.wordnotification.presentation.navigator.navigator
 import com.nagel.wordnotification.presentation.premiumdialog.PremiumDialog
 import com.nagel.wordnotification.utils.common.sendFile
-import com.nagel.wordnotification.utils.common.showToast
 import dagger.hilt.android.AndroidEntryPoint
 import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -71,14 +72,34 @@ class ChoosingDictionaryFragment : BaseFragment() {
             if (result.resultCode == Activity.RESULT_OK) {
                 val intent = result.data
                 lifecycleScope.launch(Dispatchers.Default) {
-                    fileReader.handleIntent(intent?.data) { msgId ->
-                        withContext(Dispatchers.Main) {
-                            activity?.showToast(msgId)
-                        }
-                    }
+                    fileReader.handleIntent(intent?.data, ::showPremiumDialog)
                 }
             }
         }
+
+    private suspend fun showPremiumDialog(
+        text: String,
+        advertisementWasViewed: suspend () -> Unit
+    ) {
+        val continueFlag = AtomicBoolean(false)
+        withContext(Dispatchers.Main) {
+            PremiumDialog(
+                text = text,
+                isChoiceAdvertisement = true,
+                advertisementWasViewed = {
+                    lifecycleScope.launch(Dispatchers.Default) {
+                        advertisementWasViewed.invoke()
+                    }
+                },
+                onDestroy = {
+                    continueFlag.set(true)
+                }
+            ).show(childFragmentManager, PremiumDialog.TAG)
+        }
+        while (continueFlag.get().not()) {
+            delay(50)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

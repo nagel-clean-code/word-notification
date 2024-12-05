@@ -8,6 +8,7 @@ import com.nagel.wordnotification.data.firbase.RemoteDbRepository
 import com.nagel.wordnotification.presentation.base.BaseViewModel
 import com.nagel.wordnotification.presentation.navigator.NavigatorV2
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.Eagerly
@@ -66,6 +67,10 @@ class LibraryDictionariesVM @Inject constructor(
     }
 
     fun addToDbDictionaries() {
+        val names = listDictionaryChecked.map { it.name }
+        names.forEach { item ->
+            AppMetrica.reportEvent("library_add_dictionary", mapOf("name" to item))
+        }
         _localState.value = _localState.value.copy(isLoading = true)
         viewModelScope.launch(Dispatchers.IO) {
             listDictionaryChecked.forEach {

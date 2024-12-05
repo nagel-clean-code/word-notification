@@ -136,7 +136,9 @@
 
     <string name="purchases_not_available">Purchases are not available at the moment, try again later</string>
     <string name="watch_ads">Watch ads</string>
-    <string name="suggestion_of_additional_words">The word limit is reached, get PREMIUM or you can get 3 additional words for watching ads</string>
+    <string name="suggestion_of_additional_words">The word limit is reached, get PREMIUM or you can get 5 additional words for watching ads</string>
+    <string name="suggestion_of_additional_words_d_d">The word limit is exhausted, get PREMIUM or you can get 5 additional words for watching ads\n\nExported:%d/%d</string>
+    <string name="suggestion_of_additional_words_s_d_d">The word limit is exhausted, get PREMIUM or you can get 5 additional words for watching ads\n\n\%sImported:%d/%d</string>
     <string name="voice_acting">Voiceover is available only in PREMIUM</string>
     <string name="copying_dictionaries_is_available">Copying dictionaries is only available in a PREMIUM subscription</string>
     <string name="it_is_available_to_configure_time_intervals">Time intervals can only be configured in a PREMIUM subscription</string>

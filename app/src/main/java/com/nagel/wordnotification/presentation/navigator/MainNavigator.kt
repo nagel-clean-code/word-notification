@@ -30,7 +30,9 @@ class MainNavigator @Inject constructor() : AndroidViewModel(App.get()), Navigat
     }
 
     override fun toast(messageId: Int) {
-        Toast.makeText(getApplication(), messageId, Toast.LENGTH_LONG).show()
+        whenActivityActive.mainActivity?.runOnUiThread() {
+            Toast.makeText(getApplication(), messageId, Toast.LENGTH_LONG).show()
+        }
     }
 
     override fun getString(messageRes: Int): String {

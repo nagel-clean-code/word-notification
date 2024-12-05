@@ -1,5 +1,6 @@
 package com.nagel.wordnotification.presentation.exportAndImport
 
+import com.nagel.wordnotification.Constants.NUMBER_OF_FREE_WORDS_PER_ADVERTISEMENT
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
@@ -9,9 +10,6 @@ import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.data.settings.SettingsRepository
 import com.nagel.wordnotification.data.settings.room.entities.ModeDbEntity
 import com.nagel.wordnotification.presentation.navigator.NavigatorV2
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
 import java.io.IOException
 import javax.inject.Inject
 
@@ -24,24 +22,33 @@ class FireReader @Inject constructor(
 
     private val myIdAccount: Long? by lazy { sessionRepository.getSession().account?.id }
     private lateinit var currentDictionariesNames: List<String>
-
-    init {
-        MainScope().launch(Dispatchers.IO) {
-            myIdAccount?.let { id ->
-                currentDictionariesNames = dictionaryRepository.loadDictionaries(id).map { it.name }
-            }
-        }
-    }
+    private var isStarted: Boolean = false
 
     private var pos = 0
+    private var limitWords: Int = 0
+    private var curentIxAddWord = 0
+    private var currentWord = 0
 
-    suspend fun fireReader(content: String) {
+    suspend fun fireReader(
+        content: String,
+        showPremiumDialog: suspend (text: String, advertisementWasViewed: suspend () -> Unit) -> Unit
+    ) {
         if (myIdAccount == null) return
+        myIdAccount?.let { id ->
+            currentDictionariesNames = dictionaryRepository.loadDictionaries(id).map { it.name }
+        }
+        isStarted = sessionRepository.getIsStarted()
+        pos = 0
         while (content[pos] == '{' && pos + 1 < content.length - 1) {
+            limitWords = sessionRepository.getLimitWord()
+            currentWord = dictionaryRepository.getAllWords().size
             val dictionary = readDictionary(content)
             val idDictionary = dictionaryRepository.saveDictionary(dictionary)
             dictionary.idDictionary = idDictionary
-            if (pos >= content.length) return
+            if (pos >= content.length) {
+                navigatorV2.toast(R.string.import_success)
+                return
+            }
             val isAlgorithm = content[pos++] == 'a'
             if (isAlgorithm) {
                 val mode = readAlgorithm(content, dictionary.idDictionary)
@@ -50,7 +57,28 @@ class FireReader @Inject constructor(
                 --pos
             }
             val words = readWords(content, dictionary, isAlgorithm)
-            words.forEach { word ->
+            curentIxAddWord = 0
+            addWords(words, dictionary, showPremiumDialog)
+        }
+        navigatorV2.toast(R.string.import_success)
+    }
+
+    private suspend fun addWords(
+        words: List<Word>,
+        dictionary: Dictionary,
+        showPremiumDialog: suspend (text: String, advertisementWasViewed: suspend () -> Unit) -> Unit
+    ) {
+        while (curentIxAddWord < words.size) {
+            if (isStarted.not() && currentWord + curentIxAddWord >= limitWords) {
+                var text = navigatorV2.getString(R.string.suggestion_of_additional_words_s_d_d)
+                text = String.format(text, dictionary.name, curentIxAddWord, words.size)
+                sessionRepository.changLimitWords(currentWord + curentIxAddWord)
+                showPremiumDialog.invoke(text) {
+                    limitWords += NUMBER_OF_FREE_WORDS_PER_ADVERTISEMENT
+                    sessionRepository.changLimitWords(limitWords)
+                }
+            } else {
+                val word = words[curentIxAddWord++]
                 word.idWord = dictionaryRepository.addWord(word)
                 word.notifications?.forEach { item ->
                     item.idWord = word.idWord
@@ -59,6 +87,7 @@ class FireReader @Inject constructor(
                 }
             }
         }
+        sessionRepository.changLimitWords(limitWords)
     }
 
     private fun readAlgorithm(str: String, idDictionary: Long): ModeDbEntity {

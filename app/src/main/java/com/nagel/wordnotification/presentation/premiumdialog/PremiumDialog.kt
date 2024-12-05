@@ -24,7 +24,8 @@ import javax.inject.Inject
 class PremiumDialog(
     private val text: String,
     private val isChoiceAdvertisement: Boolean,
-    private val advertisementWasViewed: () -> Unit = {}
+    private val advertisementWasViewed: () -> Unit = {},
+    private val onDestroy: () -> Unit = {}
 ) : DialogFragment() {
 
     private lateinit var binding: PremiumAskDialogBinding
@@ -84,6 +85,11 @@ class PremiumDialog(
 
     private fun showErrorPremium() {
         requireActivity().showToast(R.string.purchases_not_available)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        onDestroy.invoke()
     }
 
     companion object {

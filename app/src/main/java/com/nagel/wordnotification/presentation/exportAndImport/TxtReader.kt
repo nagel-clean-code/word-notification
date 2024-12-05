@@ -1,13 +1,11 @@
 package com.nagel.wordnotification.presentation.exportAndImport
 
+import com.nagel.wordnotification.Constants.NUMBER_OF_FREE_WORDS_PER_ADVERTISEMENT
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.presentation.navigator.NavigatorV2
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
 import java.io.IOException
 import javax.inject.Inject
 
@@ -18,19 +16,26 @@ class TxtReader @Inject constructor(
 ) {
 
     private val myIdAccount: Long? by lazy { sessionRepository.getSession().account?.id }
+    private var isStarted: Boolean = false
+    private var limitWords: Int = 0
     private lateinit var currentDictionariesNames: List<String>
     private var pos = 0
     private val charactersToSkip = listOf(' ', '\n', '\r', ',', ';', '.')
+    private var curentIxAddWord = 0
+    private var currentWord = 0
 
-    init {
-        MainScope().launch(Dispatchers.IO) {
-            myIdAccount?.let { id ->
-                currentDictionariesNames = dictionaryRepository.loadDictionaries(id).map { it.name }
-            }
+    suspend fun txtReader(
+        content: String,
+        showPremiumDialog: suspend (text: String, advertisementWasViewed: suspend () -> Unit) -> Unit
+    ) {
+        myIdAccount?.let { id ->
+            currentDictionariesNames = dictionaryRepository.loadDictionaries(id).map { it.name }
         }
-    }
-
-    suspend fun txtReader(content: String) {
+        limitWords = sessionRepository.getLimitWord()
+        currentWord = dictionaryRepository.getAllWords().size
+        isStarted = sessionRepository.getIsStarted()
+        curentIxAddWord = 0
+        pos = 0
         if (myIdAccount == null) return
         var name = navigatorV2.getString(R.string.dictionary)
         while (currentDictionariesNames.contains(name)) {
@@ -38,9 +43,30 @@ class TxtReader @Inject constructor(
         }
         val dictionary = dictionaryRepository.createDictionary(name, myIdAccount!!)
         val words = readWordsTxt(content, dictionary.idDictionary)
-        words.forEach { word ->
-            dictionaryRepository.addWord(word)
+        addWords(words, showPremiumDialog)
+    }
+
+    private suspend fun addWords(
+        words: List<Word>,
+        showPremiumDialog: suspend (text: String, advertisementWasViewed: suspend () -> Unit) -> Unit
+    ) {
+        while (curentIxAddWord < words.size) {
+            if (isStarted.not() && currentWord + curentIxAddWord >= limitWords) {
+                var text = navigatorV2.getString(R.string.suggestion_of_additional_words_d_d)
+                text = String.format(text, curentIxAddWord, words.size)
+                sessionRepository.changLimitWords(currentWord + curentIxAddWord)
+                showPremiumDialog.invoke(text) {
+                    limitWords += NUMBER_OF_FREE_WORDS_PER_ADVERTISEMENT
+                    sessionRepository.changLimitWords(limitWords)
+                    addWords(words, showPremiumDialog)
+                }
+                return
+            } else {
+                dictionaryRepository.addWord(words[curentIxAddWord++])
+            }
         }
+        sessionRepository.changLimitWords(limitWords)
+        navigatorV2.toast(R.string.import_success)
     }
 
     private fun readWordsTxt(str: String, idDictionary: Long): List<Word> {

@@ -29,17 +29,19 @@ import com.nagel.wordnotification.presentation.exportAndImport.FileReader
 import com.nagel.wordnotification.presentation.exportdictionaries.ExportFragment
 import com.nagel.wordnotification.presentation.navigator.MainNavigator
 import com.nagel.wordnotification.presentation.navigator.Navigator
+import com.nagel.wordnotification.presentation.premiumdialog.PremiumDialog
 import com.nagel.wordnotification.presentation.profile.ProfileFragment
 import com.nagel.wordnotification.presentation.profile.evalution.EvaluationAppDialog
 import com.nagel.wordnotification.presentation.randomizer.RandomizingFragment
 import com.nagel.wordnotification.presentation.settings.ModeSettingsFragment
-import com.nagel.wordnotification.utils.common.MessageUtils
 import com.nagel.wordnotification.utils.common.SystemUtils.Companion.isGooglePlayServicesAvailable
 import dagger.hilt.android.AndroidEntryPoint
 import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
 
@@ -97,15 +99,36 @@ class MainActivity : AppCompatActivity(), Navigator {
             navigator.launchFragment(this, screen, false)
             true
         }
-        lifecycleScope.launch(Dispatchers.IO) {
-            fileReader.handleIntent(intent.data) { msgId ->
-                withContext(Dispatchers.Main) {
-                    MessageUtils.showToast(msgId, this@MainActivity)
-                }
-            }
+        lifecycleScope.launch(Dispatchers.Default) {
+            fileReader.handleIntent(intent.data, ::showPremiumDialog)
         }
         initReceiver()
         viewModel.startNotification()
+    }
+
+
+    private suspend fun showPremiumDialog(
+        text: String,
+        advertisementWasViewed: suspend () -> Unit
+    ) {
+        val continueFlag = AtomicBoolean(false)
+        withContext(Dispatchers.Main) {
+            PremiumDialog(
+                text = text,
+                isChoiceAdvertisement = true,
+                advertisementWasViewed = {
+                    lifecycleScope.launch(Dispatchers.Default) {
+                        advertisementWasViewed.invoke()
+                    }
+                },
+                onDestroy = {
+                    continueFlag.set(true)
+                }
+            ).show(supportFragmentManager, PremiumDialog.TAG)
+        }
+        while (continueFlag.get().not()) {
+            delay(50)
+        }
     }
 
     override fun onNewIntent(intent: Intent) {

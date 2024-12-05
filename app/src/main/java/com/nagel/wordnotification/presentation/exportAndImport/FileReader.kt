@@ -24,7 +24,8 @@ open class FileReader @Inject constructor(
     private val sessionRepository: SessionRepository,
     @ApplicationContext private val context: Context,
     private val txtReader: TxtReader,
-    private val fireReader: FireReader
+    private val fireReader: FireReader,
+    private val navigatorV2: NavigatorV2
 ) {
     private val myIdAccount: Long? by lazy { sessionRepository.getSession().account?.id }
     private lateinit var currentDictionariesNames: List<String>
@@ -38,9 +39,11 @@ open class FileReader @Inject constructor(
     }
 
     private var pos = 0
-//        content://com.google.android.apps.docs.storage/document/acc%3D6%3Bdoc%3Dencoded%3DP08W0w1KJIPtQWkXc0QWg-eDA2dcLW6wzik-ijD0K76j4S4QSnxiJpA%3D
-//        content://org.telegram.messenger.provider/media/Android/data/org.telegram.messenger/files/Telegram/Telegram%20Documents/2_5366432581174712772.txt
-    suspend fun handleIntent(uri: Uri?, showResult: suspend (Int) -> Unit) {
+
+    suspend fun handleIntent(
+        uri: Uri?,
+        showPremiumDialog: suspend (text: String, advertisementWasViewed: suspend () -> Unit) -> Unit
+    ) {
         if (uri == null) return
         pos = 0
         var content: String? = null
@@ -50,26 +53,25 @@ open class FileReader @Inject constructor(
             if (content.isBlank()) return
             try {
                 if (uri.path?.contains(FILE_FORMAT_TXT) == true) {
-                    txtReader.txtReader(content)
+                    txtReader.txtReader(content, showPremiumDialog)
                 } else {
-                    fireReader.fireReader(content)
+                    fireReader.fireReader(content, showPremiumDialog)
                 }
             } catch (e: Exception) {
                 AppMetrica.reportEvent("file_reader_error_event")
                 AppMetrica.reportEvent("file_reader_error", mapOf("content" to content))
                 throw e
             }
-            showResult(R.string.import_success)
         } catch (e: FileNotFoundException) {
             e.printStackTrace()
         } catch (e: IOException) {
             e.printStackTrace()
         } catch (e: Exception) {
             e.printStackTrace()
-            showResult(R.string.could_not_open_file)
+            navigatorV2.toast(R.string.could_not_open_file)
         }
         if (content == null) {
-            showResult(R.string.could_not_open_file)
+            navigatorV2.toast(R.string.could_not_open_file)
             return
         }
     }

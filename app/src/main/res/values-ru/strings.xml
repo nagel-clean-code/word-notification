@@ -58,7 +58,6 @@
     <string name="remember_2">Помню</string>
     <string name="your_result">Ваш результат</string>
     <string name="couldnt_delete_word">Не удалось удалить слово</string>
-    <string name="text_statistic">Изучено %d/%d слова (%d%%) Выучены %d из %d словарей. Для полного запоминания словарей, вам требуется ещё xxx дней</string>
     <string name="update">Обновить</string>
     <string name="new_version_app">Вышла новая версия приложения, обновите.</string>
     <string name="later">Позже</string>
@@ -135,7 +134,9 @@
     <string name="rub_x">%d₽</string>
     <string name="get_premium">Получить PREMIUM</string>
     <string name="watch_ads">Смотреть рекламу</string>
-    <string name="suggestion_of_additional_words">Лимит слов исчерпан, получите PREMIUM или Вы можете получать 3 дополнительных слова за просмотр рекламы</string>
+    <string name="suggestion_of_additional_words">Лимит слов исчерпан, получите PREMIUM или Вы можете получать 5 дополнительных слова за просмотр рекламы</string>
+    <string name="suggestion_of_additional_words_d_d">Лимит слов исчерпан, получите PREMIUM или Вы можете получать 5 дополнительных слова за просмотр рекламы\n\nИмпортированно:%d/%d</string>
+    <string name="suggestion_of_additional_words_s_d_d">Лимит слов исчерпан, получите PREMIUM или Вы можете получать 5 дополнительных слова за просмотр рекламы\n\n\%s\nИмпортированно:%d/%d</string>
     <string name="voice_acting">Озвучивание доступно только в PREMIUM</string>
     <string name="copying_dictionaries_is_available">Копирование словарей доступно только в PREMIUM подписке</string>
     <string name="it_is_available_to_configure_time_intervals">Настраивать временные интервалы можно только в PREMIUM подписке</string>
