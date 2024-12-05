@@ -7,9 +7,7 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.data.firbase.RemoteDbRepository
 import com.nagel.wordnotification.data.session.SessionRepository
@@ -22,7 +20,9 @@ import com.nagel.wordnotification.utils.common.collectStarted
 import com.nagel.wordnotification.utils.common.showToast
 import dagger.hilt.android.AndroidEntryPoint
 import io.appmetrica.analytics.AppMetrica
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -62,18 +62,19 @@ class LibraryDictionariesFragment : BaseFragment() {
         if (lastListDictionaries?.contents == library.contents) return
         lastListDictionaries = library
         viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                val list = try {
+            val list = try {
+                withContext(Dispatchers.Default) {
                     library.getDictionaries(dataReader)
-                } catch (e: Exception) {
-                    AppMetrica.reportEvent("get_library_dictionaries_error")
-                    requireActivity().showToast(R.string.dictionary_could_not_be_loaded)
-                    emptyList()
                 }
-                binding.countDictionaries.text = list.size.toString()
-                adapter = ExpListAdapter(list, viewModel::changeChecked)
-                binding.expandableListView.setAdapter(adapter)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                AppMetrica.reportEvent("get_library_dictionaries_error")
+                requireActivity().showToast(R.string.dictionary_could_not_be_loaded)
+                emptyList()
             }
+            binding.countDictionaries.text = list.size.toString()
+            adapter = ExpListAdapter(list, viewModel::changeChecked)
+            binding.expandableListView.setAdapter(adapter)
         }
     }
 

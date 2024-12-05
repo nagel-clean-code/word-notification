@@ -25,6 +25,7 @@ class PremiumDialog(
     private val text: String,
     private val isChoiceAdvertisement: Boolean,
     private val advertisementWasViewed: () -> Unit = {},
+    private val onCancel: () -> Unit = {},
     private val onDestroy: () -> Unit = {}
 ) : DialogFragment() {
 
@@ -56,6 +57,7 @@ class PremiumDialog(
 
     private fun initListeners() = with(binding) {
         cancelButton.setOnClickListener {
+            onCancel.invoke()
             dismiss()
         }
         watchAdsButton.setOnClickListener {

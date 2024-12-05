@@ -5,15 +5,13 @@ import com.nagel.wordnotification.R
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.firbase.RemoteDbRepository
+import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.presentation.base.BaseViewModel
 import com.nagel.wordnotification.presentation.navigator.NavigatorV2
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted.Companion.Eagerly
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -22,16 +20,13 @@ import javax.inject.Inject
 class LibraryDictionariesVM @Inject constructor(
     private val dictionaryRepository: DictionaryRepository,
     private val realtimeDb: RemoteDbRepository,
-    private var navigatorV2: NavigatorV2
+    private var navigatorV2: NavigatorV2,
+    private val sessionRepository: SessionRepository
 ) : BaseViewModel() {
 
     private var listDictionaryChecked = mutableSetOf<Dictionary>()
     private val _localState = MutableStateFlow(DictionariesLibraryScreenState())
-    val state = realtimeDb.state.combine(_localState, ::combineStates).stateIn(
-        viewModelScope,
-        Eagerly,
-        DictionariesLibraryScreenState()
-    )
+    val state = _localState
 
     init {
         if (state.value.dictionariesList == null) {
@@ -40,7 +35,22 @@ class LibraryDictionariesVM @Inject constructor(
     }
 
     fun loadDictionaries() {
-        realtimeDb.requestGetDictionaries()
+        realtimeDb.requestGetDictionaries(
+            success = {
+                _localState.value = _localState.value.copy(
+                    isLoading = false,
+                    dictionariesList = it,
+                    isError = false
+                )
+            },
+            error = {
+                _localState.value = _localState.value.copy(
+                    isLoading = false,
+                    dictionariesList = null,
+                    isError = true
+                )
+            }
+        )
     }
 
     private fun combineStates(
@@ -76,6 +86,9 @@ class LibraryDictionariesVM @Inject constructor(
             listDictionaryChecked.forEach {
                 dictionaryRepository.saveDictionary(it)
             }
+            val currentLimit = sessionRepository.getLimitWord()
+            val newLimit = currentLimit + listDictionaryChecked.sumOf { it.wordList.size }
+            sessionRepository.changLimitWords(newLimit)
             listDictionaryChecked.clear()
             withContext(Dispatchers.Main) {
                 navigatorV2.toast(R.string.import_success)

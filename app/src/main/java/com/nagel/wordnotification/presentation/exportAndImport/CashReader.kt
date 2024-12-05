@@ -6,9 +6,6 @@ import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.presentation.navigator.NavigatorV2
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
 import java.io.IOException
 import javax.inject.Inject
 
@@ -21,18 +18,12 @@ class CashReader @Inject constructor(
 
     private val myIdAccount: Long? by lazy { sessionRepository.getSession().account?.id }
     private lateinit var currentDictionariesNames: List<String>
-
-    init {
-        MainScope().launch(Dispatchers.IO) {
-            myIdAccount?.let { id ->
-                currentDictionariesNames = dictionaryRepository.loadDictionaries(id).map { it.name }
-            }
-        }
-    }
-
     private var pos = 0
 
-    fun fireReader(content: String): List<Dictionary> {
+    suspend fun fireReader(content: String): List<Dictionary> {
+        myIdAccount?.let { id ->
+            currentDictionariesNames = dictionaryRepository.loadDictionaries(id).map { it.name }
+        }
         val dictionaries = mutableListOf<Dictionary>()
         while (content[pos] == '{' && pos + 1 < content.length - 1) {
             val dictionary = readDictionary(content)

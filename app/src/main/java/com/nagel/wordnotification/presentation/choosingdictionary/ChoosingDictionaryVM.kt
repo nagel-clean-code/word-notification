@@ -1,6 +1,7 @@
 package com.nagel.wordnotification.presentation.choosingdictionary
 
 import androidx.lifecycle.viewModelScope
+import com.nagel.wordnotification.Constants.NUMBER_OF_FREE_WORDS
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.algorithms.NotificationAlgorithm
 import com.nagel.wordnotification.core.services.Utils
@@ -9,8 +10,8 @@ import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.data.settings.SettingsRepository
 import com.nagel.wordnotification.presentation.base.BaseViewModel
-import com.nagel.wordnotification.presentation.navigator.NavigatorV2
 import com.nagel.wordnotification.presentation.exportAndImport.ExportGenerator
+import com.nagel.wordnotification.presentation.navigator.NavigatorV2
 import com.nagel.wordnotification.utils.GlobalFunction
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -116,10 +117,20 @@ class ChoosingDictionaryVM @Inject constructor(
                         }
                     }
                 }
+                correctLimits(dictionary.wordList.size)
                 success.invoke()
             } else {
                 navigatorV2.toast(R.string.couldnt_delete_dictionary)
             }
+        }
+    }
+
+    private fun correctLimits(wordListSize: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val limitWords = sessionRepository.getLimitWord()
+            val sub = limitWords - wordListSize
+            val newLimitWords = if (sub >= 25) sub else NUMBER_OF_FREE_WORDS
+            sessionRepository.changLimitWords(newLimitWords)
         }
     }
 

@@ -38,7 +38,9 @@ import com.nagel.wordnotification.utils.common.SystemUtils.Companion.isGooglePla
 import dagger.hilt.android.AndroidEntryPoint
 import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
@@ -112,6 +114,7 @@ class MainActivity : AppCompatActivity(), Navigator {
         advertisementWasViewed: suspend () -> Unit
     ) {
         val continueFlag = AtomicBoolean(false)
+        val currentCoroutineJob = currentCoroutineContext().job
         withContext(Dispatchers.Main) {
             PremiumDialog(
                 text = text,
@@ -121,12 +124,13 @@ class MainActivity : AppCompatActivity(), Navigator {
                         advertisementWasViewed.invoke()
                     }
                 },
+                onCancel = { currentCoroutineJob.cancel() },
                 onDestroy = {
                     continueFlag.set(true)
                 }
             ).show(supportFragmentManager, PremiumDialog.TAG)
         }
-        while (continueFlag.get().not()) {
+        while (continueFlag.get().not()) { //Необходимо для последовательного (синхронного запуска)
             delay(50)
         }
     }

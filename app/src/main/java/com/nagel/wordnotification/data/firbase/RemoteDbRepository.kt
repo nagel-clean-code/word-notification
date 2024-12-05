@@ -12,8 +12,6 @@ import com.nagel.wordnotification.data.firbase.entity.CurrentPrices
 import com.nagel.wordnotification.data.firbase.entity.FeatureToggles
 import com.nagel.wordnotification.presentation.exportAndImport.CashReader
 import com.nagel.wordnotification.presentation.navigator.MainNavigator
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -24,11 +22,10 @@ class RemoteDbRepository @Inject constructor(
     private val fireStore: FirebaseFirestore by lazy { Firebase.firestore }
     private var currentPrices: CurrentPrices? = null
     private var featureToggles: FeatureToggles? = null
+    private var dictionariesLibrary: DictionariesLibrary? = null
 
     //    private var testing = Date().time < 1704300235000
     private var testing = false
-    private var _state = MutableStateFlow(DictionariesLibraryState())
-    var state = _state.asStateFlow()
 
     init {
         getFeatureToggles()
@@ -89,25 +86,27 @@ class RemoteDbRepository @Inject constructor(
             }
     }
 
-    fun requestGetDictionaries() {
-        _state.value = _state.value.copy(isLoading = true)
+    fun requestGetDictionaries(
+        success: (DictionariesLibrary) -> Unit = {},
+        error: () -> Unit = {}
+    ) {
+        dictionariesLibrary?.let {
+            success(it)
+            return
+        }
         fireStore.collection("dictionaries")
             .document("all")
             .get()
             .addOnSuccessListener { documentSnapshot ->
                 try {
-                    val result = documentSnapshot.toObject<DictionariesLibrary>()!!
-                    _state.value = _state.value.copy(
-                        isLoading = false,
-                        dictionariesList = result
-                    )
+                    dictionariesLibrary = documentSnapshot.toObject<DictionariesLibrary>()!!
                 } catch (e: Exception) {
+                    error.invoke()
                     Log.w(ContentValues.TAG, "Error getting documents: ", e)
-                    _state.value = _state.value.copy(isError = true)
                     return@addOnSuccessListener
                 }
             }.addOnFailureListener { exception ->
-                _state.value = _state.value.copy(isError = true)
+                error.invoke()
                 Log.w(ContentValues.TAG, "Error getting documents: ", exception)
             }
     }
@@ -184,7 +183,7 @@ class RemoteDbRepository @Inject constructor(
     ) {
         constructor() : this("")
 
-        fun getDictionaries(dataReader: CashReader): List<Dictionary> {
+        suspend fun getDictionaries(dataReader: CashReader): List<Dictionary> {
             return dataReader.fireReader(contents)
         }
     }

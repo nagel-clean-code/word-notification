@@ -35,7 +35,9 @@ import com.nagel.wordnotification.utils.common.sendFile
 import dagger.hilt.android.AndroidEntryPoint
 import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
@@ -82,6 +84,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
         advertisementWasViewed: suspend () -> Unit
     ) {
         val continueFlag = AtomicBoolean(false)
+        val currentCoroutineJob = currentCoroutineContext().job
         withContext(Dispatchers.Main) {
             PremiumDialog(
                 text = text,
@@ -91,9 +94,8 @@ class ChoosingDictionaryFragment : BaseFragment() {
                         advertisementWasViewed.invoke()
                     }
                 },
-                onDestroy = {
-                    continueFlag.set(true)
-                }
+                onCancel = { currentCoroutineJob.cancel() },
+                onDestroy = { continueFlag.set(true) }
             ).show(childFragmentManager, PremiumDialog.TAG)
         }
         while (continueFlag.get().not()) {
