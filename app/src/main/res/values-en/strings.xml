@@ -142,7 +142,7 @@
     <string name="voice_acting">Voiceover is available only in PREMIUM</string>
     <string name="copying_dictionaries_is_available">Copying dictionaries is only available in a PREMIUM subscription</string>
     <string name="it_is_available_to_configure_time_intervals">Time intervals can only be configured in a PREMIUM subscription</string>
-    <string name="randomizer_limit_text">You have reached the daily usage limit of the randomizer, buy PREMIUM or watch ads for 5 additional uses</string>
+    <string name="randomizer_limit_text">You have reached the daily usage limit of the randomizer, buy PREMIUM or watch ads for %d additional uses</string>
 
     <string name="dictionary_export_is_available">Saving the algorithm is only available in a PREMIUM subscription</string>
     <string name="enable_state_of_algorithm">Save the state of the algorithm to a file</string>

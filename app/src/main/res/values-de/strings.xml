@@ -142,7 +142,7 @@
     <string name="voice_acting">Audio ist nur in PREMIUM verfügbar</string>
     <string name="copying_dictionaries_is_available">Das Kopieren von Wörterbüchern ist nur in einem PREMIUM-Abonnement verfügbar</string>
     <string name="it_is_available_to_configure_time_intervals">Sie können die Zeitintervalle nur in einem PREMIUM-Abonnement konfigurieren</string>
-    <string name="randomizer_limit_text">Sie haben das Limit für die Verwendung des Randomizers pro Tag erreicht, kaufen PREMIUM oder schauen Sie sich Werbung für 5 zusätzliche Verwendungen an</string>
+    <string name="randomizer_limit_text">Sie haben das Limit für die Verwendung des Randomizers pro Tag erreicht, kaufen PREMIUM oder schauen Sie sich Werbung für %d zusätzliche Verwendungen an</string>
 
     <string name="dictionary_export_is_available">Das Speichern des Algorithmus ist nur in einem PREMIUM-Abonnement verfügbar</string>
     <string name="enable_state_of_algorithm">Den Status des Algorithmus in einer Datei speichern</string>

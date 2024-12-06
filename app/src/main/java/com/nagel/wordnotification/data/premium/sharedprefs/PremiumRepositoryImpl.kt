@@ -1,6 +1,7 @@
 package com.nagel.wordnotification.data.premium.sharedprefs
 
 import android.content.Context
+import android.util.Log
 import com.nagel.wordnotification.Constants.COUNT_FREE_USE_RANDOMIZER
 import com.nagel.wordnotification.Constants.NUMBER_OF_FREE_WORDS
 import com.nagel.wordnotification.Constants.NUMBER_OF_FREE_WORDS_PER_ADVERTISEMENT
@@ -63,7 +64,7 @@ class PremiumRepositoryImpl @Inject constructor(
     }
 
     override fun getCurrentLimitWord(): Int {
-        return sharedPreferences.getInt(LIMIT_WORDS, NUMBER_OF_FREE_WORDS)
+        return sharedPreferences.getInt(LIMIT_WORDS, -1)
     }
 
     override fun saveCurrentLimitWords(limit: Int) {

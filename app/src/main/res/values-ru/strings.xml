@@ -140,7 +140,7 @@
     <string name="voice_acting">Озвучивание доступно только в PREMIUM</string>
     <string name="copying_dictionaries_is_available">Копирование словарей доступно только в PREMIUM подписке</string>
     <string name="it_is_available_to_configure_time_intervals">Настраивать временные интервалы можно только в PREMIUM подписке</string>
-    <string name="randomizer_limit_text">Вы достигли лимита использования рандомайзера на день, купите PREMIUM или посмотрите рекламу за 5 дополнительных использований</string>
+    <string name="randomizer_limit_text">Вы достигли лимита использования рандомайзера на день, купите PREMIUM или посмотрите рекламу за %d дополнительных использований</string>
     <string name="purchases_not_available">На данный момент покупки не доступны, попробуйте позже</string>
 
     <string name="dictionary_export_is_available">Сохранение алгоритма доступно только в PREMIUM подписке</string>

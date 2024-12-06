@@ -1,6 +1,7 @@
 package com.nagel.wordnotification.presentation.randomizer
 
 import androidx.lifecycle.viewModelScope
+import com.nagel.wordnotification.Constants.COUNT_FREE_USE_RANDOMIZER
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.dictionaries.entities.Word
@@ -35,8 +36,8 @@ class RandomizingVM @Inject constructor(
     private var currentIx: Int = -1
     private var positionBack = -1
     private var isStarted = AtomicBoolean(false)
-    private var limit = AtomicInteger(-1)
-    private var addNumberFreeRandomizer = AtomicInteger(-1)
+    private var limit = AtomicInteger(COUNT_FREE_USE_RANDOMIZER)
+    var addNumberFreeRandomizer = AtomicInteger(COUNT_FREE_USE_RANDOMIZER)
 
     init {
         viewModelScope.launch {

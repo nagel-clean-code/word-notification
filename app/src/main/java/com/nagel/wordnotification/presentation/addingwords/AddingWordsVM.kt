@@ -12,6 +12,7 @@ import com.nagel.wordnotification.data.accounts.room.entities.AccountDbEntity
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.dictionaries.entities.Word
+import com.nagel.wordnotification.data.firbase.RemoteDbRepository
 import com.nagel.wordnotification.data.premium.PremiumRepository
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.presentation.base.BaseViewModel
@@ -48,7 +49,8 @@ class AddingWordsVM @Inject constructor(
     private val accountDao: AccountDao,
     private var sessionRepository: SessionRepository,
     private val notificationAlgorithm: NotificationAlgorithm,
-    private var premiumRepository: PremiumRepository
+    private var premiumRepository: PremiumRepository,
+    private val remoteDbRepository: RemoteDbRepository
 ) : BaseViewModel() {
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler() { _, ex ->
@@ -75,11 +77,23 @@ class AddingWordsVM @Inject constructor(
     var isStarted = AtomicBoolean(false)
     private var countAllWords = -1
 
-
     init {
         viewModelScope.launch(Dispatchers.Default) {
             setTranslateLang(sessionRepository.getTranslationLanguage())
-            addNumberFreeWords.set(premiumRepository.getAddNumberFreeWords())
+            val limit = premiumRepository.getCurrentLimitWord()
+            if (limit == -1) {
+                remoteDbRepository.requestPremiumSettings(
+                    success = { data ->
+                        premiumRepository.saveCurrentLimitWords(data.minFreeWords)
+                        addNumberFreeWords.set(data.addNumberFreeWords)
+                    },
+                    error = {
+                        addNumberFreeWords.set(premiumRepository.getAddNumberFreeWords())
+                    }
+                )
+            } else {
+                addNumberFreeWords.set(premiumRepository.getAddNumberFreeWords())
+            }
         }
         getDictionaries()
         viewModelScope.launch(Dispatchers.IO) {
@@ -104,7 +118,7 @@ class AddingWordsVM @Inject constructor(
 
     fun addFreeWords() {
         val count = premiumRepository.getCurrentLimitWord()
-        premiumRepository.saveCurrentLimitWords(count + NUMBER_OF_FREE_WORDS_PER_ADVERTISEMENT)
+        premiumRepository.saveCurrentLimitWords(count + addNumberFreeWords.get())
     }
 
     fun changeCurrentAutoTranslate() {

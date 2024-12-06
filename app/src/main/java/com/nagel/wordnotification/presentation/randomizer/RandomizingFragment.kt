@@ -203,8 +203,12 @@ class RandomizingFragment : BaseFragment() {
     }
 
     private fun showPremium() {
+        val text = resources.getString(
+            R.string.randomizer_limit_text,
+            viewModel.addNumberFreeRandomizer.get()
+        )
         PremiumDialog(
-            text = resources.getString(R.string.randomizer_limit_text),
+            text = text,
             isChoiceAdvertisement = true,
             advertisementWasViewed = viewModel::addFreeUse
         ).show(childFragmentManager, PremiumDialog.TAG)

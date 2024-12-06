@@ -141,7 +141,7 @@ class RemoteDbRepository @Inject constructor(
             }
     }
 
-    private fun requestPremiumSettings(
+    fun requestPremiumSettings(
         success: (PremiumSettings) -> Unit = {},
         error: () -> Unit = {}
     ) {
