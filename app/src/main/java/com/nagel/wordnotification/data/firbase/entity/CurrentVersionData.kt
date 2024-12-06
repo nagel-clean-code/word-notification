@@ -1,6 +1,6 @@
 package com.nagel.wordnotification.data.firbase.entity
 
-internal data class CurrentVersionData(
+data class CurrentVersionData(
     val link: String,
     val mandatory: Boolean,
     val mandatoryUpdates: List<Int>,
