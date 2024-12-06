@@ -1,9 +1,9 @@
 package com.nagel.wordnotification.presentation.exportAndImport
 
-import com.nagel.wordnotification.Constants.NUMBER_OF_FREE_WORDS_PER_ADVERTISEMENT
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Word
+import com.nagel.wordnotification.data.premium.PremiumRepository
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.presentation.navigator.NavigatorV2
 import java.io.IOException
@@ -12,6 +12,7 @@ import javax.inject.Inject
 class TxtReader @Inject constructor(
     private val dictionaryRepository: DictionaryRepository,
     private val sessionRepository: SessionRepository,
+    private val premiumRepository: PremiumRepository,
     private val navigatorV2: NavigatorV2
 ) {
 
@@ -23,6 +24,7 @@ class TxtReader @Inject constructor(
     private val charactersToSkip = listOf(' ', '\n', '\r', ',', ';', '.')
     private var curentIxAddWord = 0
     private var currentWord = 0
+    private val addNumberFreeWords = premiumRepository.getAddNumberFreeWords()
 
     suspend fun txtReader(
         content: String,
@@ -31,9 +33,9 @@ class TxtReader @Inject constructor(
         myIdAccount?.let { id ->
             currentDictionariesNames = dictionaryRepository.loadDictionaries(id).map { it.name }
         }
-        limitWords = sessionRepository.getLimitWord()
+        limitWords = premiumRepository.getCurrentLimitWord()
         currentWord = dictionaryRepository.getAllWords().size
-        isStarted = sessionRepository.getIsStarted()
+        isStarted = premiumRepository.getIsStarted()
         curentIxAddWord = 0
         pos = 0
         if (myIdAccount == null) return
@@ -53,11 +55,11 @@ class TxtReader @Inject constructor(
         while (curentIxAddWord < words.size) {
             if (isStarted.not() && currentWord + curentIxAddWord >= limitWords) {
                 var text = navigatorV2.getString(R.string.suggestion_of_additional_words_d_d)
-                text = String.format(text, curentIxAddWord, words.size)
-                sessionRepository.changLimitWords(currentWord + curentIxAddWord)
+                text = String.format(text, addNumberFreeWords, curentIxAddWord, words.size)
+                premiumRepository.saveCurrentLimitWords(currentWord + curentIxAddWord)
                 showPremiumDialog.invoke(text) {
-                    limitWords += NUMBER_OF_FREE_WORDS_PER_ADVERTISEMENT
-                    sessionRepository.changLimitWords(limitWords)
+                    limitWords += addNumberFreeWords
+                    premiumRepository.saveCurrentLimitWords(limitWords)
                     addWords(words, showPremiumDialog)
                 }
                 return
@@ -65,7 +67,7 @@ class TxtReader @Inject constructor(
                 dictionaryRepository.addWord(words[curentIxAddWord++])
             }
         }
-        sessionRepository.changLimitWords(limitWords)
+        premiumRepository.saveCurrentLimitWords(limitWords)
         navigatorV2.toast(R.string.import_success)
     }
 

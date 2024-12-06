@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.data.firbase.RemoteDbRepository
+import com.nagel.wordnotification.data.premium.PremiumRepository
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.databinding.FragmentExportDictionariesBinding
 import com.nagel.wordnotification.presentation.base.BaseFragment
@@ -27,6 +28,9 @@ class ExportFragment : BaseFragment() {
     @Inject
     lateinit var sessionRepository: SessionRepository
 
+    @Inject
+    lateinit var premiumRepository: PremiumRepository
+
     private lateinit var binding: FragmentExportDictionariesBinding
     override val viewModel: ExportVM by viewModels()
 
@@ -42,7 +46,7 @@ class ExportFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.isStarted = sessionRepository.getIsStarted()
+        viewModel.isStarted = premiumRepository.getIsStarted()
         binding.saveAlgorithm.isChecked = viewModel.isStarted
     }
 

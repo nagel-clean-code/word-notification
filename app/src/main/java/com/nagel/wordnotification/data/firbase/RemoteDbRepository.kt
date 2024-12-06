@@ -12,13 +12,15 @@ import com.nagel.wordnotification.data.firbase.entity.CurrentVersionData
 import com.nagel.wordnotification.data.firbase.entity.DictionariesLibrary
 import com.nagel.wordnotification.data.firbase.entity.FeatureToggles
 import com.nagel.wordnotification.data.firbase.entity.PremiumSettings
+import com.nagel.wordnotification.data.premium.PremiumRepository
 import com.nagel.wordnotification.presentation.navigator.MainNavigator
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class RemoteDbRepository @Inject constructor(
-    private val navigator: MainNavigator
+    private val navigator: MainNavigator,
+    private val premiumRepository: PremiumRepository
 ) {
     private val fireStore: FirebaseFirestore by lazy { Firebase.firestore }
     private var currentPrices: CurrentPrices? = null
@@ -31,6 +33,7 @@ class RemoteDbRepository @Inject constructor(
 
     init {
         getFeatureToggles()
+        requestPremiumSettings()
         requestPremiumInformation()
         requestActualVersionApp()
     }
@@ -100,6 +103,7 @@ class RemoteDbRepository @Inject constructor(
             .addOnSuccessListener { documentSnapshot ->
                 try {
                     dictionariesLibrary = documentSnapshot.toObject<DictionariesLibrary>()!!
+                    dictionariesLibrary?.let(success)
                 } catch (e: Exception) {
                     error.invoke()
                     Log.w(ContentValues.TAG, "Error getting documents: ", e)
@@ -137,7 +141,7 @@ class RemoteDbRepository @Inject constructor(
             }
     }
 
-    fun requestPremiumSettings(
+    private fun requestPremiumSettings(
         success: (PremiumSettings) -> Unit = {},
         error: () -> Unit = {}
     ) {
@@ -151,6 +155,12 @@ class RemoteDbRepository @Inject constructor(
             .addOnSuccessListener { documentSnapshot ->
                 try {
                     premiumSettings = documentSnapshot.toObject<PremiumSettings>()
+                    premiumSettings?.apply {
+                        premiumRepository.saveMinFreeWords(minFreeWords)
+                        premiumRepository.saveAddNumberFreeWords(addNumberFreeWords)
+                        premiumRepository.saveAddNumberFreeRandomizer(addNumberFreeRandomizer)
+                        premiumRepository.saveMinFreeRandomizer(minFreeRandomizer)
+                    }
                     premiumSettings?.let { success(it) }
                 } catch (e: Exception) {
                     error()

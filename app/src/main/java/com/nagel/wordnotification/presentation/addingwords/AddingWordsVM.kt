@@ -12,6 +12,7 @@ import com.nagel.wordnotification.data.accounts.room.entities.AccountDbEntity
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.dictionaries.entities.Word
+import com.nagel.wordnotification.data.premium.PremiumRepository
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.presentation.base.BaseViewModel
 import com.nagel.wordnotification.presentation.navigator.NavigatorV2
@@ -33,6 +34,7 @@ import me.bush.translator.Translator
 import me.bush.translator.languageOf
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 
 enum class TranslationWord {
@@ -45,13 +47,15 @@ class AddingWordsVM @Inject constructor(
     val navigator: NavigatorV2,
     private val accountDao: AccountDao,
     private var sessionRepository: SessionRepository,
-    private val notificationAlgorithm: NotificationAlgorithm
+    private val notificationAlgorithm: NotificationAlgorithm,
+    private var premiumRepository: PremiumRepository
 ) : BaseViewModel() {
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler() { _, ex ->
         ex.printStackTrace()
     }
     private val defaultNameDictionary = navigator.getString(R.string.default_name_dictionary)
+    val addNumberFreeWords = AtomicInteger(NUMBER_OF_FREE_WORDS_PER_ADVERTISEMENT)
 
     private val _loadedDictionaryFlow = MutableStateFlow<Dictionary?>(null)
     val loadedDictionaryFlow: StateFlow<Dictionary?> = _loadedDictionaryFlow
@@ -71,13 +75,15 @@ class AddingWordsVM @Inject constructor(
     var isStarted = AtomicBoolean(false)
     private var countAllWords = -1
 
+
     init {
         viewModelScope.launch(Dispatchers.Default) {
             setTranslateLang(sessionRepository.getTranslationLanguage())
+            addNumberFreeWords.set(premiumRepository.getAddNumberFreeWords())
         }
         getDictionaries()
         viewModelScope.launch(Dispatchers.IO) {
-            isStarted.set(sessionRepository.getIsStarted())
+            isStarted.set(premiumRepository.getIsStarted())
         }
     }
 
@@ -93,12 +99,12 @@ class AddingWordsVM @Inject constructor(
 
     fun accessibilityOfAddOn(): Boolean {
         if (isStarted.get()) return true
-        return countAllWords < sessionRepository.getLimitWord()
+        return countAllWords < premiumRepository.getCurrentLimitWord()
     }
 
     fun addFreeWords() {
-        val count = sessionRepository.getLimitWord()
-        sessionRepository.changLimitWords(count + NUMBER_OF_FREE_WORDS_PER_ADVERTISEMENT)
+        val count = premiumRepository.getCurrentLimitWord()
+        premiumRepository.saveCurrentLimitWords(count + NUMBER_OF_FREE_WORDS_PER_ADVERTISEMENT)
     }
 
     fun changeCurrentAutoTranslate() {

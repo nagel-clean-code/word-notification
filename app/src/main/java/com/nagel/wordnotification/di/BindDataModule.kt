@@ -2,6 +2,8 @@ package com.nagel.wordnotification.di
 
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.room.RoomDictionaryRepository
+import com.nagel.wordnotification.data.premium.PremiumRepository
+import com.nagel.wordnotification.data.premium.sharedprefs.PremiumRepositoryImpl
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.data.session.sharedprefs.SharedprefSessionRepository
 import com.nagel.wordnotification.data.settings.SettingsRepository
@@ -19,6 +21,9 @@ abstract class BindDataModule {
 
     @Binds
     abstract fun bindSessionRepository(sharedPreferences: SharedprefSessionRepository): SessionRepository
+
+    @Binds
+    abstract fun bindPremiumRepository(sharedPreferences: PremiumRepositoryImpl): PremiumRepository
 
     @Binds
     abstract fun bindSettingsRepository(sharedPreferences: RoomModeRepository): SettingsRepository

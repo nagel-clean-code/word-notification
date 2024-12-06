@@ -1,10 +1,10 @@
 package com.nagel.wordnotification.presentation.randomizer
 
 import androidx.lifecycle.viewModelScope
-import com.nagel.wordnotification.Constants.COUNT_FREE_USE_RANDOMIZER
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.dictionaries.entities.Word
+import com.nagel.wordnotification.data.premium.PremiumRepository
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.presentation.base.BaseViewModel
 import com.nagel.wordnotification.presentation.randomizer.RandomizingFragment.Companion.EMPTY_WORD
@@ -20,7 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class RandomizingVM @Inject constructor(
     private val dictionaryRepository: DictionaryRepository,
-    private val sessionRepository: SessionRepository
+    private val sessionRepository: SessionRepository,
+    private val premiumRepository: PremiumRepository,
 ) : BaseViewModel() {
 
     val showResult = MutableStateFlow<Pair<Int, Int>?>(null)
@@ -35,12 +36,14 @@ class RandomizingVM @Inject constructor(
     private var positionBack = -1
     private var isStarted = AtomicBoolean(false)
     private var limit = AtomicInteger(-1)
+    private var addNumberFreeRandomizer = AtomicInteger(-1)
 
     init {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                isStarted.set(sessionRepository.getIsStarted())
-                limit.set(sessionRepository.getLimitRandomizer())
+                isStarted.set(premiumRepository.getIsStarted())
+                limit.set(premiumRepository.getCurrentLimitRandomizer())
+                addNumberFreeRandomizer.set(premiumRepository.getAddNumberFreeRandomizer())
             }
             val session = sessionRepository.getSession()
             session.account?.id?.let { id ->
@@ -60,14 +63,17 @@ class RandomizingVM @Inject constructor(
     }
 
     fun addFreeUse() {
-        limit.set(COUNT_FREE_USE_RANDOMIZER)
-        sessionRepository.changLimitRandomizer(COUNT_FREE_USE_RANDOMIZER)
+        viewModelScope.launch(Dispatchers.Default) {
+            val updateLimit = addNumberFreeRandomizer.get()
+            limit.set(updateLimit)
+            premiumRepository.saveCurrentLimitRandomizer(updateLimit)
+        }
     }
 
     private fun incrementFreeUseCount() {
         if (isStarted.get()) return
         val newLimit = limit.decrementAndGet()
-        sessionRepository.changLimitRandomizer(newLimit)
+        premiumRepository.saveCurrentLimitRandomizer(newLimit)
     }
 
     private fun initWords() {

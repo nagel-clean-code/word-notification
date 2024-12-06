@@ -2,13 +2,10 @@ package com.nagel.wordnotification.data.session.sharedprefs
 
 import android.content.Context
 import com.google.gson.Gson
-import com.nagel.wordnotification.Constants.COUNT_FREE_USE_RANDOMIZER
-import com.nagel.wordnotification.Constants.NUMBER_OF_FREE_WORDS
 import com.nagel.wordnotification.data.accounts.entities.Account
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.data.session.entities.SessionDataEntity
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.text.SimpleDateFormat
 import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -64,37 +61,6 @@ class SharedprefSessionRepository @Inject constructor(
         sharedPreferences.edit().putString(TRANSLATION_LANGUAGE, lang).apply()
     }
 
-    override fun saveIsStarted(isStarted: Boolean) {
-        sharedPreferences.edit().putBoolean(IS_STARTED, isStarted).apply()
-    }
-
-    override fun getIsStarted(): Boolean {
-        return sharedPreferences.getBoolean(IS_STARTED, false)
-    }
-
-    override fun getLimitWord(): Int {
-        return sharedPreferences.getInt(LIMIT_WORDS, NUMBER_OF_FREE_WORDS)
-    }
-
-    override fun changLimitWords(limit: Int) {
-        sharedPreferences.edit().putInt(LIMIT_WORDS, limit).apply()
-    }
-
-    override fun getLimitRandomizer(): Int {
-        val lastDate = sharedPreferences.getString(LAST_DATE_USE_RANDOMIZER, "")
-        return if (simpleCurrentDateFormat.format(Date().time) != lastDate) {
-            COUNT_FREE_USE_RANDOMIZER
-        } else {
-            sharedPreferences.getInt(LIMIT_RANDOMIZER, COUNT_FREE_USE_RANDOMIZER)
-        }
-    }
-
-    override fun changLimitRandomizer(limit: Int) {
-        val date = simpleCurrentDateFormat.format(Date().time)
-        sharedPreferences.edit().putString(LAST_DATE_USE_RANDOMIZER, date).apply()
-        sharedPreferences.edit().putInt(LIMIT_RANDOMIZER, limit).apply()
-    }
-
     override fun getAutoTranslation(): Boolean {
         return sharedPreferences.getBoolean(AUTO_TRANSLATION, true)
     }
@@ -125,15 +91,10 @@ class SharedprefSessionRepository @Inject constructor(
     }
 
     companion object {
-        private val simpleCurrentDateFormat = SimpleDateFormat("yyyy-MM-dd")
         private const val TRANSLATION_LANGUAGE = "TRANSLATION_LANGUAGE"
         private const val AUTO_TRANSLATION = "AUTO_TRANSLATION"
         private const val SESSiON_STATE = "SESSiON_STATE"
         private const val SHARED_PREFS_SESSION = "SHARED_PREFS_SESSION"
-        private const val IS_STARTED = "IS_STARTED" //это премиум для шифровки
-        private const val LIMIT_WORDS = "LIMIT_WORDS"
-        private const val LIMIT_RANDOMIZER = "LIMIT_RANDOMIZER"
-        private const val LAST_DATE_USE_RANDOMIZER = "LAST_DATE_USE_RANDOMIZER"
         private const val ID_CURRENT_WORD_NOTIFICATION = "ID_CURRENT_WORD_NOTIFICATION"
     }
 }

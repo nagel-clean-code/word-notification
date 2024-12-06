@@ -296,7 +296,10 @@ class AddingWordsFragment : BaseFragment() {
         )
         if (viewModel.accessibilityOfAddOn().not()) {
             PremiumDialog(
-                text = resources.getString(R.string.suggestion_of_additional_words),
+                text = resources.getString(
+                    R.string.suggestion_of_additional_words,
+                    viewModel.addNumberFreeWords.get()
+                ),
                 isChoiceAdvertisement = true,
                 advertisementWasViewed = {
                     viewModel.addFreeWords()

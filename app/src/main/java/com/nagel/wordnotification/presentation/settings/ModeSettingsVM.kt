@@ -9,6 +9,7 @@ import com.nagel.wordnotification.core.services.Utils
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.dictionaries.entities.Word
+import com.nagel.wordnotification.data.premium.PremiumRepository
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.data.settings.SettingsRepository
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
@@ -30,7 +31,8 @@ class ModeSettingsVM @Inject constructor(
     private val dictionaryRepository: DictionaryRepository,
     private val notificationAlgorithm: NotificationAlgorithm,
     private val navigator: NavigatorV2,
-    private var sessionRepository: SessionRepository
+    private var sessionRepository: SessionRepository,
+    private var premiumRepository: PremiumRepository
 ) : BaseViewModel() {
 
     var idDictionary: Long = -1
@@ -42,7 +44,7 @@ class ModeSettingsVM @Inject constructor(
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            isStarted.set(sessionRepository.getIsStarted())
+            isStarted.set(premiumRepository.getIsStarted())
         }
     }
 

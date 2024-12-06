@@ -3,6 +3,7 @@ package com.nagel.wordnotification.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nagel.wordnotification.core.algorithms.NotificationAlgorithm
+import com.nagel.wordnotification.data.premium.PremiumRepository
 import com.nagel.wordnotification.data.session.SessionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -12,6 +13,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainActivityVM @Inject constructor(
     private val sessionRepository: SessionRepository,
+    private val premiumRepository: PremiumRepository,
     private val notificationAlgorithm: NotificationAlgorithm
 ) : ViewModel() {
 
@@ -30,7 +32,7 @@ class MainActivityVM @Inject constructor(
     }
 
     fun saveIsStarted() {
-        sessionRepository.saveIsStarted(true)
+        premiumRepository.saveIsStarted(true)
     }
 
     companion object {

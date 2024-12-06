@@ -136,9 +136,9 @@
 
     <string name="purchases_not_available">Momentan sind keine Käufe verfügbar, versuchen Sie es später</string>
     <string name="watch_ads">Anzeigen ansehen</string>
-    <string name="suggestion_of_additional_words">Das Wortlimit ist erschöpft, Sie erhalten PREMIUM oder Sie erhalten 5 zusätzliche Wörter pro Anzeige</string>
-    <string name="suggestion_of_additional_words_d_d">Das Wortlimit ist erschöpft, Sie erhalten PREMIUM oder Sie erhalten 5 zusätzliche Wörter pro Anzeige\n\nportiert:%d/%d</string>
-    <string name="suggestion_of_additional_words_s_d_d">Das Wortlimit ist erschöpft, Sie erhalten PREMIUM oder Sie erhalten 5 zusätzliche Wörter pro Anzeige\n\n%s\nportiert:%d/%d</string>
+    <string name="suggestion_of_additional_words">Das Wortlimit ist erschöpft, Sie erhalten PREMIUM oder Sie erhalten %d zusätzliche Wörter pro Anzeige</string>
+    <string name="suggestion_of_additional_words_d_d">Das Wortlimit ist erschöpft, Sie erhalten PREMIUM oder Sie erhalten %d zusätzliche Wörter pro Anzeige\n\nportiert:%d/%d</string>
+    <string name="suggestion_of_additional_words_s_d_d">Das Wortlimit ist erschöpft, Sie erhalten PREMIUM oder Sie erhalten %d zusätzliche Wörter pro Anzeige\n\n%s\nportiert:%d/%d</string>
     <string name="voice_acting">Audio ist nur in PREMIUM verfügbar</string>
     <string name="copying_dictionaries_is_available">Das Kopieren von Wörterbüchern ist nur in einem PREMIUM-Abonnement verfügbar</string>
     <string name="it_is_available_to_configure_time_intervals">Sie können die Zeitintervalle nur in einem PREMIUM-Abonnement konfigurieren</string>

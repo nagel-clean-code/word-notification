@@ -12,12 +12,6 @@ interface SessionRepository {
     fun getPreviewFlag(screenCode: String): Boolean
     fun getTranslationLanguage(): String
     fun saveTranslationLanguage(lang: String)
-    fun saveIsStarted(isStarted: Boolean)
-    fun getIsStarted(): Boolean
-    fun getLimitWord(): Int
-    fun changLimitWords(limit: Int)
-    fun getLimitRandomizer(): Int
-    fun changLimitRandomizer(limit: Int)
     fun getAutoTranslation(): Boolean
     fun saveAutoTranslation(isAuto: Boolean)
     fun saveCurrentWordNotification(idWord: Long)

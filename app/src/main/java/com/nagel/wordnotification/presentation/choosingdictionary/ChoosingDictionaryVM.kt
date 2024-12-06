@@ -1,12 +1,12 @@
 package com.nagel.wordnotification.presentation.choosingdictionary
 
 import androidx.lifecycle.viewModelScope
-import com.nagel.wordnotification.Constants.NUMBER_OF_FREE_WORDS
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.algorithms.NotificationAlgorithm
 import com.nagel.wordnotification.core.services.Utils
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
+import com.nagel.wordnotification.data.premium.PremiumRepository
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.data.settings.SettingsRepository
 import com.nagel.wordnotification.presentation.base.BaseViewModel
@@ -30,6 +30,7 @@ class ChoosingDictionaryVM @Inject constructor(
     private var navigatorV2: NavigatorV2,
     private val notificationAlgorithm: NotificationAlgorithm,
     private var sessionRepository: SessionRepository,
+    private var premiumRepository: PremiumRepository,
     private val exportGenerator: ExportGenerator
 ) : BaseViewModel() {
 
@@ -42,7 +43,7 @@ class ChoosingDictionaryVM @Inject constructor(
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            isStarted.set(sessionRepository.getIsStarted())
+            isStarted.set(premiumRepository.getIsStarted())
         }
     }
 
@@ -126,11 +127,12 @@ class ChoosingDictionaryVM @Inject constructor(
     }
 
     private fun correctLimits(wordListSize: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val limitWords = sessionRepository.getLimitWord()
+        viewModelScope.launch(Dispatchers.Default) {
+            val limitWords = premiumRepository.getCurrentLimitWord()
             val sub = limitWords - wordListSize
-            val newLimitWords = if (sub >= 25) sub else NUMBER_OF_FREE_WORDS
-            sessionRepository.changLimitWords(newLimitWords)
+            val numberFreeWords = premiumRepository.getMinFreeWords()
+            val newLimitWords = if (sub >= numberFreeWords) sub else numberFreeWords
+            premiumRepository.saveCurrentLimitWords(newLimitWords)
         }
     }
 
