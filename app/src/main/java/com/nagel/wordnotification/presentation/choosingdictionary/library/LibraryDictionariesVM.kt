@@ -53,20 +53,6 @@ class LibraryDictionariesVM @Inject constructor(
         )
     }
 
-    private fun combineStates(
-        state1: RemoteDbRepository.DictionariesLibraryState,
-        state2: DictionariesLibraryScreenState
-    ): DictionariesLibraryScreenState {
-        if (state2.isLoading || state1.isLoading) {
-            state2.isLoading = true
-        }
-        if (state2.isError || state1.isError) {
-            state2.isError = true
-        }
-        state2.dictionariesList = state1.dictionariesList
-        return state2
-    }
-
     fun changeChecked(dictionary: Dictionary, isCheck: Boolean) {
         if (isCheck) {
             listDictionaryChecked.add(dictionary)

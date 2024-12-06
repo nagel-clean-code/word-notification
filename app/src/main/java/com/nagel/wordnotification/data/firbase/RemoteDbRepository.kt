@@ -7,10 +7,11 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import com.nagel.wordnotification.BuildConfig
-import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.firbase.entity.CurrentPrices
+import com.nagel.wordnotification.data.firbase.entity.CurrentVersionData
+import com.nagel.wordnotification.data.firbase.entity.DictionariesLibrary
 import com.nagel.wordnotification.data.firbase.entity.FeatureToggles
-import com.nagel.wordnotification.presentation.exportAndImport.CashReader
+import com.nagel.wordnotification.data.firbase.entity.PremiumSettings
 import com.nagel.wordnotification.presentation.navigator.MainNavigator
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -23,6 +24,7 @@ class RemoteDbRepository @Inject constructor(
     private var currentPrices: CurrentPrices? = null
     private var featureToggles: FeatureToggles? = null
     private var dictionariesLibrary: DictionariesLibrary? = null
+    private var premiumSettings: PremiumSettings? = null
 
     //    private var testing = Date().time < 1704300235000
     private var testing = false
@@ -30,7 +32,6 @@ class RemoteDbRepository @Inject constructor(
     init {
         getFeatureToggles()
         requestPremiumInformation()
-        requestGetDictionaries()
         requestActualVersionApp()
     }
 
@@ -42,7 +43,6 @@ class RemoteDbRepository @Inject constructor(
             success(it)
             return
         }
-
         fireStore.collection("featureToggle")
             .document("allVersions")
             .get()
@@ -137,6 +137,32 @@ class RemoteDbRepository @Inject constructor(
             }
     }
 
+    fun requestPremiumSettings(
+        success: (PremiumSettings) -> Unit = {},
+        error: () -> Unit = {}
+    ) {
+        premiumSettings?.let {
+            success(it)
+            return
+        }
+        fireStore.collection("premium")
+            .document("settings")
+            .get()
+            .addOnSuccessListener { documentSnapshot ->
+                try {
+                    premiumSettings = documentSnapshot.toObject<PremiumSettings>()
+                    premiumSettings?.let { success(it) }
+                } catch (e: Exception) {
+                    error()
+                    Log.w(ContentValues.TAG, "Error getting documents: ", e)
+                    return@addOnSuccessListener
+                }
+            }.addOnFailureListener { exception ->
+                error()
+                Log.w(ContentValues.TAG, "Error getting documents: ", exception)
+            }
+    }
+
     private fun requestActualVersionApp() {
         fireStore.collection("current_viersion_app")
             .document("data")
@@ -168,29 +194,4 @@ class RemoteDbRepository @Inject constructor(
 
     fun isTesting() = testing
 
-    internal data class CurrentVersionData(
-        val link: String,
-        val mandatory: Boolean,
-        val mandatoryUpdates: List<Int>,
-        val noUpdateNeeded: List<Int>,
-        val optionalUpdates: List<Int>
-    ) {
-        constructor() : this("", false, emptyList(), emptyList(), emptyList())
-    }
-
-    data class DictionariesLibrary(
-        val contents: String
-    ) {
-        constructor() : this("")
-
-        suspend fun getDictionaries(dataReader: CashReader): List<Dictionary> {
-            return dataReader.fireReader(contents)
-        }
-    }
-
-    data class DictionariesLibraryState(
-        var isLoading: Boolean = true,
-        var dictionariesList: DictionariesLibrary? = null,
-        val isError: Boolean = false
-    )
 }
