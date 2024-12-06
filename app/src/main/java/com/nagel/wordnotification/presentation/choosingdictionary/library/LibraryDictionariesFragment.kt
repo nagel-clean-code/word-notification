@@ -9,7 +9,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.nagel.wordnotification.R
-import com.nagel.wordnotification.data.firbase.RemoteDbRepository
+import com.nagel.wordnotification.data.firbase.entity.DictionariesLibrary
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.databinding.FragmentLibraryDictionariesBinding
 import com.nagel.wordnotification.presentation.base.BaseFragment
@@ -57,8 +57,8 @@ class LibraryDictionariesFragment : BaseFragment() {
         initListeners()
     }
 
-    private var lastListDictionaries: RemoteDbRepository.DictionariesLibrary? = null
-    private fun initAdapter(library: RemoteDbRepository.DictionariesLibrary) {
+    private var lastListDictionaries: DictionariesLibrary? = null
+    private fun initAdapter(library: DictionariesLibrary) {
         if (lastListDictionaries?.contents == library.contents) return
         lastListDictionaries = library
         viewLifecycleOwner.lifecycleScope.launch {
