@@ -64,8 +64,10 @@ open class FileReader @Inject constructor(
             }
         } catch (e: FileNotFoundException) {
             e.printStackTrace()
+            navigatorV2.toast(R.string.could_not_open_file)
         } catch (e: IOException) {
             e.printStackTrace()
+            navigatorV2.toast(R.string.could_not_open_file)
         } catch (e: Exception) {
             e.printStackTrace()
             navigatorV2.toast(R.string.could_not_open_file)

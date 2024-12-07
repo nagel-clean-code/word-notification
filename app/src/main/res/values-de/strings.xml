@@ -152,4 +152,8 @@
     <string name="it_will_be_available_only_in_premium">Wird nur in einem PREMIUM-Abonnement verfügbar sein</string>
 
     <string name="recommendation_list_2">1. Wenn Sie den Status des Algorithmus beibehalten, können Sie eine vollständige Sicherung Ihrer Wörterbücher erstellen. Wenn Sie dies nicht angeben, werden alle Ihre Algorithmen beim Export vom ersten Schritt an ausgeführt.\n\n2.Wenn Sie auf Google Disk sichern, können Sie Ihre Wörterbücher auch dann speichern, wenn Sie Ihr Telefon verloren haben.\n\n3.Sie können eine Importdatei manuell auf Ihrem Computer erstellen, um dies zu tun, erstellen Sie eine Formatdatei .txt und schreiben Sie Wörter im Format [Wort;Übersetzung] hinein</string>
+    <string name="provide">Bereitstellen</string>
+    <string name="exit">Beenden</string>
+    <string name="permissions_required_for_the_algorithm_to_work">Berechtigungen sind erforderlich, damit der Algorithmus funktioniert, da die Anzeige von Wörtern ohne Berechtigungen nicht verfügbar ist :(</string>
+    <string name="permissions_required_for_the_algorithm_to_work_manually">Berechtigungen sind erforderlich, damit der Algorithmus funktioniert, da die Wortanzeige ohne Berechtigungen nicht verfügbar ist :(\nberechtigungen manuell in den Einstellungen der Anwendung erteilen</string>
 </resources>

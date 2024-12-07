@@ -154,4 +154,8 @@
     <string name="it_will_be_available_only_in_premium">Will be available only in PREMIUM subscription</string>
 
     <string name="recommendation_list_2">1. Saving the state of the algorithm allows you to create a full backup of your dictionaries. If you do not specify it, all your algorithms will start working from the first step when exporting.\n\n2.Backup to Google Disk will allow you to save your dictionaries even if you lose your phone.\n\n3.You can create an import file manually on your computer. To do this, create a format file.txt and write words into it in the format [Word;Translation]</string>
+    <string name="provide">Provide </string>
+    <string name="exit">Exit</string>
+    <string name="permissions_required_for_the_algorithm_to_work">Permissions are required for the algorithm to work, because without permissions, the display of words will not be available :(</string>
+    <string name="permissions_required_for_the_algorithm_to_work_manually">Permissions are required for the algorithm to work, because without permissions, the display of words will not be available :(\nProvide permissions manually in the settings of the application</string>
 </resources>

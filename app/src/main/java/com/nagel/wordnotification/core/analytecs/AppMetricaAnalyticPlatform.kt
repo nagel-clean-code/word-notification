@@ -1,24 +1,20 @@
 package com.nagel.wordnotification.core.analytecs
 
 import android.content.Context
-import com.nagel.wordnotification.data.session.SessionRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.appmetrica.analytics.AppMetrica
 import io.appmetrica.analytics.profile.Attribute
 import io.appmetrica.analytics.profile.UserProfile
 import javax.inject.Inject
-import javax.inject.Singleton
 
 
-@Singleton
 class AppMetricaAnalyticPlatform @Inject constructor(
-    @ApplicationContext val context: Context,
-    sessionRepository: SessionRepository
+    @ApplicationContext val context: Context
 ) {
 
     fun changeStatusNotification(permissionGranted: Boolean) {
         val userProfile = UserProfile.newBuilder()
-            .apply(Attribute.notificationsEnabled().withValue(false))
+            .apply(Attribute.notificationsEnabled().withValue(permissionGranted))
             .build()
         AppMetrica.reportUserProfile(userProfile)
     }

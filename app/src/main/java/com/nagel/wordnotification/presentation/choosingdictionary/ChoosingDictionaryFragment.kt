@@ -169,10 +169,9 @@ class ChoosingDictionaryFragment : BaseFragment() {
             dictionary = dictionary,
             edit = ::showEditDictionaryDialog,
             copy = ::copyDictionary,
-            exportDictionary = ::exportDictionary
-        ) {
-            showConfirmationDialog(dictionary)
-        }.show(parentFragmentManager, null)
+            exportDictionary = ::exportDictionary,
+            delete = { showConfirmationDialog(dictionary) }
+        ).show(parentFragmentManager, null)
     }
 
     private fun exportDictionary(dictionary: Dictionary) {

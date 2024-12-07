@@ -1,18 +1,20 @@
 package com.nagel.wordnotification.presentation.settings
 
 import android.Manifest.permission.POST_NOTIFICATIONS
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.constraintlayout.helper.widget.Flow
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -54,6 +56,62 @@ class ModeSettingsFragment : BaseFragment() {
     @Inject
     lateinit var appMetrica: AppMetricaAnalyticPlatform
 
+    private val permissionResult = registerForActivityResult(
+        RequestPermission()
+    ) { granted ->
+        appMetrica.changeStatusNotification(granted)
+        if (!granted) {
+            if (shouldShowRequestPermissionRationale(POST_NOTIFICATIONS)) { // Если пользователь запретил не на всегда{
+                //Объясняем пользователю зачем нам нужно это разрешение
+                RequestPermissionDialog(
+                    text = resources.getString(R.string.permissions_required_for_the_algorithm_to_work),
+                    exitButtonClick = ::postDelayBack,
+                    provideButtonClick = ::requestPermissions,
+                    onDestroy = ::postDelayBack
+                ).show(childFragmentManager, RequestPermissionDialog.TAG)
+            } else {
+                // Перенаправим пользователя в настройки чтобы он руками изменил разрешение
+                askUserForOpeningAppSettings()
+            }
+        }
+    }
+
+    private fun postDelayBack() {
+        binding.root.postDelayed({
+            try {
+                navigatorV2.goBack()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }, 100)
+    }
+
+    private fun askUserForOpeningAppSettings() {
+        val appSettingsIntent = Intent(
+            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+            Uri.fromParts("package", requireContext().packageName, null)
+        )
+        if (requireActivity().packageManager.resolveActivity(
+                appSettingsIntent,
+                PackageManager.MATCH_DEFAULT_ONLY
+            ) == null
+        ) {
+            RequestPermissionDialog(
+                text = resources.getString(R.string.permissions_required_for_the_algorithm_to_work_manually),
+                exitButtonClick = ::postDelayBack,
+                onDestroy = ::postDelayBack
+            ).show(childFragmentManager, RequestPermissionDialog.TAG)
+        } else {
+            RequestPermissionDialog(
+                text = resources.getString(R.string.permissions_required_for_the_algorithm_to_work_manually),
+                exitButtonClick = ::postDelayBack,
+                onDestroy = ::postDelayBack,
+                provideButtonClick = {
+                    startActivity(appSettingsIntent)
+                },
+            ).show(childFragmentManager, RequestPermissionDialog.TAG)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -69,8 +127,12 @@ class ModeSettingsFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         initWeekday()
         initListeners()
-        checkPermissions()
         initOnBackPressed()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        requestPermissions()
     }
 
     private fun initOnBackPressed() {
@@ -88,22 +150,9 @@ class ModeSettingsFragment : BaseFragment() {
             )
     }
 
-    private fun checkPermissions() {
-        //TODO переделать
-        if (Build.VERSION.SDK_INT >= 33) {
-            if (ContextCompat.checkSelfPermission(
-                    requireContext(),
-                    POST_NOTIFICATIONS
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    requireActivity(),
-                    arrayOf(POST_NOTIFICATIONS),
-                    101
-                )
-//                appMetrica.changeStatusNotification(true) //TODO доделать
-
-            }
+    private fun requestPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissionResult.launch(POST_NOTIFICATIONS)
         }
     }
 
