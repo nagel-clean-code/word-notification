@@ -90,6 +90,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
                 text = text,
                 isChoiceAdvertisement = true,
                 advertisementWasViewed = {
+                    AppMetrica.reportEvent("remuneration_for_importing_dictionaries")
                     lifecycleScope.launch(Dispatchers.Default) {
                         advertisementWasViewed.invoke()
                     }

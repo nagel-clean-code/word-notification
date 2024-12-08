@@ -302,6 +302,7 @@ class AddingWordsFragment : BaseFragment() {
                 ),
                 isChoiceAdvertisement = true,
                 advertisementWasViewed = {
+                    AppMetrica.reportEvent("reward_for_adding_words")
                     viewModel.addFreeWords()
                     addWord(word)
                 }

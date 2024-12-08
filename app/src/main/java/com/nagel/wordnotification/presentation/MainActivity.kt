@@ -21,6 +21,7 @@ import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.analytecs.AppMetricaAnalyticPlatform
 import com.nagel.wordnotification.core.services.NotificationRestorerReceiver
 import com.nagel.wordnotification.data.firbase.RemoteDbRepository
+import com.nagel.wordnotification.data.googledisk.accounts.ActivityRequired
 import com.nagel.wordnotification.databinding.ActivityMainBinding
 import com.nagel.wordnotification.presentation.addingwords.AddingWordsFragment
 import com.nagel.wordnotification.presentation.choosingdictionary.ChoosingDictionaryFragment
@@ -120,6 +121,7 @@ class MainActivity : AppCompatActivity(), Navigator {
                 text = text,
                 isChoiceAdvertisement = true,
                 advertisementWasViewed = {
+                    AppMetrica.reportEvent("remuneration_for_importing_dictionaries")
                     lifecycleScope.launch(Dispatchers.Default) {
                         advertisementWasViewed.invoke()
                     }

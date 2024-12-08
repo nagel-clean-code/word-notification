@@ -6,6 +6,8 @@ import androidx.work.Configuration
 import com.google.firebase.FirebaseApp
 import com.nagel.wordnotification.BuildConfig
 import com.nagel.wordnotification.R
+import com.nagel.wordnotification.utils.CheckCountyEs
+import com.yandex.mobile.ads.common.MobileAds
 import dagger.hilt.android.HiltAndroidApp
 import io.appmetrica.analytics.AppMetrica
 import io.appmetrica.analytics.AppMetricaConfig
@@ -29,14 +31,18 @@ class App : Application(), Configuration.Provider {
 
         FirebaseApp.initializeApp(this)
 
-        val apiKey = resources.getString(R.string.APP_METRICA_API_KEY)
-        val config = AppMetricaConfig.newConfigBuilder(apiKey)
-            .withAppVersion(BuildConfig.VERSION_NAME)
-            .withDeviceType(PredefinedDeviceTypes.TABLET)
-            .withLocationTracking(true)
-            .build()
-        AppMetrica.activate(this, config)
-        AppMetrica.enableActivityAutoTracking(this)
+        val permissionAnalytic = CheckCountyEs.checkPermissionAnalytics(this)
+        if (permissionAnalytic) {
+            val apiKey = resources.getString(R.string.APP_METRICA_API_KEY)
+            val config = AppMetricaConfig.newConfigBuilder(apiKey)
+                .withAppVersion(BuildConfig.VERSION_NAME)
+                .withDeviceType(PredefinedDeviceTypes.TABLET)
+                .withLocationTracking(true)
+                .build()
+            AppMetrica.activate(this, config)
+            AppMetrica.enableActivityAutoTracking(this)
+        }
+        MobileAds.initialize(this) {}
     }
 
     companion object {

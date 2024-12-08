@@ -11,6 +11,7 @@ import android.view.Window
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import com.nagel.wordnotification.R
+import com.nagel.wordnotification.core.adv.RewardedAdLoaderImpl
 import com.nagel.wordnotification.data.firbase.RemoteDbRepository
 import com.nagel.wordnotification.data.firbase.entity.CurrentPrices
 import com.nagel.wordnotification.databinding.PremiumAskDialogBinding
@@ -30,6 +31,9 @@ class PremiumDialog(
 ) : DialogFragment() {
 
     private lateinit var binding: PremiumAskDialogBinding
+
+    @Inject
+    lateinit var rewardedAdLoader: RewardedAdLoaderImpl
 
     @Inject
     lateinit var remoteDbRepository: RemoteDbRepository
@@ -61,10 +65,11 @@ class PremiumDialog(
             dismiss()
         }
         watchAdsButton.setOnClickListener {
-            //TODO реализовать просмотр рекламы
             AppMetrica.reportEvent("watch_ads_button_click")
-            advertisementWasViewed.invoke()
-            dismiss()
+            rewardedAdLoader.showAdv(requireActivity()) {
+                advertisementWasViewed.invoke()
+                dismiss()
+            }
         }
         getPremiumButton.setOnClickListener {
             AppMetrica.reportEvent("get_premium_button_click")

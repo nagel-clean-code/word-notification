@@ -10,6 +10,7 @@ import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.presentation.base.BaseViewModel
 import com.nagel.wordnotification.presentation.randomizer.RandomizingFragment.Companion.EMPTY_WORD
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -64,6 +65,7 @@ class RandomizingVM @Inject constructor(
     }
 
     fun addFreeUse() {
+        AppMetrica.reportEvent("reward_for_randomizer")
         viewModelScope.launch(Dispatchers.Default) {
             val updateLimit = addNumberFreeRandomizer.get()
             limit.set(updateLimit)

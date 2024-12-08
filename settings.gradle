@@ -4,7 +4,14 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
 //        maven { url 'https://jitpack.io' }
-        maven {url 'https://developer.huawei.com/repo/'}
+        maven { url 'https://developer.huawei.com/repo/' }
+
+        maven { url 'https://android-sdk.is.com/' }// IronSource
+        maven { url 'https://artifact.bytedance.com/repository/pangle' }// Pangle
+        maven { url "https://sdk.tapjoy.com/" }// Tapjoy        // Mintegral
+        maven { url "https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea" }
+        maven { url "https://cboost.jfrog.io/artifactory/chartboost-ads/" }// Chartboost
+        maven { url "https://dl.appnext.com/" }// AppNext
     }
 }
 dependencyResolutionManagement {
@@ -13,7 +20,14 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven { url 'https://jitpack.io' }
-        maven {url 'https://developer.huawei.com/repo/'}
+        maven { url 'https://developer.huawei.com/repo/' }
+
+        maven { url 'https://android-sdk.is.com/' }// IronSource
+        maven { url 'https://artifact.bytedance.com/repository/pangle' }// Pangle
+        maven { url "https://sdk.tapjoy.com/" }// Tapjoy    // Mintegral
+        maven { url "https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea" }
+        maven { url "https://cboost.jfrog.io/artifactory/chartboost-ads/" }// Chartboost
+        maven { url "https://dl.appnext.com/" }// AppNext
     }
 }
 rootProject.name = "Word Notification"
