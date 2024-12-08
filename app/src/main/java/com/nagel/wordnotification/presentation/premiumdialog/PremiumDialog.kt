@@ -8,8 +8,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.adv.RewardedAdLoaderImpl
 import com.nagel.wordnotification.data.firbase.RemoteDbRepository
@@ -19,6 +23,7 @@ import com.nagel.wordnotification.utils.GlobalFunction.openUrl
 import com.nagel.wordnotification.utils.common.showToast
 import dagger.hilt.android.AndroidEntryPoint
 import io.appmetrica.analytics.AppMetrica
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -65,11 +70,7 @@ class PremiumDialog(
             dismiss()
         }
         watchAdsButton.setOnClickListener {
-            AppMetrica.reportEvent("watch_ads_button_click")
-            rewardedAdLoader.showAdv(requireActivity()) {
-                advertisementWasViewed.invoke()
-                dismiss()
-            }
+            startAdv()
         }
         getPremiumButton.setOnClickListener {
             AppMetrica.reportEvent("get_premium_button_click")
@@ -77,6 +78,26 @@ class PremiumDialog(
                 success = ::openLinkPremium,
                 error = ::showErrorPremium
             )
+        }
+    }
+
+    private fun startAdv() = with(binding) {
+        progressBar.isVisible = true
+        AppMetrica.reportEvent("watch_ads_button_click")
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                rewardedAdLoader.showAdv(
+                    activity = requireActivity(),
+                    award = {
+                        advertisementWasViewed.invoke()
+                        dismiss()
+                    },
+                    loaded = { isFailed ->
+                        progressBar.isInvisible = true
+                        textError.isVisible = isFailed
+                    }
+                )
+            }
         }
     }
 
