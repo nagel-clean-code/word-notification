@@ -14,6 +14,7 @@ import com.yandex.mobile.ads.rewarded.RewardedAdLoadListener
 import com.yandex.mobile.ads.rewarded.RewardedAdLoader
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.appmetrica.analytics.AppMetrica
+import kotlinx.coroutines.delay
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -24,15 +25,19 @@ class RewardedAdLoaderImpl @Inject constructor(
 ) {
     private var rewardedAd: RewardedAd? = null
     private var isAward = false
+    private var isAdFailedToLoad = false
+    private var counterLoad = 0
 
     private val rewardedAdLoader = RewardedAdLoader(context).apply {
         setAdLoadListener(object : RewardedAdLoadListener {
             override fun onAdLoaded(rewarded: RewardedAd) {
+                isAdFailedToLoad = false
                 Log.d(TAG, "Реклама загрузилась")
                 rewardedAd = rewarded
             }
 
             override fun onAdFailedToLoad(error: AdRequestError) {
+                isAdFailedToLoad = true
                 Log.e(TAG, "Ошибка загрузки рекламы: ${error.description} (errorObject: $error)")
                 AppMetrica.reportEvent("ad_loading_error")
             }
@@ -43,8 +48,14 @@ class RewardedAdLoaderImpl @Inject constructor(
         loadRewardedAd()
     }
 
-    fun showAdv(activity: Activity, award: () -> Unit) {
+    suspend fun showAdv(activity: Activity, award: () -> Unit, loaded: (Boolean) -> Unit) {
         Log.d(TAG, "Нажата крнопка показа рекламы")
+        counterLoad = 0
+        while (rewardedAd == null && !isAdFailedToLoad && counterLoad < 1000) {
+            ++counterLoad
+            delay(20)
+        }
+        loaded.invoke(isAdFailedToLoad || counterLoad >= 1000)
         rewardedAd?.apply {
             setAdEventListener(object : RewardedAdEventListener {
                 override fun onAdShown() {
