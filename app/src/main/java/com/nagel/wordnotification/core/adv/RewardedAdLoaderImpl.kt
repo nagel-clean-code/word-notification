@@ -112,7 +112,7 @@ class RewardedAdLoaderImpl @Inject constructor(
     }
 
     private fun loadRewardedAd() {
-        val adRequestConfiguration = AdRequestConfiguration.Builder("R-M-13190463-1").build()
+        val adRequestConfiguration = AdRequestConfiguration.Builder("R-M-13195559-1").build()
         rewardedAdLoader.loadAd(adRequestConfiguration)
     }
 

@@ -8,7 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import androidx.core.view.isInvisible
+import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Lifecycle
@@ -83,6 +83,7 @@ class PremiumDialog(
 
     private fun startAdv() = with(binding) {
         progressBar.isVisible = true
+        textError.isVisible = false
         AppMetrica.reportEvent("watch_ads_button_click")
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -93,7 +94,7 @@ class PremiumDialog(
                         dismiss()
                     },
                     loaded = { isFailed ->
-                        progressBar.isInvisible = true
+                        progressBar.isGone = true
                         textError.isVisible = isFailed
                     }
                 )

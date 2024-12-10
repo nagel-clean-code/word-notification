@@ -21,7 +21,6 @@ import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.analytecs.AppMetricaAnalyticPlatform
 import com.nagel.wordnotification.core.services.NotificationRestorerReceiver
 import com.nagel.wordnotification.data.firbase.RemoteDbRepository
-import com.nagel.wordnotification.data.googledisk.accounts.ActivityRequired
 import com.nagel.wordnotification.databinding.ActivityMainBinding
 import com.nagel.wordnotification.presentation.addingwords.AddingWordsFragment
 import com.nagel.wordnotification.presentation.choosingdictionary.ChoosingDictionaryFragment
@@ -35,6 +34,7 @@ import com.nagel.wordnotification.presentation.profile.ProfileFragment
 import com.nagel.wordnotification.presentation.profile.evalution.EvaluationAppDialog
 import com.nagel.wordnotification.presentation.randomizer.RandomizingFragment
 import com.nagel.wordnotification.presentation.settings.ModeSettingsFragment
+import com.nagel.wordnotification.utils.Toggles
 import com.nagel.wordnotification.utils.common.SystemUtils.Companion.isGooglePlayServicesAvailable
 import dagger.hilt.android.AndroidEntryPoint
 import io.appmetrica.analytics.AppMetrica
@@ -69,6 +69,7 @@ class MainActivity : AppCompatActivity(), Navigator {
 
     private val viewModel: MainActivityVM by viewModels()
     private var auth: FirebaseAuth? = null
+    private var isAdvToggle = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_WordNotification)
@@ -107,6 +108,9 @@ class MainActivity : AppCompatActivity(), Navigator {
         }
         initReceiver()
         viewModel.startNotification()
+        realtimeDb.getFeatureToggles(success = { toggles ->
+            isAdvToggle = toggles.content.contains(Toggles.Adv.name)
+        })
     }
 
 
@@ -119,7 +123,7 @@ class MainActivity : AppCompatActivity(), Navigator {
         withContext(Dispatchers.Main) {
             PremiumDialog(
                 text = text,
-                isChoiceAdvertisement = true,
+                isChoiceAdvertisement = isAdvToggle,
                 advertisementWasViewed = {
                     AppMetrica.reportEvent("remuneration_for_importing_dictionaries")
                     lifecycleScope.launch(Dispatchers.Default) {
@@ -161,7 +165,7 @@ class MainActivity : AppCompatActivity(), Navigator {
             if (task.isSuccessful) {
                 task.result.user?.zzb()?.metadata?.creationTimestamp?.let {
                     if (it < NEW_YEARS_GIFT) {
-                        viewModel.saveIsStarted()
+                        viewModel.saveIsStarted(true)
                     }
                 }
             } else {

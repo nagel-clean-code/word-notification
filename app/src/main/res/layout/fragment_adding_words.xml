@@ -74,14 +74,18 @@
 
                     <TextView
                         android:id="@+id/nameDictionary"
-                        android:layout_width="wrap_content"
+                        android:layout_width="250dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginBottom="1dp"
+                        android:ellipsize="end"
                         android:fontFamily="@font/montserrat_bold"
+                        android:gravity="center"
+                        android:maxLines="2"
+                        android:paddingHorizontal="10dp"
                         android:textColor="@color/white"
                         android:textSize="15sp"
-                        tools:text="Стандартный словарь" />
+                        tools:text="Стандартный словарьdldlldldldldlldldlldddsdskdkdksdkskdskdsksdkdskddskkdskdsdjjdssd" />
 
                 </FrameLayout>
 

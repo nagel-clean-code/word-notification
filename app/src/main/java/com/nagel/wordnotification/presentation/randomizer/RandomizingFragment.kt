@@ -121,7 +121,7 @@ class RandomizingFragment : BaseFragment() {
                 if (viewModel.checkAvailableRandomizer().not()) {
                     showPremium()
                 } else if (runable == null) {
-                    setBackgroundResource(R.drawable.background_selected_not_remember)
+                    setBackgroundResource(R.drawable.background_selected_remember)
                     viewModel.notRemember()
                     onClickAnswer()
                     addRunnable(DURATION_PRESSING_BUTTON) {
@@ -148,7 +148,7 @@ class RandomizingFragment : BaseFragment() {
 
         with(bookButton) {
             setOnClickListener {
-                setBackgroundResource(R.drawable.background_selected_book_view)
+                setBackgroundResource(R.drawable.background_selected_remember)
                 openBookButtonClick()
                 addRunnable(DURATION_PRESSING_BUTTON) {
                     setBackgroundResource(R.drawable.background_open_book_view)

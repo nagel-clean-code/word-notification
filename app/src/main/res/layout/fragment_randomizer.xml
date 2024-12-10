@@ -42,12 +42,15 @@
 
         <TextView
             android:id="@+id/head"
-            android:layout_width="wrap_content"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center|top"
             android:background="@drawable/background_blue_rad_30"
+            android:ellipsize="end"
             android:fontFamily="@font/montserrat_bold"
             android:gravity="center"
+            android:maxLines="1"
+            android:paddingHorizontal="10dp"
             android:textColor="@color/white"
             android:textSize="15sp"
             app:layout_constraintEnd_toEndOf="@+id/view3"
@@ -153,7 +156,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="27dp"
-                android:layout_marginTop="20dp">
+                android:layout_marginTop="20dp"
+                android:paddingBottom="20dp">
 
                 <androidx.constraintlayout.helper.widget.Flow
                     android:id="@+id/flow"

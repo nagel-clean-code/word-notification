@@ -3,9 +3,11 @@ package com.nagel.wordnotification.presentation.exportAndImport
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Word
+import com.nagel.wordnotification.data.firbase.RemoteDbRepository
 import com.nagel.wordnotification.data.premium.PremiumRepository
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.presentation.navigator.NavigatorV2
+import com.nagel.wordnotification.utils.Toggles
 import java.io.IOException
 import javax.inject.Inject
 
@@ -13,7 +15,8 @@ class TxtReader @Inject constructor(
     private val dictionaryRepository: DictionaryRepository,
     private val sessionRepository: SessionRepository,
     private val premiumRepository: PremiumRepository,
-    private val navigatorV2: NavigatorV2
+    private val navigatorV2: NavigatorV2,
+    dbRepository: RemoteDbRepository
 ) {
 
     private val myIdAccount: Long? by lazy { sessionRepository.getSession().account?.id }
@@ -25,6 +28,13 @@ class TxtReader @Inject constructor(
     private var curentIxAddWord = 0
     private var currentWord = 0
     private val addNumberFreeWords = premiumRepository.getAddNumberFreeWords()
+    private var isAdvToggle = false
+
+    init {
+        dbRepository.getFeatureToggles(success = { toggles ->
+            isAdvToggle = toggles.content.contains(Toggles.Adv.name)
+        })
+    }
 
     suspend fun txtReader(
         content: String,
@@ -54,8 +64,12 @@ class TxtReader @Inject constructor(
     ) {
         while (curentIxAddWord < words.size) {
             if (isStarted.not() && currentWord + curentIxAddWord >= limitWords) {
-                var text = navigatorV2.getString(R.string.suggestion_of_additional_words_d_d)
-                text = String.format(text, addNumberFreeWords, curentIxAddWord, words.size)
+                val text = if (isAdvToggle) {
+                    val textL = navigatorV2.getString(R.string.suggestion_of_additional_words_d_d)
+                    String.format(textL, addNumberFreeWords, curentIxAddWord, words.size)
+                } else {
+                    navigatorV2.getString(R.string.suggestion_of_additional_words_only_premium)
+                }
                 premiumRepository.saveCurrentLimitWords(currentWord + curentIxAddWord)
                 showPremiumDialog.invoke(text) {
                     limitWords += addNumberFreeWords

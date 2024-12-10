@@ -295,21 +295,30 @@ class AddingWordsFragment : BaseFragment() {
             textLast = textLast
         )
         if (viewModel.accessibilityOfAddOn().not()) {
-            PremiumDialog(
-                text = resources.getString(
-                    R.string.suggestion_of_additional_words,
-                    viewModel.addNumberFreeWords.get()
-                ),
-                isChoiceAdvertisement = true,
-                advertisementWasViewed = {
-                    AppMetrica.reportEvent("reward_for_adding_words")
-                    viewModel.addFreeWords()
-                    addWord(word)
-                }
-            ).show(childFragmentManager, PremiumDialog.TAG)
+            getPremiumDialogTryAdv(word)
         } else {
             addWord(word)
         }
+    }
+
+    private fun getPremiumDialogTryAdv(word: Word) {
+        val text = if (viewModel.isAdv) {
+            resources.getString(
+                R.string.suggestion_of_additional_words,
+                viewModel.addNumberFreeWords.get()
+            )
+        } else {
+            resources.getString(R.string.suggestion_of_additional_words_only_premium)
+        }
+        PremiumDialog(
+            text = text,
+            isChoiceAdvertisement = viewModel.isAdv,
+            advertisementWasViewed = {
+                AppMetrica.reportEvent("reward_for_adding_words")
+                viewModel.addFreeWords()
+                addWord(word)
+            }
+        ).show(childFragmentManager, PremiumDialog.TAG)
     }
 
     private fun addWord(word: Word) = with(binding) {

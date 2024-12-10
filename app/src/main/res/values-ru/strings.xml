@@ -10,7 +10,7 @@
     <string name="default_name_dictionary">Первый словарь</string>
     <string name="create_dictionary">Создание словаря</string>
     <string name="move">Переместить</string>
-    <string name="edit">Редактировать</string>
+    <string name="edit">Переименовать</string>
     <string name="delete">Удалить</string>
     <string name="Pn">Пн</string>
     <string name="Vt">Вт</string>
@@ -135,6 +135,7 @@
     <string name="get_premium">Получить PREMIUM</string>
     <string name="watch_ads">Смотреть рекламу</string>
     <string name="suggestion_of_additional_words">Лимит слов исчерпан, получите PREMIUM или Вы можете получать %d дополнительных слов за просмотр рекламы</string>
+    <string name="suggestion_of_additional_words_only_premium">Лимит слов исчерпан, получите PREMIUM чтобы снять все ограничения</string>
     <string name="suggestion_of_additional_words_d_d">Лимит слов исчерпан, получите PREMIUM или Вы можете получать %d дополнительных слов за просмотр рекламы\n\nИмпортированно:%d/%d</string>
     <string name="suggestion_of_additional_words_s_d_d">Лимит слов исчерпан, получите PREMIUM или Вы можете получать %d дополнительных слов за просмотр рекламы\n\n\%s\nИмпортированно:%d/%d</string>
     <string name="voice_acting">Озвучивание доступно только в PREMIUM</string>
@@ -155,5 +156,12 @@
     <string name="exit">Выйти</string>
     <string name="permissions_required_for_the_algorithm_to_work">Разрешения необходимы для работы алгоритма, т.к. без разрешений показ слов будет не доступен :(</string>
     <string name="permissions_required_for_the_algorithm_to_work_manually">Разрешения необходимы для работы алгоритма, т.к. без разрешений показ слов будет не доступен :(\nПредоставьте разрешения вручную в настойках приложения</string>
+    <string name="failed_to_load_ad">Не удалось загрузить рекламу, попробуйте позже</string>
 
+    <string name="error_unknown">Unknown internal error</string>
+    <string name="error_called_not_from_ui">Application is not active</string>
+    <string name="error_auth">User session has been expired</string>
+    <string name="error_in_progress">This operation is already in progress</string>
+    <string name="error_connection">Internet connection error</string>
+    <string name="error_login_failed">Login has been failed: %1$s</string>
 </resources>

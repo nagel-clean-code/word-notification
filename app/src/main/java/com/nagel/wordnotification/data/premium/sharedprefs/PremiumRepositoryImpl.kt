@@ -1,7 +1,6 @@
 package com.nagel.wordnotification.data.premium.sharedprefs
 
 import android.content.Context
-import android.util.Log
 import com.nagel.wordnotification.Constants.COUNT_FREE_USE_RANDOMIZER
 import com.nagel.wordnotification.Constants.NUMBER_OF_FREE_WORDS
 import com.nagel.wordnotification.Constants.NUMBER_OF_FREE_WORDS_PER_ADVERTISEMENT
@@ -18,7 +17,7 @@ class PremiumRepositoryImpl @Inject constructor(
 ) : PremiumRepository {
 
     private val sharedPreferences =
-        context.getSharedPreferences(SHARED_PREFS_PREMIUM, Context.MODE_PRIVATE)
+        context.getSharedPreferences(SHARED_PREFS_STARTED, Context.MODE_PRIVATE)
 
     override fun getAddNumberFreeRandomizer(): Int {
         return sharedPreferences.getInt(ADD_NUMBER_FREE_RANDOMIZER, COUNT_FREE_USE_RANDOMIZER)
@@ -60,6 +59,8 @@ class PremiumRepositoryImpl @Inject constructor(
     }
 
     override fun getIsStarted(): Boolean {
+        val isAllPremium = getCurrentIsAllPremium()
+        if (isAllPremium) return true
         return sharedPreferences.getBoolean(IS_STARTED, false)
     }
 
@@ -86,8 +87,17 @@ class PremiumRepositoryImpl @Inject constructor(
         sharedPreferences.edit().putInt(LIMIT_RANDOMIZER, limit).apply()
     }
 
+    override fun saveAllIsStarted(endTime: Long) {
+        sharedPreferences.edit().putLong(ALL_PREMIUM_END, endTime).apply()
+    }
+
+    private fun getCurrentIsAllPremium(): Boolean {
+        val currentTimeSeconds = Date().time / 1000
+        return currentTimeSeconds < sharedPreferences.getLong(ALL_PREMIUM_END, -1)
+    }
+
     companion object {
-        private const val SHARED_PREFS_PREMIUM = "SHARED_PREFS_PREMIUM"
+        private const val SHARED_PREFS_STARTED = "SHARED_PREFS_STARTED"
         private const val ADD_NUMBER_FREE_RANDOMIZER = "ADD_NUMBER_FREE_RANDOMIZER"
         private const val ADD_NUMBER_FREE_WORDS = "ADD_NUMBER_FREE_WORDS"
         private const val MIN_FREE_RANDOMIZER = "MIN_FREE_RANDOMIZER"
@@ -96,6 +106,7 @@ class PremiumRepositoryImpl @Inject constructor(
         private const val LIMIT_WORDS = "LIMIT_WORDS"
         private const val LIMIT_RANDOMIZER = "LIMIT_RANDOMIZER"
         private const val LAST_DATE_USE_RANDOMIZER = "LAST_DATE_USE_RANDOMIZER"
+        private const val ALL_PREMIUM_END = "ALL_PREMIUM_END"
 
         private val simpleCurrentDateFormat = SimpleDateFormat("yyyy-MM-dd")
     }

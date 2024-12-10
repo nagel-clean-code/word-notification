@@ -5,7 +5,7 @@
     android:background="@drawable/rounded_background_settings"
     android:gravity="center"
     android:orientation="vertical"
-    android:paddingHorizontal="60dp"
+    android:paddingHorizontal="25dp"
     android:paddingVertical="25dp">
 
     <TextView
@@ -19,7 +19,7 @@
 
     <EditText
         android:id="@+id/firstWord"
-        android:layout_width="match_parent"
+        android:layout_width="250dp"
         android:layout_height="48dp"
         android:layout_marginTop="10dp"
         android:focusable="true"
@@ -39,7 +39,7 @@
 
     <EditText
         android:id="@+id/lastWord"
-        android:layout_width="match_parent"
+        android:layout_width="250dp"
         android:layout_height="48dp"
         android:layout_marginTop="-10dp"
         android:focusable="true"

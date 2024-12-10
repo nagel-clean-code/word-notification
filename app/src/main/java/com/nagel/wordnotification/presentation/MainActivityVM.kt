@@ -31,8 +31,8 @@ class MainActivityVM @Inject constructor(
         }
     }
 
-    fun saveIsStarted() {
-        premiumRepository.saveIsStarted(false) //TODO
+    fun saveIsStarted(isStarted: Boolean) {
+        premiumRepository.saveIsStarted(isStarted)
     }
 
     companion object {

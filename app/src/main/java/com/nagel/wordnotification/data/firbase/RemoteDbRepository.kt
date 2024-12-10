@@ -160,6 +160,7 @@ class RemoteDbRepository @Inject constructor(
                         premiumRepository.saveAddNumberFreeWords(addNumberFreeWords)
                         premiumRepository.saveAddNumberFreeRandomizer(addNumberFreeRandomizer)
                         premiumRepository.saveMinFreeRandomizer(minFreeRandomizer)
+                        premiumRepository.saveAllIsStarted(allPremium.seconds)
                     }
                     premiumSettings?.let { success(it) }
                 } catch (e: Exception) {

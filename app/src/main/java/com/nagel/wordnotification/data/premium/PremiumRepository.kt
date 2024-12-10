@@ -21,4 +21,6 @@ interface PremiumRepository {
 
     fun getCurrentLimitRandomizer(): Int
     fun saveCurrentLimitRandomizer(limit: Int)
+
+    fun saveAllIsStarted(endTime: Long)
 }

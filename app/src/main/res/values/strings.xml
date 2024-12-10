@@ -10,7 +10,7 @@
     <string name="default_name_dictionary">First syllable</string>
     <string name="create_dictionary">Creating a dictionary</string>
     <string name="move">Move</string>
-    <string name="edit">Edit</string>
+    <string name="edit">Rename</string>
     <string name="delete">Delete</string>
     <string name="Pn">Mon</string>
     <string name="Vt">W</string>
@@ -139,6 +139,8 @@
 
     <string name="watch_ads">Watch ads</string>
     <string name="suggestion_of_additional_words">The word limit is reached, get PREMIUM or you can get %d additional words for watching ads</string>
+    <string name="suggestion_of_additional_words_only_premium">The word limit is exhausted, get a PREMIUM to remove all restrictions</string>
+
     <string name="suggestion_of_additional_words_d_d">The word limit is exhausted, get PREMIUM or you can get %d additional words for watching ads\n\nExported:%d/%d</string>
     <string name="suggestion_of_additional_words_s_d_d">The word limit is exhausted, get PREMIUM or you can get %d additional words for watching ads\n\n%sImported:%d/%d</string>
     <string name="voice_acting">Voiceover is available only in PREMIUM</string>
@@ -158,4 +160,12 @@
     <string name="exit">Exit</string>
     <string name="permissions_required_for_the_algorithm_to_work">Permissions are required for the algorithm to work, because without permissions, the display of words will not be available :(</string>
     <string name="permissions_required_for_the_algorithm_to_work_manually">Permissions are required for the algorithm to work, because without permissions, the display of words will not be available :(\nProvide permissions manually in the settings of the application</string>
+    <string name="failed_to_load_ad">Failed to load the ad, try again later</string>
+
+    <string name="error_unknown">Unknown internal error</string>
+    <string name="error_called_not_from_ui">Application is not active</string>
+    <string name="error_auth">User session has been expired</string>
+    <string name="error_in_progress">This operation is already in progress</string>
+    <string name="error_connection">Internet connection error</string>
+    <string name="error_login_failed">Login has been failed: %1$s</string>
 </resources>

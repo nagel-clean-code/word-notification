@@ -18,6 +18,7 @@ import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.presentation.base.BaseViewModel
 import com.nagel.wordnotification.presentation.navigator.NavigatorV2
 import com.nagel.wordnotification.utils.GlobalFunction
+import com.nagel.wordnotification.utils.Toggles
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -52,6 +53,16 @@ class AddingWordsVM @Inject constructor(
     private var premiumRepository: PremiumRepository,
     private val remoteDbRepository: RemoteDbRepository
 ) : BaseViewModel() {
+
+    var isAdv = true
+
+    init {
+        remoteDbRepository.getFeatureToggles(
+            success = { data ->
+                isAdv = data.content.contains(Toggles.Adv.name)
+            }
+        )
+    }
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler() { _, ex ->
         ex.printStackTrace()
