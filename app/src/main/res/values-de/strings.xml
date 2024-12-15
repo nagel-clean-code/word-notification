@@ -176,4 +176,7 @@
     <string name="file_has_been_uploaded_successfully">Die Datei wurde bereits heruntergeladen</string>
     <string name="backup_has_been_performed">Sicherung durchgeführt</string>
 
+    <string name="to_extend">Verlängern</string>
+    <string name="until_the">Bis zum %s</string>
+
 </resources>

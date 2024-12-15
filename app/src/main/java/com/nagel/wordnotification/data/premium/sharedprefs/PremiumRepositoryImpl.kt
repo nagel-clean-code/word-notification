@@ -64,6 +64,14 @@ class PremiumRepositoryImpl @Inject constructor(
         return sharedPreferences.getBoolean(IS_STARTED, false)
     }
 
+    override fun saveDatePremiumEnd(date: Long) {
+        sharedPreferences.edit().putLong(DATE_PREMIUM_END, date).apply()
+    }
+
+    override fun getDatePremiumEnd(): Long {
+        return sharedPreferences.getLong(DATE_PREMIUM_END, -1L)
+    }
+
     override fun getCurrentLimitWord(): Int {
         return sharedPreferences.getInt(LIMIT_WORDS, -1)
     }
@@ -107,5 +115,6 @@ class PremiumRepositoryImpl @Inject constructor(
         private const val LIMIT_RANDOMIZER = "LIMIT_RANDOMIZER"
         private const val LAST_DATE_USE_RANDOMIZER = "LAST_DATE_USE_RANDOMIZER"
         private const val ALL_PREMIUM_END = "ALL_PREMIUM_END"
+        private const val DATE_PREMIUM_END = "DATE_PREMIUM_END"
     }
 }

@@ -174,4 +174,8 @@
     <string name="a_google_drive">Google Disk</string>
     <string name="file_has_been_uploaded_successfully">Файл успешно загружен</string>
     <string name="backup_has_been_performed">Выполненно резервное копироваине</string>
+
+    <string name="to_extend">Продлить</string>
+    <string name="until_the">До %s</string>
+
 </resources>

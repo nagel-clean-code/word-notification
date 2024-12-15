@@ -8,24 +8,20 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import com.nagel.wordnotification.R
-import com.nagel.wordnotification.data.firbase.RemoteDbRepository
 import com.nagel.wordnotification.data.firbase.entity.CurrentPrices
 import com.nagel.wordnotification.databinding.FragmentProfileBinding
 import com.nagel.wordnotification.presentation.base.BaseFragment
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import com.nagel.wordnotification.utils.GlobalFunction.openUrl
-import com.nagel.wordnotification.utils.Toggles
+import com.nagel.wordnotification.utils.common.collectStarted
 import com.nagel.wordnotification.utils.common.showToast
 import dagger.hilt.android.AndroidEntryPoint
 import io.appmetrica.analytics.AppMetrica
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProfileFragment : BaseFragment() {
     class Screen : BaseScreen
 
-    @Inject
-    lateinit var remoteDbRepository: RemoteDbRepository
     private lateinit var binding: FragmentProfileBinding
     override val viewModel: ProfileVM by viewModels()
 
@@ -38,20 +34,6 @@ class ProfileFragment : BaseFragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        remoteDbRepository.getFeatureToggles(
-            success = {
-                if (it.content.contains(Toggles.Purchases.name)) {
-                    showPremium()
-                } else {
-                    premiumIsDisabled()
-                }
-            },
-            error = ::showError
-        )
-    }
-
     private fun premiumIsDisabled() = with(binding) {
         errorText.text = resources.getString(R.string.purchases_not_available)
         showError()
@@ -59,10 +41,7 @@ class ProfileFragment : BaseFragment() {
 
     private fun showPremium() {
         loadingInformationPremium()
-        remoteDbRepository.requestPremiumInformation(
-            success = ::chowPremiumInformation,
-            error = ::showError
-        )
+        viewModel.requestPremiumInformation()
     }
 
 
@@ -125,6 +104,8 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun initListeners() = with(binding) {
+        viewModel.state.collectStarted(viewLifecycleOwner, ::renderState)
+
         vkButton.setOnClickListener {
             requireContext().openUrl("https://vk.com/club223679470")  //Желательно ссылки брать с Firbase
         }
@@ -134,6 +115,33 @@ class ProfileFragment : BaseFragment() {
         telegramButton.setOnClickListener {
             requireContext().openUrl("https://t.me/notifier2023")
         }
+    }
+
+    private fun renderState(state: ProfileUiState) = with(binding) {
+        state.showErrorEvent?.getContentIfNotHandled()?.let {
+            showError()
+        }
+        state.showPremiumEvent?.getContentIfNotHandled()?.let {
+            showPremium()
+        }
+        state.premiumIsDisabledEvent?.getContentIfNotHandled()?.let {
+            premiumIsDisabled()
+        }
+        state.chowPremiumInformationEvent?.getContentIfNotHandled()?.let { currentPrices ->
+            chowPremiumInformation(currentPrices)
+        }
+        state.youHavePremium?.getContentIfNotHandled()?.let { date ->
+            showYouHavePremium(date)
+        }
+    }
+
+    private fun showYouHavePremium(date: String) = with(binding) {
+        linearLayout3.isInvisible = true
+        progressBar.isVisible = false
+        saleTextImg.setImageResource(R.drawable.you_have_premium)
+        getPremiumButton.text = resources.getString(R.string.to_extend)
+        timeEndPremium.text = date
+        timeEndPremium.isVisible = true
     }
 
     companion object {

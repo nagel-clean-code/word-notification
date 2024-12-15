@@ -179,4 +179,7 @@
     <string name= "file_has_been_uploaded_successfully" >The file has already been uploaded</string>
     <string name="backup_has_been_performed">Backup has been performed</string>
 
+    <string name="to_extend">To extend</string>
+    <string name="until_the">Until the %s</string>
+
 </resources>

@@ -110,9 +110,7 @@ class ExportFragment : BaseFragment() {
     }
 
     private fun initStates() {
-        viewModel.state.collectStarted(viewLifecycleOwner) {
-            renderState(it)
-        }
+        viewModel.state.collectStarted(viewLifecycleOwner, ::renderState)
     }
 
     private fun renderState(state: ExportUiState) = with(binding) {

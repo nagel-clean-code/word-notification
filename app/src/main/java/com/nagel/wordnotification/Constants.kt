@@ -32,4 +32,5 @@ object Constants {
     val dateTemplate by lazy { SimpleDateFormat("(yyyy.MM.dd, HH:mm:ss)", Locale.getDefault()) }
     val dateTemplateV2 by lazy { SimpleDateFormat("yyyy.MM.dd HH:mm:ss", Locale.getDefault()) }
 
+    val datePremium by lazy { SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()) }
 }

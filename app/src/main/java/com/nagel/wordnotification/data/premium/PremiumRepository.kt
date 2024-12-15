@@ -16,6 +16,9 @@ interface PremiumRepository {
     fun saveIsStarted(isStarted: Boolean)
     fun getIsStarted(): Boolean
 
+    fun saveDatePremiumEnd(date: Long)
+    fun getDatePremiumEnd(): Long
+
     fun getCurrentLimitWord(): Int
     fun saveCurrentLimitWords(limit: Int)
 
