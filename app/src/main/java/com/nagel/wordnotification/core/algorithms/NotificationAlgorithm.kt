@@ -6,6 +6,7 @@ import com.google.gson.Gson
 import com.nagel.wordnotification.Constants.TAKE_AWAY
 import com.nagel.wordnotification.Constants.TYPE
 import com.nagel.wordnotification.Constants.TYPE_ANSWER
+import com.nagel.wordnotification.Constants.dateFormat
 import com.nagel.wordnotification.app.App
 import com.nagel.wordnotification.core.services.AlarmReceiver
 import com.nagel.wordnotification.core.services.NotificationDto
@@ -14,7 +15,6 @@ import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.data.settings.SettingsRepository
 import com.nagel.wordnotification.data.settings.room.entities.ModeDbEntity
-import java.text.SimpleDateFormat
 import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -152,9 +152,5 @@ class NotificationAlgorithm @Inject constructor(
 
     private suspend fun updateWord(word: Word) {
         dictionaryRepository.updateWord(word)
-    }
-
-    companion object {
-        val dateFormat = SimpleDateFormat("d, HH:mm:ss")
     }
 }

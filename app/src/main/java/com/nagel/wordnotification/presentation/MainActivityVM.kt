@@ -2,11 +2,19 @@ package com.nagel.wordnotification.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.algorithms.NotificationAlgorithm
+import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.premium.PremiumRepository
 import com.nagel.wordnotification.data.session.SessionRepository
+import com.nagel.wordnotification.domain.googledisk.files.FilesRepository
+import com.nagel.wordnotification.presentation.exportAndImport.ExportGenerator
+import com.nagel.wordnotification.presentation.navigator.NavigatorV2
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
 import java.util.Date
 import javax.inject.Inject
 
@@ -14,8 +22,38 @@ import javax.inject.Inject
 class MainActivityVM @Inject constructor(
     private val sessionRepository: SessionRepository,
     private val premiumRepository: PremiumRepository,
-    private val notificationAlgorithm: NotificationAlgorithm
+    private val notificationAlgorithm: NotificationAlgorithm,
+    private val exportGenerator: ExportGenerator,
+    private val dictionaryRepository: DictionaryRepository,
+    private val filesRepository: FilesRepository,
+    private val navigator: NavigatorV2,
 ) : ViewModel() {
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (sessionRepository.getIsAutoBackupAndMark() && premiumRepository.getIsStarted()) {
+                uploadBackupToGoogleDisk()
+            }
+        }
+    }
+
+    private suspend fun uploadBackupToGoogleDisk() {
+        val file = generateBackupFile(false)
+        file?.let {
+            filesRepository.upload(file)
+        }
+        navigator.toast(R.string.backup_has_been_performed)
+    }
+
+    private suspend fun generateBackupFile(fileNameWithDate: Boolean): File? {
+        val accountId = sessionRepository.getAccountId() ?: return null
+        return withContext(Dispatchers.Default) {
+            val list = dictionaryRepository.loadDictionaries(accountId)
+            return@withContext exportGenerator.writeDictionaries(
+                list, true, fileNameWithDate
+            )
+        }
+    }
 
     fun isItPossibleShowRateApp(): Boolean {
         val session = sessionRepository.getSession()

@@ -7,11 +7,12 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import com.google.gson.Gson
 import com.nagel.wordnotification.Constants.TAKE_AWAY
+import com.nagel.wordnotification.Constants.dateFormat
+import com.nagel.wordnotification.Constants.dayDateFormat
 import com.nagel.wordnotification.app.App
 import com.nagel.wordnotification.core.services.AlarmReceiver
 import com.nagel.wordnotification.core.services.NotificationDto
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
-import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 
@@ -95,7 +96,7 @@ object AlgorithmHelper {
 
     private fun checkDays(mode: ModeSettingsDto, time: Long): Boolean {
         if (mode.sampleDays) {
-            val day = SimpleDateFormat("EE").format(Date(time))
+            val day = dayDateFormat.format(Date(time))
             val str = day[0].uppercase() + day[1]
             return mode.days.contains(str)
         }
@@ -141,7 +142,7 @@ object AlgorithmHelper {
                     }
                 }
             }
-            val dateTime = NotificationAlgorithm.dateFormat.format(Date(time))
+            val dateTime = dateFormat.format(Date(time))
             Log.d(
                 "CoroutineWorker:",
                 "CHECK_TIME: time = $dateTime, " +

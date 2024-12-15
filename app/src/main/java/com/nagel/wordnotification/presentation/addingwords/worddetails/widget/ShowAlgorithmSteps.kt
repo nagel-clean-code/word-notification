@@ -8,14 +8,13 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
 import androidx.core.content.res.ResourcesCompat
+import com.nagel.wordnotification.Constants.dateTemplate
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.algorithms.AlgorithmHelper
 import com.nagel.wordnotification.data.dictionaries.entities.NotificationHistoryItem
 import com.nagel.wordnotification.presentation.addingwords.worddetails.widget.model.ShowStepsWordDto
 import java.lang.Float.max
-import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 
 class ShowAlgorithmSteps(
     context: Context,
@@ -54,7 +53,6 @@ class ShowAlgorithmSteps(
     private val marginTextLeft = 20f
     private var currentIx = 0
     private lateinit var textList: List<String>
-    private val dateTemplate = SimpleDateFormat("(yyyy.MM.dd, HH:mm:ss)", Locale.getDefault())
 
     init {
         initPaint()

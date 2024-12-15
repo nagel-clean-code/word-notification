@@ -31,7 +31,7 @@ class App : Application(), Configuration.Provider {
 
         FirebaseApp.initializeApp(this)
 
-        val permissionAnalytic = CheckCountyEs.checkPermissionAnalytics(this)
+        permissionAnalytic = CheckCountyEs.checkPermissionAnalytics(this)
         if (permissionAnalytic) {
             val apiKey = resources.getString(R.string.APP_METRICA_API_KEY)
             val config = AppMetricaConfig.newConfigBuilder(apiKey)
@@ -48,6 +48,7 @@ class App : Application(), Configuration.Provider {
     companion object {
 
         private lateinit var instance: App
+        var permissionAnalytic: Boolean = false
 
         fun get(): App {
             return instance

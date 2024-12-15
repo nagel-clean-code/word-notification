@@ -165,4 +165,15 @@
     <string name="error_in_progress">This operation is already in progress</string>
     <string name="error_connection">Internet connection error</string>
     <string name="error_login_failed">Login has been failed: %1$s</string>
+
+    <string name="failed_to_load_google_disk">Anmeldung bei Google Drive fehlgeschlagen</string>
+    <string name="unplug">Deaktivieren</string>
+    <string name="list_of_copies">Liste der Kopien</string>
+    <string name="google_drive_auto_copying_information">Die automatische Sicherung findet einmal täglich statt, wenn Sie sich zum ersten Mal bei der Anwendung anmelden. Wenn Sie jetzt eine Sicherung erstellen müssen, tun Sie dies manuell, indem Sie auf die Schaltfläche \"Exportieren\" klicken</string>
+    <string name="send_file_or_upload_to_google_drive"> Eine Datei senden oder auf Google Disk hochladen?</string>
+    <string name="a_file">Eine Datei</string>
+    <string name="a_google_drive">Ein Google-Laufwerk</string>
+    <string name="file_has_been_uploaded_successfully">Die Datei wurde bereits heruntergeladen</string>
+    <string name="backup_has_been_performed">Sicherung durchgeführt</string>
+
 </resources>

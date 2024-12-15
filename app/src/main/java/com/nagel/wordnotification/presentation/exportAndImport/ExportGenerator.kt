@@ -1,5 +1,8 @@
 package com.nagel.wordnotification.presentation.exportAndImport
 
+import com.nagel.wordnotification.Constants.DICTIONARY_NAME
+import com.nagel.wordnotification.Constants.FILE_FORMAT_FIRE
+import com.nagel.wordnotification.Constants.dateTemplateV2
 import com.nagel.wordnotification.app.App
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
@@ -7,6 +10,7 @@ import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.settings.SettingsRepository
 import java.io.File
 import java.io.PrintWriter
+import java.util.Date
 import javax.inject.Inject
 
 class ExportGenerator @Inject constructor(
@@ -32,9 +36,17 @@ class ExportGenerator @Inject constructor(
 
     suspend fun writeDictionaries(
         dictionaries: List<Dictionary>,
-        isAlgorithm: Boolean
+        isAlgorithm: Boolean,
+        fileNameWithDate: Boolean
     ): File {
-        val file = createFile("dictionaries$FILE_FORMAT_FIRE")
+        val date = dateTemplateV2.format(Date())
+        var fileName = DICTIONARY_NAME
+        fileName += if (fileNameWithDate) {
+            "-$date$FILE_FORMAT_FIRE"
+        } else {
+            FILE_FORMAT_FIRE
+        }
+        val file = createFile(fileName)
         file.printWriter().use { out ->
             dictionaries.forEach() { dictionary ->
                 with(dictionary) {
@@ -79,6 +91,5 @@ class ExportGenerator @Inject constructor(
 
     companion object {
         const val FILE_FORMAT_TXT = ".txt"
-        const val FILE_FORMAT_FIRE = ".fire"
     }
 }

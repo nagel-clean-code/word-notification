@@ -16,8 +16,8 @@ android {
         applicationId "com.nagel.wordnotification"
         minSdk 24
         targetSdk 34
-        versionCode 443
-        versionName "1.5.8"
+        versionCode 444
+        versionName "1.5.9"
 
         resConfigs "en", "ru", "de"
 
@@ -30,6 +30,12 @@ android {
     }
 
     signingConfigs {
+        debug {
+            storeFile file('sign.jks')
+            storePassword "$storePassworda"
+            keyAlias "$keyAliasa"
+            keyPassword "$storePassworda"
+        }
         config {
             keyAlias "$keyAliasa"
             keyPassword "$storePassworda"
@@ -145,10 +151,10 @@ dependencies {
 
     //Реклама
 //    implementation 'com.yandex.android:mobileads-mediation:7.7.0.0'
-    implementation 'com.yandex.android:mobileads:7.7.0'
+    implementation 'com.yandex.android:mobileads:7.8.0'
 
     //Google disk
-    implementation 'com.google.android.gms:play-services-auth:20.5.0'
+    implementation 'com.google.android.gms:play-services-auth:21.3.0'
     implementation 'com.google.http-client:google-http-client-gson:1.26.0'
     implementation('com.google.api-client:google-api-client-android:1.26.0') {
         exclude group: 'org.apache.httpcomponents'
@@ -156,5 +162,4 @@ dependencies {
     implementation('com.google.apis:google-api-services-drive:v3-rev136-1.25.0') {
         exclude group: 'org.apache.httpcomponents'
     }
-
 }

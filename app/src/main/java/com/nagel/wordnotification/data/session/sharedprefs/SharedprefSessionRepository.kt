@@ -2,6 +2,7 @@ package com.nagel.wordnotification.data.session.sharedprefs
 
 import android.content.Context
 import com.google.gson.Gson
+import com.nagel.wordnotification.Constants.simpleCurrentDateFormat
 import com.nagel.wordnotification.data.accounts.entities.Account
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.data.session.entities.SessionDataEntity
@@ -77,6 +78,24 @@ class SharedprefSessionRepository @Inject constructor(
         return sharedPreferences.getLong(ID_CURRENT_WORD_NOTIFICATION, -1L)
     }
 
+    override fun saveIsAutoBackup(isAutoBackup: Boolean) {
+        sharedPreferences.edit().putBoolean(IS_AUTO_BACKUP, isAutoBackup).apply()
+    }
+
+    override fun getIsAutoBackupAndMark(): Boolean {
+        val lastDate = sharedPreferences.getString(LAST_TIME_AUTO_BACKUP, "")
+        if (simpleCurrentDateFormat.format(Date()) == lastDate) {
+            return false
+        }
+        val currentDate = simpleCurrentDateFormat.format(Date())
+        sharedPreferences.edit().putString(LAST_TIME_AUTO_BACKUP, currentDate).apply()
+        return sharedPreferences.getBoolean(IS_AUTO_BACKUP, false)
+    }
+
+    override fun getIsAutoBackup(): Boolean {
+        return sharedPreferences.getBoolean(IS_AUTO_BACKUP, false)
+    }
+
     private fun createSession(): SessionDataEntity {
         val currentTime = Date().time
         val loadSession = SessionDataEntity(dateAppInstallation = currentTime)
@@ -96,5 +115,7 @@ class SharedprefSessionRepository @Inject constructor(
         private const val SESSiON_STATE = "SESSiON_STATE"
         private const val SHARED_PREFS_SESSION = "SHARED_PREFS_SESSION"
         private const val ID_CURRENT_WORD_NOTIFICATION = "ID_CURRENT_WORD_NOTIFICATION"
+        private const val IS_AUTO_BACKUP = "IS_AUTO_BACKUP"
+        private const val LAST_TIME_AUTO_BACKUP = "LAST_TIME_AUTO_BACKUP"
     }
 }

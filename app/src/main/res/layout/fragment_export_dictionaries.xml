@@ -104,7 +104,7 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/headerTitle"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:fontFamily="@font/montserrat_bold"
@@ -112,20 +112,78 @@
                     android:textColor="@color/gray_3"
                     android:textSize="14sp" />
 
-                <Button
-                    android:id="@+id/backupDiskButton"
-                    android:layout_width="wrap_content"
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/error"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/include" />
+                    android:layout_weight="1"
+                    android:fontFamily="@font/montserrat_bold"
+                    android:text="@string/failed_to_load_google_disk"
+                    android:textColor="@color/red"
+                    android:textSize="14sp"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <Button
+                        android:id="@+id/backupDiskButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/include" />
+
+                    <ProgressBar
+                        android:id="@+id/progressBar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:visibility="gone" />
+                </FrameLayout>
             </LinearLayout>
 
-            <Button
-                android:id="@+id/exportButton"
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/listOfCopiesButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="15dp"
-                android:text="@string/exports_s" />
+                android:layout_marginStart="20dp"
+                android:fontFamily="@font/montserrat_bold"
+                android:padding="5dp"
+                android:paddingStart="0dp"
+                android:text="@string/list_of_copies"
+                android:textColor="@color/purple"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <Button
+                    android:id="@+id/exportButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/exports_s" />
+
+                <ImageView
+                    android:id="@+id/infoButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:padding="10dp"
+                    android:scaleType="center"
+                    android:src="@drawable/baseline_info_24"
+                    android:visibility="invisible" />
+            </LinearLayout>
 
             <View
                 android:layout_width="0dp"

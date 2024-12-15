@@ -18,15 +18,18 @@ import com.nagel.wordnotification.Constants.BOOT_COMPLETED
 import com.nagel.wordnotification.Constants.HTC_QUICKBOOT_POWERON
 import com.nagel.wordnotification.Constants.QUICKBOOT_POWERON
 import com.nagel.wordnotification.R
+import com.nagel.wordnotification.app.App
 import com.nagel.wordnotification.core.analytecs.AppMetricaAnalyticPlatform
 import com.nagel.wordnotification.core.services.NotificationRestorerReceiver
 import com.nagel.wordnotification.data.firbase.RemoteDbRepository
+import com.nagel.wordnotification.data.googledisk.accounts.ActivityRequired
 import com.nagel.wordnotification.databinding.ActivityMainBinding
 import com.nagel.wordnotification.presentation.addingwords.AddingWordsFragment
 import com.nagel.wordnotification.presentation.choosingdictionary.ChoosingDictionaryFragment
 import com.nagel.wordnotification.presentation.choosingdictionary.library.LibraryDictionariesFragment
 import com.nagel.wordnotification.presentation.exportAndImport.FileReader
 import com.nagel.wordnotification.presentation.exportdictionaries.ExportFragment
+import com.nagel.wordnotification.presentation.googledisk.files.GoogleDiskFilesFragment
 import com.nagel.wordnotification.presentation.navigator.MainNavigator
 import com.nagel.wordnotification.presentation.navigator.Navigator
 import com.nagel.wordnotification.presentation.premiumdialog.PremiumDialog
@@ -51,6 +54,9 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), Navigator {
 
+    @Inject
+    lateinit var activityRequiredStuffs: ActivityRequired
+
     private val broadcastReceiver: NotificationRestorerReceiver = NotificationRestorerReceiver()
 
     private lateinit var binding: ActivityMainBinding
@@ -74,6 +80,7 @@ class MainActivity : AppCompatActivity(), Navigator {
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_WordNotification)
         super.onCreate(savedInstanceState)
+        activityRequiredStuffs.onActivityCreated(this)
         if (savedInstanceState == null) {
             AppMetrica.reportAppOpen(this)
         }
@@ -83,7 +90,9 @@ class MainActivity : AppCompatActivity(), Navigator {
 
         val isGms = isGooglePlayServicesAvailable(this)
         if (isGms) {
-            initFirebase()
+            if (App.permissionAnalytic) {
+                initFirebase()
+            }
         } else {
             setAutoInitHmsPushEnabled()
         }
@@ -194,6 +203,10 @@ class MainActivity : AppCompatActivity(), Navigator {
         if (viewModel.isItPossibleShowRateApp()) {
             EvaluationAppDialog().show(supportFragmentManager, EvaluationAppDialog.TAG)
         }
+    }
+
+    override fun showGoogleDiskFilesFragment() {
+        navigator.launchFragment(this, GoogleDiskFilesFragment.Screen())
     }
 
     override fun showAddingWordsFragment() {

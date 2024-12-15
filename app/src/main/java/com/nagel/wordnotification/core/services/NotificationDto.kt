@@ -1,6 +1,6 @@
 package com.nagel.wordnotification.core.services
 
-import java.text.SimpleDateFormat
+import com.nagel.wordnotification.Constants.dateFormat
 import java.util.Date
 
 data class NotificationDto(
@@ -15,9 +15,5 @@ data class NotificationDto(
         return "NotificationDto(text=$text, translation=$translation, date=" + dateFormat.format(
             Date(date)
         ) + ", uniqueId=$uniqueId, step=$step)"
-    }
-
-    companion object {
-        val dateFormat = SimpleDateFormat("d, HH:mm:ss")
     }
 }

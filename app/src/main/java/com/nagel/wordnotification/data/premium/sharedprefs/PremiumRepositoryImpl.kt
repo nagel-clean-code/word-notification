@@ -4,9 +4,9 @@ import android.content.Context
 import com.nagel.wordnotification.Constants.COUNT_FREE_USE_RANDOMIZER
 import com.nagel.wordnotification.Constants.NUMBER_OF_FREE_WORDS
 import com.nagel.wordnotification.Constants.NUMBER_OF_FREE_WORDS_PER_ADVERTISEMENT
+import com.nagel.wordnotification.Constants.simpleCurrentDateFormat
 import com.nagel.wordnotification.data.premium.PremiumRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.text.SimpleDateFormat
 import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -107,7 +107,5 @@ class PremiumRepositoryImpl @Inject constructor(
         private const val LIMIT_RANDOMIZER = "LIMIT_RANDOMIZER"
         private const val LAST_DATE_USE_RANDOMIZER = "LAST_DATE_USE_RANDOMIZER"
         private const val ALL_PREMIUM_END = "ALL_PREMIUM_END"
-
-        private val simpleCurrentDateFormat = SimpleDateFormat("yyyy-MM-dd")
     }
 }

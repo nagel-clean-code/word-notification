@@ -7,6 +7,7 @@ fun Fragment.navigator(): Navigator? {
 }
 
 interface Navigator {
+    fun showGoogleDiskFilesFragment()
     fun showAddingWordsFragment()
     fun showRandomizingFragment()
     fun showLibraryDictionariesFragment()

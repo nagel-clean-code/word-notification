@@ -95,7 +95,7 @@
     <string name="exports_s">Экспортировать</string>
     <string name="dictionary">Словарь</string>
     <string name="library">Библиотека</string>
-    <string name="in_process_implementation">В процессе реализации</string>
+    <string name="in_process_implementation">Скоро будет реализовано</string>
     <string name="error_loading_dictionaries">Ошибка загрузки словарей\nповторите попытку позже</string>
     <string name="add_to_yourself">Добавить себе</string>
     <string name="completed">Завершено</string>
@@ -158,10 +158,20 @@
     <string name="permissions_required_for_the_algorithm_to_work_manually">Разрешения необходимы для работы алгоритма, т.к. без разрешений показ слов будет не доступен :(\nПредоставьте разрешения вручную в настойках приложения</string>
     <string name="failed_to_load_ad">Не удалось загрузить рекламу, попробуйте позже</string>
 
-    <string name="error_unknown">Unknown internal error</string>
-    <string name="error_called_not_from_ui">Application is not active</string>
-    <string name="error_auth">User session has been expired</string>
-    <string name="error_in_progress">This operation is already in progress</string>
-    <string name="error_connection">Internet connection error</string>
-    <string name="error_login_failed">Login has been failed: %1$s</string>
+    <string name="error_unknown">Неизвестная внутренняя ошибка</string>
+    <string name="error_called_not_from_ui">Приложение неактивно</string>
+    <string name="error_auth">Срок действия пользовательской сессии истек</string>
+    <string name="error_in_progress">Эта операция уже проводится</string>
+    <string name="error_connection">Ошибка подключения к Интернету</string>
+    <string name="error_login_failed">Не удалось войти в систему: %1$s</string>
+
+    <string name="failed_to_load_google_disk">Не удалось войти в Google Disk</string>
+    <string name="unplug">Отключить</string>
+    <string name="list_of_copies">Список копий</string>
+    <string name="google_drive_auto_copying_information">Автоматическое резервное копирование происходит раз в день при первом входе в приложение, если вам необходимо создать резервную копию именно сейчас - сделайте это вручную нажатиме на кнопку \"Экспортировать\"</string>
+    <string name="send_file_or_upload_to_google_drive">Отправить файло или загрузить на Google Disk?</string>
+    <string name="a_file">Файлом</string>
+    <string name="a_google_drive">Google Disk</string>
+    <string name="file_has_been_uploaded_successfully">Файл успешно загружен</string>
+    <string name="backup_has_been_performed">Выполненно резервное копироваине</string>
 </resources>

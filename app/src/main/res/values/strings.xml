@@ -168,4 +168,15 @@
     <string name="error_in_progress">This operation is already in progress</string>
     <string name="error_connection">Internet connection error</string>
     <string name="error_login_failed">Login has been failed: %1$s</string>
+
+    <string name= "failed_to_load_google_disk" >Failed to log in to Google Drive</string>
+    <string name="unplug">Disable </string>
+    <string name="list_of_copies">List of copies</string>
+    <string name="google_drive_auto_copying_information">Automatic backup takes place once a day when you first log into the application, if you need to create a backup right now - do it manually by clicking on the \"Export\" button</string>
+    <string name="send_file_or_upload_to_google_drive">Send a file or upload it to Google Disk?</string>
+    <string name="a_file">A file</string>
+    <string name="a_google_drive">A Google Drive</string>
+    <string name= "file_has_been_uploaded_successfully" >The file has already been uploaded</string>
+    <string name="backup_has_been_performed">Backup has been performed</string>
+
 </resources>
