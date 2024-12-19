@@ -1,10 +1,12 @@
 package com.nagel.wordnotification.data.premium.sharedprefs
 
 import android.content.Context
+import com.nagel.wordnotification.BuildConfig
 import com.nagel.wordnotification.Constants.COUNT_FREE_USE_RANDOMIZER
 import com.nagel.wordnotification.Constants.NUMBER_OF_FREE_WORDS
 import com.nagel.wordnotification.Constants.NUMBER_OF_FREE_WORDS_PER_ADVERTISEMENT
 import com.nagel.wordnotification.Constants.simpleCurrentDateFormat
+import com.nagel.wordnotification.R
 import com.nagel.wordnotification.data.premium.PremiumRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.Date
@@ -59,6 +61,9 @@ class PremiumRepositoryImpl @Inject constructor(
     }
 
     override fun getIsStarted(): Boolean {
+        if (BuildConfig.DEBUG && context.resources.getBoolean(R.bool.IS_PREMIUM_TESTING).not()) {
+            return false
+        }
         val isAllPremium = getCurrentIsAllPremium()
         if (isAllPremium) return true
         return sharedPreferences.getBoolean(IS_STARTED, false)
