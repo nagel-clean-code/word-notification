@@ -1,22 +1,16 @@
 package com.nagel.wordnotification.core.adv
 
-import android.app.Activity
 import android.content.Context
 import android.util.Log
-import com.yandex.mobile.ads.common.AdError
-import com.yandex.mobile.ads.common.AdRequestConfiguration
-import com.yandex.mobile.ads.common.AdRequestError
-import com.yandex.mobile.ads.common.ImpressionData
-import com.yandex.mobile.ads.rewarded.Reward
-import com.yandex.mobile.ads.rewarded.RewardedAd
-import com.yandex.mobile.ads.rewarded.RewardedAdEventListener
-import com.yandex.mobile.ads.rewarded.RewardedAdLoadListener
-import com.yandex.mobile.ads.rewarded.RewardedAdLoader
+import com.my.target.ads.Reward
+import com.my.target.ads.RewardedAd
+import com.my.target.common.models.IAdLoadingError
+import com.nagel.wordnotification.core.analytecs.AppMetricaAnalytic
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.delay
 import javax.inject.Inject
 import javax.inject.Singleton
+
 
 //TODO могут возникать утечки памяти https://ads.yandex.com/helpcenter/ru/dev/android/rewarded
 @Singleton
@@ -24,99 +18,93 @@ class RewardedAdLoaderImpl @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
     private var rewardedAd: RewardedAd? = null
-    private var isAward = false
     private var isAdFailedToLoad = false
     private var counterLoad = 0
+    private var award: () -> Unit = {}
+    private var counterError = 0
+    private var isLoaded = false
 
-    private val rewardedAdLoader = RewardedAdLoader(context).apply {
-        setAdLoadListener(object : RewardedAdLoadListener {
-            override fun onAdLoaded(rewarded: RewardedAd) {
-                isAdFailedToLoad = false
-                Log.d(TAG, "Реклама загрузилась")
-                rewardedAd = rewarded
-            }
+    fun init() {
+        // Включение режима отладки
+//        val myTargetConfig = MyTargetConfig.Builder()
+//            .withTestDevices("931dd442-b37a-498a-9305-8318696bd43b")
+//            .build()
+//        MyTargetManager.setSdkConfig(myTargetConfig)
+//        MyTargetManager.setDebugMode(true);
+        Log.d(TAG, "fun init()")
 
-            override fun onAdFailedToLoad(error: AdRequestError) {
-                isAdFailedToLoad = true
-                Log.e(TAG, "Ошибка загрузки рекламы: ${error.description} (errorObject: $error)")
-                AppMetrica.reportEvent("ad_loading_error")
+        rewardedAd = RewardedAd(YOUR_SLOT_ID_2, context).apply {
+            listener = object : RewardedAd.RewardedAdListener {
+                override fun onLoad(p0: RewardedAd) {
+                    isAdFailedToLoad = false
+                    Log.d(TAG, "onLoad")
+                    counterError = 0
+                    isLoaded = true
+                }
+
+                override fun onNoAd(p0: IAdLoadingError, p1: RewardedAd) {
+                    if (p0 == null) {
+                        AppMetricaAnalytic.reportEvent("advertisement_did_not_appear")
+                    }
+                    isAdFailedToLoad = true
+                    isLoaded = false
+                    Log.e(TAG, "Ошибка загрузки рекламы: ${p0?.message} (code: ${p0?.code})")
+                    AppMetricaAnalytic.reportEvent("ad_loading_error")
+                    if (counterError++ < MAX_COUNTER_ERROR) {
+                        init()
+                    }
+                }
+
+                override fun onClick(p0: RewardedAd) {
+                    //Вызывается, когда регистрируется клик по объявлению.
+                    AppMetricaAnalytic.reportEvent("click_on_the_ad")
+                    Log.d(TAG, "КЛИК ПО ОБЪЯВЛЕНИЮ")
+                }
+
+                override fun onDismiss(p0: RewardedAd) {
+                    // Вызывается при закрытии объявления.
+                    // Очистка ресурсов после закрытия объявления
+                    Log.d(TAG, "ЗАКРЫТИЕ ОБЪЯВЛЕНИЯ")
+                    AppMetricaAnalytic.reportEvent("closing_an_ad")
+                    award.invoke()
+                    init()
+                }
+
+                override fun onReward(p0: Reward, p1: RewardedAd) {
+                    Log.d(TAG, "ВОЗНАГРАЖДЕНИЕ")
+                }
+
+                override fun onDisplay(p0: RewardedAd) {
+                    Log.d(TAG, "ПОКАЗ РЕКЛАМЫ")
+                }
             }
-        })
+        }
+        isLoaded = false
+        rewardedAd?.load()
     }
 
-    init {
-        loadRewardedAd()
-    }
-
-    suspend fun showAdv(activity: Activity, award: () -> Unit, loaded: (Boolean) -> Unit) {
+    suspend fun showAdv(loaded: (Boolean) -> Unit) {
+        if (isAdFailedToLoad) {
+            counterError = 0
+            init()
+        }
         Log.d(TAG, "Нажата крнопка показа рекламы")
         counterLoad = 0
-        while (rewardedAd == null && !isAdFailedToLoad && counterLoad < 1000) {
+        while (isLoaded.not() && counterError < MAX_COUNTER_ERROR && counterLoad < 1000) {
             ++counterLoad
             delay(20)
         }
         loaded.invoke(isAdFailedToLoad || counterLoad >= 1000)
-        rewardedAd?.apply {
-            setAdEventListener(object : RewardedAdEventListener {
-                override fun onAdShown() {
-                    Log.d(TAG, "ПОКАЗ РЕКЛАМЫ")
-                    // Вызывается при показе рекламы.
-                }
-
-                override fun onAdFailedToShow(adError: AdError) {
-                    //Вызывался, когда реклама с вознаграждением не показывалась
-                    // Очистить ресурсы после сбоя показа рекламы
-                    rewardedAd?.setAdEventListener(null)
-                    rewardedAd = null
-                    AppMetrica.reportEvent("advertisement_did_not_appear")
-
-                    // Теперь вы можете предварительно загрузить следующее рекламное объявление с вознаграждением.
-                    loadRewardedAd()
-                }
-
-                override fun onAdDismissed() {
-                    // Вызывается при закрытии объявления.
-                    // Очистка ресурсов после закрытия объявления
-                    Log.d(TAG, "ЗАКРЫТИЕ ОБЪЯВЛЕНИЯ")
-                    rewardedAd?.setAdEventListener(null)
-                    rewardedAd = null
-
-                    AppMetrica.reportEvent("closing_an_ad")
-                    if (isAward) {
-                        isAward = false
-                        award.invoke()
-                    }
-                    //Теперь вы можете предварительно загрузить следующее рекламное объявление с вознаграждением.
-                    loadRewardedAd()
-                }
-
-                override fun onAdClicked() {
-                    //Вызывается, когда регистрируется клик по объявлению.
-                    AppMetrica.reportEvent("click_on_the_ad")
-                    Log.d(TAG, "КЛИК ПО ОБЪЯВЛЕНИЮ")
-                }
-
-                override fun onAdImpression(impressionData: ImpressionData?) {
-                    //Вызывается при регистрации показа рекламы.
-                    Log.d(TAG, "ПОКАЗ РЕКЛАМЫ")
-                }
-
-                override fun onRewarded(reward: Reward) {
-                    Log.d(TAG, "ВОЗНАГРАЖДЕНИЕ")
-                    isAward = true
-                    // Вызывается, когда пользователь может быть вознагражден.
-                }
-            })
-            show(activity)
-        }
     }
 
-    private fun loadRewardedAd() {
-        val adRequestConfiguration = AdRequestConfiguration.Builder("R-M-13195559-1").build()
-        rewardedAdLoader.loadAd(adRequestConfiguration)
+    fun show(award: () -> Unit) {
+        this.award = award
+        rewardedAd?.show()
     }
 
     companion object {
         const val TAG = "RewardedAdLoaderImpl:::"
+        private const val MAX_COUNTER_ERROR = 2
+        const val YOUR_SLOT_ID_2 = 1744052
     }
 }

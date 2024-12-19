@@ -15,6 +15,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nagel.wordnotification.R
+import com.nagel.wordnotification.core.adv.RewardedAdLoaderImpl
+import com.nagel.wordnotification.core.analytecs.AppMetricaAnalytic
 import com.nagel.wordnotification.core.services.Utils
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.databinding.FragmentAddingWordsBinding
@@ -31,10 +33,10 @@ import com.nagel.wordnotification.utils.RotationAnimator
 import com.nagel.wordnotification.utils.common.hideKeyboard
 import com.nagel.wordnotification.utils.common.showToast
 import dagger.hilt.android.AndroidEntryPoint
-import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Locale
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AddingWordsFragment : BaseFragment() {
@@ -47,6 +49,9 @@ class AddingWordsFragment : BaseFragment() {
     private lateinit var rotationAnimatorDoubleArrow: RotationAnimator
     private lateinit var rotationAnimatorReloadIcon: RotationAnimator
     private lateinit var textToSpeech: TextToSpeech
+
+    @Inject
+    lateinit var rewardedAdLoader: RewardedAdLoaderImpl
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -85,7 +90,7 @@ class AddingWordsFragment : BaseFragment() {
             textToSpeech.speak(editTextWord.text.toString(), TextToSpeech.QUEUE_FLUSH, null, "")
         }
         microphoneTranslation.setOnClickListener {
-            AppMetrica.reportEvent("microphone_translation")
+            AppMetricaAnalytic.reportEvent("microphone_translation")
             if (viewModel.isStarted.get()) {
                 textToSpeech.speak(
                     editTextTranslation.text.toString(),
@@ -101,7 +106,7 @@ class AddingWordsFragment : BaseFragment() {
             }
         }
         imageView3.setOnClickListener {
-            AppMetrica.reportEvent("arrow_click_add_word_screen")
+            AppMetricaAnalytic.reportEvent("arrow_click_add_word_screen")
             choiceLanguageWord.isVisible = choiceLanguageTranslation.isVisible
             choiceLanguageTranslation.isVisible = choiceLanguageTranslation.isVisible.not()
             microphoneWord.isVisible = microphoneWord.isVisible.not()
@@ -112,7 +117,7 @@ class AddingWordsFragment : BaseFragment() {
             translateCurrentText()
         }
         swapIcon.setOnClickListener {
-            AppMetrica.reportEvent("swap_icon_click_add_word_screen")
+            AppMetricaAnalytic.reportEvent("swap_icon_click_add_word_screen")
             viewModel.swapWordsInCurrentDictionary()
             rotationAnimatorReloadIcon.rotationLeft()
         }
@@ -164,9 +169,9 @@ class AddingWordsFragment : BaseFragment() {
             }.show(childFragmentManager, ChoiceLanguageDialog.TAG)
         }
         choiceLanguageWord.setOnClickListener {
-            AppMetrica.reportEvent("choice_language_word_click")
+            AppMetricaAnalytic.reportEvent("choice_language_word_click")
             ChoiceLanguageDialog(viewModel.currentAutoTranslate, null) { lang, isAutoTranslation ->
-                AppMetrica.reportEvent("selected_language", mapOf("lang" to lang))
+                AppMetricaAnalytic.reportEvent("selected_language", mapOf("lang" to lang))
                 changeLanguageTranslate(lang, isAutoTranslation)
                 viewModel.requestTranslation(
                     editTextWord.text.toString(),
@@ -264,7 +269,7 @@ class AddingWordsFragment : BaseFragment() {
     }
 
     private fun showMenuActionOnWord(word: Word) {
-        AppMetrica.reportEvent("show_menu_action_on_word")
+        AppMetricaAnalytic.reportEvent("show_menu_action_on_word")
         MenuSelectingActions({
             chowEdit(word)
         }) {
@@ -313,12 +318,20 @@ class AddingWordsFragment : BaseFragment() {
         PremiumDialog(
             text = text,
             isChoiceAdvertisement = viewModel.isAdv,
-            advertisementWasViewed = {
-                AppMetrica.reportEvent("reward_for_adding_words")
+            showAdv = {
+                showAdv(word)
+            }
+        ).show(childFragmentManager, PremiumDialog.TAG)
+    }
+
+    private fun showAdv(word: Word) {
+        rewardedAdLoader.show(
+            award = {
+                AppMetricaAnalytic.reportEvent("reward_for_adding_words")
                 viewModel.addFreeWords()
                 addWord(word)
             }
-        ).show(childFragmentManager, PremiumDialog.TAG)
+        )
     }
 
     private fun addWord(word: Word) = with(binding) {

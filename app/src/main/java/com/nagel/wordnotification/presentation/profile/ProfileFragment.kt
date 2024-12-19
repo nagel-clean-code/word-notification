@@ -8,6 +8,7 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import com.nagel.wordnotification.R
+import com.nagel.wordnotification.core.analytecs.AppMetricaAnalytic
 import com.nagel.wordnotification.data.firbase.entity.CurrentPrices
 import com.nagel.wordnotification.databinding.FragmentProfileBinding
 import com.nagel.wordnotification.presentation.base.BaseFragment
@@ -16,7 +17,6 @@ import com.nagel.wordnotification.utils.GlobalFunction.openUrl
 import com.nagel.wordnotification.utils.common.collectStarted
 import com.nagel.wordnotification.utils.common.showToast
 import dagger.hilt.android.AndroidEntryPoint
-import io.appmetrica.analytics.AppMetrica
 
 @AndroidEntryPoint
 class ProfileFragment : BaseFragment() {
@@ -67,19 +67,19 @@ class ProfileFragment : BaseFragment() {
         saleButton3.title.text = currentPrices.button3Title
 
         saleButton1.root.setOnClickListener {
-            AppMetrica.reportEvent("sale_button_1_click")
+            AppMetricaAnalytic.reportEvent("sale_button_1_click")
             openLink(currentPrices.linkButton1)
         }
         saleButton2.root.setOnClickListener {
-            AppMetrica.reportEvent("sale_button_2_click")
+            AppMetricaAnalytic.reportEvent("sale_button_2_click")
             openLink(currentPrices.linkButton2)
         }
         saleButton3.root.setOnClickListener {
-            AppMetrica.reportEvent("sale_button_3_click")
+            AppMetricaAnalytic.reportEvent("sale_button_3_click")
             openLink(currentPrices.linkButton3)
         }
         getPremiumButton.setOnClickListener {
-            AppMetrica.reportEvent("get_premium_button_click")
+            AppMetricaAnalytic.reportEvent("get_premium_button_click")
             openLink(currentPrices.linkGetPremiumButton)
         }
 

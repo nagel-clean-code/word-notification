@@ -138,6 +138,9 @@
 
         </activity>
 
+        <activity
+            android:name="com.my.target.common.MyTargetActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>
 
         <meta-data
             android:name="preloaded_fonts"

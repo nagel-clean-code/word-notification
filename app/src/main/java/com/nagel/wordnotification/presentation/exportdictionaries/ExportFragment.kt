@@ -121,8 +121,9 @@ class ExportFragment : BaseFragment() {
         } else {
             resources.getString(R.string.include)
         }
+        progressBar.isVisible =
+            state.loadingDiskState is ExportVM.State.Loading || state.isLoadingFile
         if (state.isLoadingFile) {
-            progressBar.isVisible = true
             backupDiskButton.text = "       "
         }
         if (state.isExported) {

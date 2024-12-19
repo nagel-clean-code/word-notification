@@ -12,14 +12,16 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.nagel.wordnotification.R
+import com.nagel.wordnotification.core.adv.RewardedAdLoaderImpl
+import com.nagel.wordnotification.core.analytecs.AppMetricaAnalytic
 import com.nagel.wordnotification.databinding.FragmentRandomizerBinding
 import com.nagel.wordnotification.presentation.base.BaseFragment
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import com.nagel.wordnotification.presentation.premiumdialog.PremiumDialog
 import com.nagel.wordnotification.utils.RotationAnimator
 import dagger.hilt.android.AndroidEntryPoint
-import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -30,6 +32,10 @@ class RandomizingFragment : BaseFragment() {
     private lateinit var rotationAnimatorReloadIcon: RotationAnimator
     override val viewModel: RandomizingVM by viewModels()
     private var runable: Runnable? = null
+
+    @Inject
+    lateinit var rewardedAdLoader: RewardedAdLoaderImpl
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -94,7 +100,7 @@ class RandomizingFragment : BaseFragment() {
             viewModel.goBackPreviousWord()
         }
         swapIcon.setOnClickListener {
-            AppMetrica.reportEvent("swap_icon_randomizer")
+            AppMetricaAnalytic.reportEvent("swap_icon_randomizer")
             if (translation.tag as? Boolean != true) {
                 translation.tag = true
                 word.text = EMPTY_WORD
@@ -107,7 +113,7 @@ class RandomizingFragment : BaseFragment() {
             rotationAnimatorReloadIcon.rotationLeft()
         }
         head.setOnClickListener {
-            AppMetrica.reportEvent("head_click_randomizer")
+            AppMetricaAnalytic.reportEvent("head_click_randomizer")
             if (head.tag as? Boolean == true) {
                 head.tag = false
                 updateHead(viewModel.currentDictionary.value)
@@ -188,7 +194,7 @@ class RandomizingFragment : BaseFragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.showResult.collect() {
                     it?.let {
-                        AppMetrica.reportEvent("show_result_randomizer")
+                        AppMetricaAnalytic.reportEvent("show_result_randomizer")
                         ResultRandomizingFragmentDialog(
                             it.first,
                             it.second
@@ -210,8 +216,14 @@ class RandomizingFragment : BaseFragment() {
         PremiumDialog(
             text = text,
             isChoiceAdvertisement = true,
-            advertisementWasViewed = viewModel::addFreeUse
+            showAdv = ::showAdv
         ).show(childFragmentManager, PremiumDialog.TAG)
+    }
+
+    private fun showAdv() {
+        rewardedAdLoader.show(
+            award = viewModel::addFreeUse
+        )
     }
 
     private fun updateHead(dictionaryName: String?) = with(binding) {

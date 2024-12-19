@@ -26,7 +26,7 @@ import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.algorithms.ForgetfulnessCurveLong
 import com.nagel.wordnotification.core.algorithms.ForgetfulnessCurveShort
 import com.nagel.wordnotification.core.algorithms.PlateauEffect
-import com.nagel.wordnotification.core.analytecs.AppMetricaAnalyticPlatform
+import com.nagel.wordnotification.core.analytecs.AppMetricaAnalytic
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import com.nagel.wordnotification.databinding.FragmentModeSettingsBinding
 import com.nagel.wordnotification.presentation.ConfirmationDialog
@@ -37,7 +37,6 @@ import com.nagel.wordnotification.presentation.navigator.NavigatorV2
 import com.nagel.wordnotification.presentation.premiumdialog.PremiumDialog
 import com.nagel.wordnotification.utils.common.showToast
 import dagger.hilt.android.AndroidEntryPoint
-import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -53,13 +52,10 @@ class ModeSettingsFragment : BaseFragment() {
     @Inject
     lateinit var navigatorV2: NavigatorV2
 
-    @Inject
-    lateinit var appMetrica: AppMetricaAnalyticPlatform
-
     private val permissionResult = registerForActivityResult(
         RequestPermission()
     ) { granted ->
-        appMetrica.changeStatusNotification(granted)
+        AppMetricaAnalytic.changeStatusNotification(granted)
         if (!granted) {
             if (shouldShowRequestPermissionRationale(POST_NOTIFICATIONS)) { // Если пользователь запретил не на всегда{
                 //Объясняем пользователю зачем нам нужно это разрешение
@@ -141,7 +137,7 @@ class ModeSettingsFragment : BaseFragment() {
             .addCallback(requireActivity(), object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     if (isEnabled) {
-                        AppMetrica.reportEvent("start_algorithm_on_back_press")
+                        AppMetricaAnalytic.reportEvent("start_algorithm_on_back_press")
                         isEnabled = false
                         saveMode()
                     }
@@ -158,15 +154,15 @@ class ModeSettingsFragment : BaseFragment() {
 
     private fun initListeners() = with(binding) {
         resettingButton.setOnClickListener {
-            AppMetrica.reportEvent("resetting_button_click")
+            AppMetricaAnalytic.reportEvent("resetting_button_click")
             ConfirmationDialog(requireContext().getString(R.string.reset_text_algorithm)) {
-                AppMetrica.reportEvent("resetting_algorithm")
+                AppMetricaAnalytic.reportEvent("resetting_algorithm")
                 viewModel.resettingAlgorithm()
             }.show(parentFragmentManager, null)
         }
 
         time1.setOnClickListener {
-            AppMetrica.reportEvent("choice_time1_click")
+            AppMetricaAnalytic.reportEvent("choice_time1_click")
             if (viewModel.isStarted.get()) {
                 getTimePiker(time1)
             } else {
@@ -177,7 +173,7 @@ class ModeSettingsFragment : BaseFragment() {
             }
         }
         time2.setOnClickListener {
-            AppMetrica.reportEvent("choice_time2_click")
+            AppMetricaAnalytic.reportEvent("choice_time2_click")
             if (viewModel.isStarted.get()) {
                 getTimePiker(time2)
             } else {
@@ -189,16 +185,19 @@ class ModeSettingsFragment : BaseFragment() {
         }
 
         timeIntervals.setOnCheckedChangeListener { _, isChecked ->
-            AppMetrica.reportEvent("time_interval_checkbox", mapOf("isChecked" to isChecked))
+            AppMetricaAnalytic.reportEvent(
+                "time_interval_checkbox",
+                mapOf("isChecked" to isChecked)
+            )
         }
 
         sampleDays.setOnCheckedChangeListener { _, isChecked ->
-            AppMetrica.reportEvent("sample_days_checkbox", mapOf("isChecked" to isChecked))
+            AppMetricaAnalytic.reportEvent("sample_days_checkbox", mapOf("isChecked" to isChecked))
         }
 
         initRadioButtons()
         saveButton.setOnClickListener {
-            AppMetrica.reportEvent("start_algorithm_button")
+            AppMetricaAnalytic.reportEvent("start_algorithm_button")
             navigatorV2.whenActivityActive {
                 it.goBack()
             }
@@ -211,7 +210,7 @@ class ModeSettingsFragment : BaseFragment() {
             }
         }
         infoButton.setOnClickListener {
-            AppMetrica.reportEvent("info_button_click")
+            AppMetricaAnalytic.reportEvent("info_button_click")
             InformationDialog().show(childFragmentManager, InformationDialog.TAG)
         }
         initData()
@@ -374,7 +373,7 @@ class ModeSettingsFragment : BaseFragment() {
             val statusNotification = viewModel.getStatusNotificationDictionary()
             viewModel.saveNewSettings(newMode) {
                 if (resetSteps) {
-                    AppMetrica.reportEvent(
+                    AppMetricaAnalytic.reportEvent(
                         "selected_mode",
                         mapOf("mode_name" to newMode.selectedMode?.getName(requireContext()))
                     )

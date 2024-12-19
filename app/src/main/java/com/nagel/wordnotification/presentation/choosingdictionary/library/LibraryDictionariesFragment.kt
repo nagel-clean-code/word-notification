@@ -9,6 +9,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.nagel.wordnotification.R
+import com.nagel.wordnotification.core.analytecs.AppMetricaAnalytic
 import com.nagel.wordnotification.data.firbase.entity.DictionariesLibrary
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.databinding.FragmentLibraryDictionariesBinding
@@ -19,7 +20,6 @@ import com.nagel.wordnotification.presentation.navigator.NavigatorV2
 import com.nagel.wordnotification.utils.common.collectStarted
 import com.nagel.wordnotification.utils.common.showToast
 import dagger.hilt.android.AndroidEntryPoint
-import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -68,7 +68,7 @@ class LibraryDictionariesFragment : BaseFragment() {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                AppMetrica.reportEvent("get_library_dictionaries_error")
+                AppMetricaAnalytic.reportEvent("get_library_dictionaries_error")
                 requireActivity().showToast(R.string.dictionary_could_not_be_loaded)
                 emptyList()
             }

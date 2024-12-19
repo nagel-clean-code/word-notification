@@ -12,11 +12,11 @@ import com.nagel.wordnotification.core.algorithms.Algorithm
 import com.nagel.wordnotification.core.algorithms.ForgetfulnessCurveLong
 import com.nagel.wordnotification.core.algorithms.ForgetfulnessCurveShort
 import com.nagel.wordnotification.core.algorithms.PlateauEffect
+import com.nagel.wordnotification.core.analytecs.AppMetricaAnalytic
 import com.nagel.wordnotification.data.dictionaries.entities.Word
 import com.nagel.wordnotification.data.settings.entities.ModeSettingsDto
 import com.nagel.wordnotification.databinding.InformationDialogBinding
 import com.nagel.wordnotification.presentation.addingwords.worddetails.WordDetailsDialog
-import io.appmetrica.analytics.AppMetrica
 
 class InformationDialog() : DialogFragment() {
 
@@ -45,15 +45,15 @@ class InformationDialog() : DialogFragment() {
             dismiss()
         }
         showIntervals1.setOnClickListener {
-            AppMetrica.reportEvent("show_intervals_instruction_1")
+            AppMetricaAnalytic.reportEvent("show_intervals_instruction_1")
             showWordDetailsDialog(ForgetfulnessCurveShort)
         }
         showIntervals2.setOnClickListener {
-            AppMetrica.reportEvent("show_intervals_instruction_2")
+            AppMetricaAnalytic.reportEvent("show_intervals_instruction_2")
             showWordDetailsDialog(ForgetfulnessCurveLong)
         }
         showIntervals3.setOnClickListener {
-            AppMetrica.reportEvent("show_intervals_instruction_3")
+            AppMetricaAnalytic.reportEvent("show_intervals_instruction_3")
             showWordDetailsDialog(PlateauEffect)
         }
     }

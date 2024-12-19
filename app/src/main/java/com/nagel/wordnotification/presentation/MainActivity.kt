@@ -19,7 +19,8 @@ import com.nagel.wordnotification.Constants.HTC_QUICKBOOT_POWERON
 import com.nagel.wordnotification.Constants.QUICKBOOT_POWERON
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.app.App
-import com.nagel.wordnotification.core.analytecs.AppMetricaAnalyticPlatform
+import com.nagel.wordnotification.core.adv.RewardedAdLoaderImpl
+import com.nagel.wordnotification.core.analytecs.AppMetricaAnalytic
 import com.nagel.wordnotification.core.services.NotificationRestorerReceiver
 import com.nagel.wordnotification.data.firbase.RemoteDbRepository
 import com.nagel.wordnotification.data.googledisk.accounts.ActivityRequired
@@ -40,7 +41,6 @@ import com.nagel.wordnotification.presentation.settings.ModeSettingsFragment
 import com.nagel.wordnotification.utils.Toggles
 import com.nagel.wordnotification.utils.common.SystemUtils.Companion.isGooglePlayServicesAvailable
 import dagger.hilt.android.AndroidEntryPoint
-import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -71,18 +71,18 @@ class MainActivity : AppCompatActivity(), Navigator {
     lateinit var fileReader: FileReader
 
     @Inject
-    lateinit var appMetrica: AppMetricaAnalyticPlatform
+    lateinit var rewardedAdLoader: RewardedAdLoaderImpl
 
     private val viewModel: MainActivityVM by viewModels()
     private var auth: FirebaseAuth? = null
-    private var isAdvToggle = false
+    private var isAdvToggle = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_WordNotification)
         super.onCreate(savedInstanceState)
         activityRequiredStuffs.onActivityCreated(this)
         if (savedInstanceState == null) {
-            AppMetrica.reportAppOpen(this)
+            AppMetricaAnalytic.reportAppOpen(this)
         }
         navigatorInstance = navigator
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity(), Navigator {
         } else {
             setAutoInitHmsPushEnabled()
         }
-        appMetrica.changeIsGmsBuild(isGms)
+        AppMetricaAnalytic.changeIsGmsBuild(isGms)
 
         binding.bottomNavigationView.setOnItemSelectedListener {
             val screen = when (it.itemId) {
@@ -113,6 +113,15 @@ class MainActivity : AppCompatActivity(), Navigator {
             true
         }
         lifecycleScope.launch(Dispatchers.Default) {
+            if (firstRead.not() && intent.data != null) {
+                firstRead = true
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                startActivity(intent)
+                finish()
+                return@launch
+            }
+            firstRead = false
             fileReader.handleIntent(intent.data, ::showPremiumDialog)
         }
         initReceiver()
@@ -122,27 +131,22 @@ class MainActivity : AppCompatActivity(), Navigator {
         })
     }
 
+    private val continueFlag = AtomicBoolean(false)
 
     private suspend fun showPremiumDialog(
         text: String,
         advertisementWasViewed: suspend () -> Unit
     ) {
-        val continueFlag = AtomicBoolean(false)
+        continueFlag.set(false)
         val currentCoroutineJob = currentCoroutineContext().job
         withContext(Dispatchers.Main) {
             PremiumDialog(
                 text = text,
                 isChoiceAdvertisement = isAdvToggle,
-                advertisementWasViewed = {
-                    AppMetrica.reportEvent("remuneration_for_importing_dictionaries")
-                    lifecycleScope.launch(Dispatchers.Default) {
-                        advertisementWasViewed.invoke()
-                    }
+                showAdv = {
+                    showAdv(advertisementWasViewed)
                 },
                 onCancel = { currentCoroutineJob.cancel() },
-                onDestroy = {
-                    continueFlag.set(true)
-                }
             ).show(supportFragmentManager, PremiumDialog.TAG)
         }
         while (continueFlag.get().not()) { //Необходимо для последовательного (синхронного запуска)
@@ -150,9 +154,21 @@ class MainActivity : AppCompatActivity(), Navigator {
         }
     }
 
+    private fun showAdv(advWasViewed: suspend () -> Unit) {
+        rewardedAdLoader.show(
+            award = {
+                AppMetricaAnalytic.reportEvent("remuneration_for_importing_dictionaries")
+                lifecycleScope.launch(Dispatchers.Default) {
+                    advWasViewed.invoke()
+                    continueFlag.set(true)
+                }
+            }
+        )
+    }
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        AppMetrica.reportAppOpen(intent)
+        AppMetricaAnalytic.reportAppOpen(intent)
     }
 
     private fun initReceiver() {
@@ -256,6 +272,7 @@ class MainActivity : AppCompatActivity(), Navigator {
     }
 
     companion object {
+        var firstRead = false
         var navigatorInstance: MainNavigator? = null
         private const val NEW_YEARS_GIFT = 1735664399000L
     }

@@ -8,11 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import androidx.fragment.app.DialogFragment
+import com.nagel.wordnotification.core.analytecs.AppMetricaAnalytic
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
 import com.nagel.wordnotification.data.firbase.RemoteDbRepository
 import com.nagel.wordnotification.databinding.MenuForDictionaryBinding
 import dagger.hilt.android.AndroidEntryPoint
-import io.appmetrica.analytics.AppMetrica
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -56,7 +56,7 @@ class MenuForDictionaryDialog(
             dismiss()
         }
         exportDictionary.setOnClickListener {
-            AppMetrica.reportEvent("export_on_dictionary_click")
+            AppMetricaAnalytic.reportEvent("export_on_dictionary_click")
             if (realtimeDb.isTesting()) return@setOnClickListener
             this@MenuForDictionaryDialog.exportDictionary.invoke(dictionary)
         }

@@ -19,6 +19,8 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nagel.wordnotification.R
+import com.nagel.wordnotification.core.adv.RewardedAdLoaderImpl
+import com.nagel.wordnotification.core.analytecs.AppMetricaAnalytic
 import com.nagel.wordnotification.core.services.Utils
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
@@ -31,9 +33,9 @@ import com.nagel.wordnotification.presentation.exportAndImport.FileReader
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import com.nagel.wordnotification.presentation.navigator.navigator
 import com.nagel.wordnotification.presentation.premiumdialog.PremiumDialog
+import com.nagel.wordnotification.utils.Toggles
 import com.nagel.wordnotification.utils.common.sendFile
 import dagger.hilt.android.AndroidEntryPoint
-import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -63,8 +65,12 @@ class ChoosingDictionaryFragment : BaseFragment() {
     @Inject
     lateinit var repository: DictionaryRepository
 
+    @Inject
+    lateinit var rewardedAdLoader: RewardedAdLoaderImpl
+
     private var idAuthorUUID: String? = null
     private var accountId: Long? = null
+    private var isAdvToggle = true
 
     private val fileImportIntentLauncher =
         registerForActivityResult(
@@ -79,24 +85,22 @@ class ChoosingDictionaryFragment : BaseFragment() {
             }
         }
 
+    private val continueFlag = AtomicBoolean(false)
+
     private suspend fun showPremiumDialog(
         text: String,
         advertisementWasViewed: suspend () -> Unit
     ) {
-        val continueFlag = AtomicBoolean(false)
+        continueFlag.set(false)
         val currentCoroutineJob = currentCoroutineContext().job
         withContext(Dispatchers.Main) {
             PremiumDialog(
                 text = text,
-                isChoiceAdvertisement = true,
-                advertisementWasViewed = {
-                    AppMetrica.reportEvent("remuneration_for_importing_dictionaries")
-                    lifecycleScope.launch(Dispatchers.Default) {
-                        advertisementWasViewed.invoke()
-                    }
+                isChoiceAdvertisement = isAdvToggle,
+                showAdv = {
+                    showAdv(advertisementWasViewed)
                 },
-                onCancel = { currentCoroutineJob.cancel() },
-                onDestroy = { continueFlag.set(true) }
+                onCancel = { currentCoroutineJob.cancel() }
             ).show(childFragmentManager, PremiumDialog.TAG)
         }
         while (continueFlag.get().not()) {
@@ -104,10 +108,27 @@ class ChoosingDictionaryFragment : BaseFragment() {
         }
     }
 
+    private fun showAdv(
+        advertisementWasViewed: suspend () -> Unit
+    ) {
+        rewardedAdLoader.show(
+            award = {
+                AppMetricaAnalytic.reportEvent("remuneration_for_importing_dictionaries")
+                lifecycleScope.launch(Dispatchers.Default) {
+                    advertisementWasViewed.invoke()
+                    continueFlag.set(true)
+                }
+            }
+        )
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        realtimeDb.getFeatureToggles(success = { toggles ->
+            isAdvToggle = toggles.content.contains(Toggles.Adv.name)
+        })
         binding = FragmentChoosingDictionaryBinding.inflate(layoutInflater, container, false)
         binding.dictionariesList.addItemDecoration(
             DictionariesListAdapter.VerticalSpaceItemDecoration(70)
@@ -156,7 +177,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
     }
 
     private fun toggleActiveDictionary(dictionary: Dictionary, active: Boolean) {
-        AppMetrica.reportEvent("toggle_active_dictionary")
+        AppMetricaAnalytic.reportEvent("toggle_active_dictionary")
         viewModel.toggleActiveDictionary(active, dictionary)
     }
 
@@ -165,7 +186,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
     }
 
     private fun showMenuActionOnDictionary(dictionary: Dictionary, position: Int) {
-        AppMetrica.reportEvent("show_menu_action_on_dictionary")
+        AppMetricaAnalytic.reportEvent("show_menu_action_on_dictionary")
         MenuForDictionaryDialog(
             dictionary = dictionary,
             edit = ::showEditDictionaryDialog,
@@ -215,7 +236,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
     private fun initListeners() = with(binding) {
         fab.setOnClickListener {
             if (View.GONE == fabBGLayout.visibility) {
-                AppMetrica.reportEvent("click_plus_dictionaries_screen")
+                AppMetricaAnalytic.reportEvent("click_plus_dictionaries_screen")
                 showFABMenu()
             } else {
                 closeFABMenu()
@@ -228,12 +249,12 @@ class ChoosingDictionaryFragment : BaseFragment() {
             closeFABMenu()
         }
         openLibrary.setOnClickListener {
-            AppMetrica.reportEvent("open_library_click")
+            AppMetricaAnalytic.reportEvent("open_library_click")
             navigator()?.showLibraryDictionariesFragment()
             closeFABMenu()
         }
         importButton.setOnClickListener {
-            AppMetrica.reportEvent("import_button_click")
+            AppMetricaAnalytic.reportEvent("import_button_click")
             if (realtimeDb.isTesting()) return@setOnClickListener
             try {
                 val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
@@ -246,7 +267,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
             }
         }
         exportButton.setOnClickListener() {
-            AppMetrica.reportEvent("export_button_click")
+            AppMetricaAnalytic.reportEvent("export_button_click")
             navigator()?.showExportDictionariesFragment()
         }
     }

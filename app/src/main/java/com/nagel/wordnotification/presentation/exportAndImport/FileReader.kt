@@ -3,12 +3,12 @@ package com.nagel.wordnotification.presentation.exportAndImport
 import android.content.Context
 import android.net.Uri
 import com.nagel.wordnotification.R
+import com.nagel.wordnotification.core.analytecs.AppMetricaAnalytic
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.presentation.exportAndImport.ExportGenerator.Companion.FILE_FORMAT_TXT
 import com.nagel.wordnotification.presentation.navigator.NavigatorV2
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -58,8 +58,8 @@ open class FileReader @Inject constructor(
                     fireReader.fireReader(content, showPremiumDialog)
                 }
             } catch (e: Exception) {
-                AppMetrica.reportEvent("file_reader_error_event")
-                AppMetrica.reportEvent("file_reader_error", mapOf("content" to content))
+                AppMetricaAnalytic.reportEvent("file_reader_error_event")
+                AppMetricaAnalytic.reportEvent("file_reader_error", mapOf("content" to content))
                 throw e
             }
         } catch (e: FileNotFoundException) {

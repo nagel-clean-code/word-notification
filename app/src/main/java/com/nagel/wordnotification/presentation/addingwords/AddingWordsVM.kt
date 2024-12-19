@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.nagel.wordnotification.Constants.NUMBER_OF_FREE_WORDS_PER_ADVERTISEMENT
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.algorithms.NotificationAlgorithm
+import com.nagel.wordnotification.core.analytecs.AppMetricaAnalytic
 import com.nagel.wordnotification.core.services.Utils
 import com.nagel.wordnotification.data.accounts.entities.Account
 import com.nagel.wordnotification.data.accounts.room.AccountDao
@@ -20,7 +21,6 @@ import com.nagel.wordnotification.presentation.navigator.NavigatorV2
 import com.nagel.wordnotification.utils.GlobalFunction
 import com.nagel.wordnotification.utils.Toggles
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -248,7 +248,7 @@ class AddingWordsVM @Inject constructor(
 
     private suspend fun createNewUser() {
         val account = createAndSaveAccountInDb()
-        AppMetrica.setUserProfileID(account.idAuthorUUID)
+        AppMetricaAnalytic.setUserProfileID(account.idAuthorUUID)
         sessionRepository.saveAccount(account)
     }
 

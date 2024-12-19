@@ -28,7 +28,7 @@ class TxtReader @Inject constructor(
     private var curentIxAddWord = 0
     private var currentWord = 0
     private val addNumberFreeWords = premiumRepository.getAddNumberFreeWords()
-    private var isAdvToggle = false
+    private var isAdvToggle = true
 
     init {
         dbRepository.getFeatureToggles(success = { toggles ->
