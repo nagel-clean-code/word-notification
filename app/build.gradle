@@ -60,7 +60,7 @@ android {
         }
         release {
             //  signingConfig signingConfigs.config //todo проверить прокатит иои нет для hms
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }

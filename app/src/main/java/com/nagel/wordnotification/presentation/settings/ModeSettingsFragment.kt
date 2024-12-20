@@ -1,6 +1,7 @@
 package com.nagel.wordnotification.presentation.settings
 
 import android.Manifest.permission.POST_NOTIFICATIONS
+import android.Manifest.permission.USE_EXACT_ALARM
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -13,7 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.helper.widget.Flow
 import androidx.core.view.children
 import androidx.fragment.app.viewModels
@@ -52,25 +53,29 @@ class ModeSettingsFragment : BaseFragment() {
     @Inject
     lateinit var navigatorV2: NavigatorV2
 
-    private val permissionResult = registerForActivityResult(
-        RequestPermission()
-    ) { granted ->
-        AppMetricaAnalytic.changeStatusNotification(granted)
-        if (!granted) {
-            if (shouldShowRequestPermissionRationale(POST_NOTIFICATIONS)) { // Если пользователь запретил не на всегда{
-                //Объясняем пользователю зачем нам нужно это разрешение
-                RequestPermissionDialog(
-                    text = resources.getString(R.string.permissions_required_for_the_algorithm_to_work),
-                    exitButtonClick = ::postDelayBack,
-                    provideButtonClick = ::requestPermissions,
-                    onDestroy = ::postDelayBack
-                ).show(childFragmentManager, RequestPermissionDialog.TAG)
-            } else {
-                // Перенаправим пользователя в настройки чтобы он руками изменил разрешение
-                askUserForOpeningAppSettings()
+    private val permissionResult =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
+            val isNotification = granted[POST_NOTIFICATIONS] == true
+            val isExactAlarm = granted[USE_EXACT_ALARM] == true
+            AppMetricaAnalytic.changeStatusNotification(isNotification && isExactAlarm)
+
+            if (isNotification.not() || isExactAlarm.not()) {
+                if (shouldShowRequestPermissionRationale(POST_NOTIFICATIONS) ||
+                    shouldShowRequestPermissionRationale(USE_EXACT_ALARM)
+                ) { // Если пользователь запретил не на всегда
+                    //Объясняем пользователю зачем нам нужно это разрешение
+                    RequestPermissionDialog(
+                        text = resources.getString(R.string.permissions_required_for_the_algorithm_to_work),
+                        exitButtonClick = ::postDelayBack,
+                        provideButtonClick = ::requestPermissions,
+                        onDestroy = ::postDelayBack
+                    ).show(childFragmentManager, RequestPermissionDialog.TAG)
+                } else {
+                    // Перенаправим пользователя в настройки чтобы он руками изменил разрешение
+                    askUserForOpeningAppSettings()
+                }
             }
         }
-    }
 
     private fun postDelayBack() {
         binding.root.postDelayed({
@@ -148,7 +153,7 @@ class ModeSettingsFragment : BaseFragment() {
 
     private fun requestPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            permissionResult.launch(POST_NOTIFICATIONS)
+            permissionResult.launch(arrayOf(POST_NOTIFICATIONS, USE_EXACT_ALARM))
         }
     }
 
