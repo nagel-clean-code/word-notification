@@ -28,6 +28,7 @@ android {
         }
         resValue "string", "APP_METRICA_API_KEY", "$appMetricaApiKey"
         resValue "bool", "IS_PREMIUM_TESTING", "false"
+        resValue "bool", "IS_PREMIUM", "false" //работает только при IS_PREMIUM_TESTING = true
     }
 
     signingConfigs {

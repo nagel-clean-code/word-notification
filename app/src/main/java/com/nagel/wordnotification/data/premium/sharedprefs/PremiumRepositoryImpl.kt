@@ -61,8 +61,8 @@ class PremiumRepositoryImpl @Inject constructor(
     }
 
     override fun getIsStarted(): Boolean {
-        if (BuildConfig.DEBUG && context.resources.getBoolean(R.bool.IS_PREMIUM_TESTING).not()) {
-            return false
+        if (BuildConfig.DEBUG && context.resources.getBoolean(R.bool.IS_PREMIUM_TESTING)) {
+            return context.resources.getBoolean(R.bool.IS_PREMIUM)
         }
         val isAllPremium = getCurrentIsAllPremium()
         if (isAllPremium) return true
