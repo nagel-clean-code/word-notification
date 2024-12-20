@@ -21,6 +21,7 @@ import com.nagel.wordnotification.R
 import com.nagel.wordnotification.app.App
 import com.nagel.wordnotification.core.adv.RewardedAdLoaderImpl
 import com.nagel.wordnotification.core.analytecs.AppMetricaAnalytic
+import com.nagel.wordnotification.core.analytecs.ProfileAttributeBase.GoogleServicesAttributes
 import com.nagel.wordnotification.core.services.NotificationRestorerReceiver
 import com.nagel.wordnotification.data.firbase.RemoteDbRepository
 import com.nagel.wordnotification.data.googledisk.accounts.ActivityRequired
@@ -96,7 +97,8 @@ class MainActivity : AppCompatActivity(), Navigator {
         } else {
             setAutoInitHmsPushEnabled()
         }
-        AppMetricaAnalytic.changeIsGmsBuild(isGms)
+        val attr = GoogleServicesAttributes(isGms)
+        AppMetricaAnalytic.setProfileAttribute(attr)
 
         binding.bottomNavigationView.setOnItemSelectedListener {
             val screen = when (it.itemId) {

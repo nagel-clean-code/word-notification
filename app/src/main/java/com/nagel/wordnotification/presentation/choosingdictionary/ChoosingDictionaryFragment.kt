@@ -169,7 +169,7 @@ class ChoosingDictionaryFragment : BaseFragment() {
         viewLifecycleOwner.lifecycleScope.launch() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.dictionaries.collect() {
-                    viewModel.listDictionary = it
+                    viewModel.setDictionaries(it)
                     binding.countDictionaries.text = it.size.toString()
                 }
             }

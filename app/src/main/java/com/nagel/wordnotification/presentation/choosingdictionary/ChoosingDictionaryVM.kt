@@ -3,6 +3,8 @@ package com.nagel.wordnotification.presentation.choosingdictionary
 import androidx.lifecycle.viewModelScope
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.algorithms.NotificationAlgorithm
+import com.nagel.wordnotification.core.analytecs.AppMetricaAnalytic
+import com.nagel.wordnotification.core.analytecs.ProfileAttributeBase.WordCounterAttributes
 import com.nagel.wordnotification.core.services.Utils
 import com.nagel.wordnotification.data.dictionaries.DictionaryRepository
 import com.nagel.wordnotification.data.dictionaries.entities.Dictionary
@@ -38,13 +40,23 @@ class ChoosingDictionaryVM @Inject constructor(
     val dictionaries: Flow<List<Dictionary>> by lazy {
         dictionaryRepository.loadDictionariesFlow(idAccount)
     }
-    var listDictionary: List<Dictionary>? = null
+    private var listDictionary: List<Dictionary>? = null
     var isStarted = AtomicBoolean(false)
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
             isStarted.set(premiumRepository.getIsStarted())
         }
+    }
+
+    fun setDictionaries(list: List<Dictionary>?) {
+        viewModelScope.launch(Dispatchers.IO) {
+            list?.sumOf { it.wordList.size }?.let { countWords ->
+                val attr = WordCounterAttributes(countWords)
+                AppMetricaAnalytic.setProfileAttribute(attr)
+            }
+        }
+        listDictionary = list
     }
 
     fun toggleActiveDictionary(

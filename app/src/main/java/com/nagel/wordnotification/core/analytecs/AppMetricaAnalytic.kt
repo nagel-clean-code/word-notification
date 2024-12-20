@@ -15,6 +15,7 @@ import io.appmetrica.analytics.profile.UserProfile
 object AppMetricaAnalytic {
 
     private var permissionAnalytic: Boolean = false
+    private val userProfile by lazy { UserProfile.newBuilder() }
 
     fun init(context: Application, permissionAnalytic: Boolean) {
         this.permissionAnalytic = permissionAnalytic
@@ -38,12 +39,18 @@ object AppMetricaAnalytic {
         AppMetrica.reportUserProfile(userProfile)
     }
 
-    fun changeIsGmsBuild(isGms: Boolean) {
+    fun setProfileAttribute(attr: ProfileAttributeBase) {
         if (permissionAnalytic.not()) return
-        val userProfile = UserProfile.newBuilder()
-            .apply(Attribute.customBoolean("google_services").withValue(isGms))
-            .build()
-        AppMetrica.reportUserProfile(userProfile)
+        val build = userProfile.apply(createProfileAttribute(attr)).build()
+        AppMetrica.reportUserProfile(build)
+    }
+
+    fun setListProfileAttribute(attr: List<ProfileAttributeBase>) {
+        if (permissionAnalytic.not()) return
+        attr.forEach { item ->
+            userProfile.apply(createProfileAttribute(item))
+        }
+        AppMetrica.reportUserProfile(userProfile.build())
     }
 
     fun reportEvent(key: String, map: Map<String, Any?>? = null) {
