@@ -178,4 +178,7 @@
     <string name="to_extend">Продлить</string>
     <string name="until_the">До %s</string>
 
+    <string name="specify_your_date_of_birth">Укажите вашу дату рождения</string>
+    <string name="adv_is_only_available_for_adults">Реклама доступна только с %d лет</string>
+
 </resources>

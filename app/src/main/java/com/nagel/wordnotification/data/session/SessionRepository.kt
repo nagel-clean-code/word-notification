@@ -26,4 +26,6 @@ interface SessionRepository {
     fun getIsAutoBackupAndMark(): Boolean
     fun getIsAutoBackup(): Boolean
 
+    fun saveIsAnAdult(isAnAdult: Boolean)
+    fun getIsAnAdult(): Boolean?
 }

@@ -179,4 +179,6 @@
     <string name="to_extend">Verlängern</string>
     <string name="until_the">Bis zum %s</string>
 
+    <string name="specify_your_date_of_birth">Geben Sie Ihr Geburtsdatum an</string>
+    <string name="adv_is_only_available_for_adults">Werbung ist nur ab %d Jahren verfügbar</string>
 </resources>

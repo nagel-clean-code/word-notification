@@ -6,7 +6,7 @@ import androidx.work.Configuration
 import com.google.firebase.FirebaseApp
 import com.nagel.wordnotification.core.adv.RewardedAdLoaderImpl
 import com.nagel.wordnotification.core.analytecs.AppMetricaAnalytic
-import com.nagel.wordnotification.utils.CheckCountyEs
+import com.nagel.wordnotification.utils.CountyUtils
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
@@ -30,7 +30,7 @@ class App : Application(), Configuration.Provider {
 
         FirebaseApp.initializeApp(this)
 
-        permissionAnalytic = CheckCountyEs.checkPermissionAnalytics(this)
+        permissionAnalytic = CountyUtils.checkPermissionAnalytics(this)
         AppMetricaAnalytic.init(this, permissionAnalytic)
         rewardedAdLoaderImpl.init()
     }

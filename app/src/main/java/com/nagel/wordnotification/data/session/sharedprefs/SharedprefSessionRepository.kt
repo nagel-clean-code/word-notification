@@ -96,6 +96,18 @@ class SharedprefSessionRepository @Inject constructor(
         return sharedPreferences.getBoolean(IS_AUTO_BACKUP, false)
     }
 
+    override fun saveIsAnAdult(isAnAdult: Boolean) {
+        sharedPreferences.edit().putBoolean(IS_AN_ADULT, isAnAdult).apply()
+    }
+
+    override fun getIsAnAdult(): Boolean? {
+        return if (sharedPreferences.contains(IS_AN_ADULT).not()) {
+            null
+        } else {
+            sharedPreferences.getBoolean(IS_AN_ADULT, false)
+        }
+    }
+
     private fun createSession(): SessionDataEntity {
         val currentTime = Date().time
         val loadSession = SessionDataEntity(dateAppInstallation = currentTime)
@@ -117,5 +129,6 @@ class SharedprefSessionRepository @Inject constructor(
         private const val ID_CURRENT_WORD_NOTIFICATION = "ID_CURRENT_WORD_NOTIFICATION"
         private const val IS_AUTO_BACKUP = "IS_AUTO_BACKUP"
         private const val LAST_TIME_AUTO_BACKUP = "LAST_TIME_AUTO_BACKUP"
+        private const val IS_AN_ADULT = "IS_AN_ADULT"
     }
 }

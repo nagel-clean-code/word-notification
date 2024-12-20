@@ -179,4 +179,7 @@
     <string name="to_extend">To extend</string>
     <string name="until_the">Until the %s</string>
 
+    <string name="specify_your_date_of_birth">Specify your date of birth</string>
+    <string name="adv_is_only_available_for_adults">Advertising is available only from %d years</string>
+
 </resources>

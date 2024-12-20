@@ -19,7 +19,9 @@ import com.nagel.wordnotification.core.adv.RewardedAdLoaderImpl
 import com.nagel.wordnotification.core.analytecs.AppMetricaAnalytic
 import com.nagel.wordnotification.data.firbase.RemoteDbRepository
 import com.nagel.wordnotification.data.firbase.entity.CurrentPrices
+import com.nagel.wordnotification.data.session.SessionRepository
 import com.nagel.wordnotification.databinding.PremiumAskDialogBinding
+import com.nagel.wordnotification.utils.CountyUtils
 import com.nagel.wordnotification.utils.GlobalFunction.openUrl
 import com.nagel.wordnotification.utils.common.showToast
 import dagger.hilt.android.AndroidEntryPoint
@@ -43,6 +45,9 @@ class PremiumDialog(
     @Inject
     lateinit var remoteDbRepository: RemoteDbRepository
 
+    @Inject
+    lateinit var sessionRepository: SessionRepository
+
     @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -61,7 +66,6 @@ class PremiumDialog(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initListeners()
-
     }
 
     private fun initListeners() = with(binding) {
@@ -70,7 +74,14 @@ class PremiumDialog(
             dismiss()
         }
         watchAdsButton.setOnClickListener {
-            startAdv()
+            val isAnAdult = sessionRepository.getIsAnAdult()
+            if (isAnAdult == null) {
+                showAnAdultDialog()
+            } else if (isAnAdult) {
+                startAdv()
+            } else {
+                advIsOnlyAvailableForAdults()
+            }
         }
         getPremiumButton.setOnClickListener {
             AppMetricaAnalytic.reportEvent("get_premium_button_click")
@@ -79,6 +90,29 @@ class PremiumDialog(
                 error = ::showErrorPremium
             )
         }
+    }
+
+    private fun showAnAdultDialog() {
+        AgeVerificationDialog(
+            isAnAdultReturn = { result ->
+                saveIsAnAdult(result)
+                if (result) {
+                    startAdv()
+                } else {
+                    advIsOnlyAvailableForAdults()
+                }
+            }
+        ).show(childFragmentManager, AgeVerificationDialog.TAG)
+    }
+
+    private fun saveIsAnAdult(isAnAdult: Boolean) {
+        sessionRepository.saveIsAnAdult(isAnAdult)
+    }
+
+    private fun advIsOnlyAvailableForAdults() = with(binding) {
+        val minAge = CountyUtils.getAgeOfMajorityOfCountry(requireContext())
+        text.text = resources.getString(R.string.adv_is_only_available_for_adults, minAge)
+        watchAdsButton.isGone = true
     }
 
     private fun startAdv() = with(binding) {
@@ -91,7 +125,7 @@ class PremiumDialog(
                     loaded = { isFailed ->
                         progressBar.isGone = true
                         textError.isVisible = isFailed
-                        if(isFailed.not()) {
+                        if (isFailed.not()) {
                             showAdv.invoke()
                             dismiss()
                         }
