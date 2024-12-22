@@ -58,7 +58,6 @@
     <string name="remember_2">I remember</string>
     <string name="your_result">Your result</string>
     <string name="couldnt_delete_word">Couldn\'t delete the word</string>
-    <string name="text_statistic">%d/%d words studied (%d%%) You have learned %d from %d dictionaries. To fully memorize dictionaries, you need another xxx days</string>
     <string name="update">Update </string>
     <string name="new_version_app">A new version of the application has been released, update it.</string>
     <string name="later">Later</string>
@@ -87,7 +86,6 @@
     <string name="begin">Start</string>
     <string name="selected_dictionary">Select\nDictionary</string>
     <string name="mode_settings_1">Mode\nSettings</string>
-    <string name="recommendation_list">1. If you want to share a dictionary or make a backup copy, hold down the dictionary for three seconds\n\n2. In the mode settings, specify the time of operation of notifications that is convenient for you, so that the application does not distract from important things \n\n3. For effective memorization, I recommend using the “Plateau Effect” algorithm</string>
     <string name="memorization_step">The memorization step:</string>
     <string name="current_language">Current language: %s</string>
     <string name="automatic_translation">Automatic translation</string>
@@ -150,7 +148,7 @@
     <string name="automatic_backup_to_google_disk">Automatic backup to Google Disk</string>
     <string name="include">Include</string>
     <string name="export">Dictionary export</string>
-    <string name="it_will_be_available_only_in_premium">Will be available only in PREMIUM subscription</string>
+    <string name="it_will_be_available_only_in_premium">Available only in PREMIUM subscription</string>
 
     <string name="recommendation_list_2">1. Saving the state of the algorithm allows you to create a full backup of your dictionaries. If you do not specify it, all your algorithms will start working from the first step when exporting.\n\n2.Backup to Google Disk will allow you to save your dictionaries even if you lose your phone.\n\n3.You can create an import file manually on your computer. To do this, create a format file.txt and write words into it in the format [Word;Translation]</string>
     <string name="provide">Provide </string>
@@ -181,5 +179,13 @@
 
     <string name="specify_your_date_of_birth">Specify your date of birth</string>
     <string name="adv_is_only_available_for_adults">Advertising is available only from %d years</string>
+    <string name="premium">PREMIUM</string>
+    <string name="advantage">Advantage</string>
+    <string name="you_can_cancel_your_subscription">You can cancel your subscription at any time</string>
+    <string name="recover">Recover</string>
+    <string name="conditions">Conditions</string>
+    <string name="privacy">Privacy</string>
+    <string name="subscription_is_automatically_renewed">The subscription is automatically renewed, and you can cancel it on this screen</string>
+    <string name="get_documents_error">Write to the post office nagel99work@gmail.com to provide</string>
 
 </resources>

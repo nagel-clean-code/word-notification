@@ -91,19 +91,12 @@ class AddingWordsFragment : BaseFragment() {
         }
         microphoneTranslation.setOnClickListener {
             AppMetricaAnalytic.reportEvent("microphone_translation")
-            if (viewModel.isStarted.get()) {
-                textToSpeech.speak(
-                    editTextTranslation.text.toString(),
-                    TextToSpeech.QUEUE_FLUSH,
-                    null,
-                    ""
-                )
-            } else {
-                PremiumDialog(
-                    text = resources.getString(R.string.voice_acting),
-                    isChoiceAdvertisement = false,
-                ).show(childFragmentManager, PremiumDialog.TAG)
-            }
+            textToSpeech.speak(
+                editTextTranslation.text.toString(),
+                TextToSpeech.QUEUE_FLUSH,
+                null,
+                ""
+            )
         }
         imageView3.setOnClickListener {
             AppMetricaAnalytic.reportEvent("arrow_click_add_word_screen")

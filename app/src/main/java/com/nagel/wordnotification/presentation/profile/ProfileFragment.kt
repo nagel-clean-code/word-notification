@@ -4,13 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.nagel.wordnotification.R
 import com.nagel.wordnotification.core.analytecs.AppMetricaAnalytic
 import com.nagel.wordnotification.data.firbase.entity.CurrentPrices
 import com.nagel.wordnotification.databinding.FragmentProfileBinding
+import com.nagel.wordnotification.presentation.addingwords.ListWordsAdapter
 import com.nagel.wordnotification.presentation.base.BaseFragment
 import com.nagel.wordnotification.presentation.navigator.BaseScreen
 import com.nagel.wordnotification.utils.GlobalFunction.openUrl
@@ -30,8 +33,12 @@ class ProfileFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentProfileBinding.inflate(inflater, container, false)
-        initListeners()
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initListeners()
     }
 
     private fun premiumIsDisabled() = with(binding) {
@@ -54,6 +61,9 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun chowPremiumInformation(currentPrices: CurrentPrices) = with(binding) {
+        plaha.isVisible = true
+        initAdapter(currentPrices.advantagesPremium)
+
         errorText.isVisible = false
         getPremiumButton.isVisible = true
         progressBar.isVisible = false
@@ -65,6 +75,8 @@ class ProfileFragment : BaseFragment() {
         saleButton1.title.text = currentPrices.button1Title
         saleButton2.title.text = currentPrices.button2Title
         saleButton3.title.text = currentPrices.button3Title
+
+        saleButton2.sale20ImageView.isVisible = currentPrices.button2Sale20
 
         saleButton1.root.setOnClickListener {
             AppMetricaAnalytic.reportEvent("sale_button_1_click")
@@ -87,6 +99,15 @@ class ProfileFragment : BaseFragment() {
         saleTextImg.isVisible = true
     }
 
+    private fun initAdapter(advantagesPremium: List<String>) = with(binding.listView) {
+        addItemDecoration(
+            ListWordsAdapter.VerticalSpaceItemDecoration(40)
+        )
+        itemAnimator = null
+        this.layoutManager = LinearLayoutManager(requireContext())
+        adapter = AdvantagesPremiumAdapter(advantagesPremium)
+    }
+
     private fun openLink(link: String) {
         if (link.isNotBlank()) {
             requireContext().openUrl(link)
@@ -107,13 +128,33 @@ class ProfileFragment : BaseFragment() {
         viewModel.state.collectStarted(viewLifecycleOwner, ::renderState)
 
         vkButton.setOnClickListener {
-            requireContext().openUrl("https://vk.com/club223679470")  //Желательно ссылки брать с Firbase
+            requireContext().openUrl("https://vk.com/club223679470")
         }
         okButton.setOnClickListener {
             requireContext().openUrl("https://ok.ru/group/70000004748309")
         }
         telegramButton.setOnClickListener {
             requireContext().openUrl("https://t.me/notifier2023")
+        }
+        recover.setOnClickListener {
+            val data = viewModel.state.value.chowPremiumInformationEvent?.peekContent()
+            openLinkDocument(data?.recoverLink)
+        }
+        conditions.setOnClickListener {
+            val data = viewModel.state.value.chowPremiumInformationEvent?.peekContent()
+            openLinkDocument(data?.conditionsLink)
+        }
+        privacy.setOnClickListener {
+            val data = viewModel.state.value.chowPremiumInformationEvent?.peekContent()
+            openLinkDocument(data?.privacyLink)
+        }
+    }
+
+    private fun openLinkDocument(link: String?) {
+        if (link.isNullOrBlank()) {
+            showToast(R.string.get_documents_error, Toast.LENGTH_LONG)
+        } else {
+            requireContext().openUrl(link)
         }
     }
 

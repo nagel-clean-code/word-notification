@@ -1,6 +1,7 @@
 package com.nagel.wordnotification.data.firbase
 
 import android.content.ContentValues
+import android.content.Context
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
@@ -14,13 +15,17 @@ import com.nagel.wordnotification.data.firbase.entity.FeatureToggles
 import com.nagel.wordnotification.data.firbase.entity.PremiumSettings
 import com.nagel.wordnotification.data.premium.PremiumRepository
 import com.nagel.wordnotification.presentation.navigator.MainNavigator
+import com.nagel.wordnotification.utils.CountyUtils
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class RemoteDbRepository @Inject constructor(
     private val navigator: MainNavigator,
-    private val premiumRepository: PremiumRepository
+    private val premiumRepository: PremiumRepository,
+    @ApplicationContext
+    private val applicationContext: Context
 ) {
     private val fireStore: FirebaseFirestore by lazy { Firebase.firestore }
     private var currentPrices: CurrentPrices? = null
@@ -123,8 +128,9 @@ class RemoteDbRepository @Inject constructor(
             success(it)
             return
         }
+        val docPath = "currentPrices" + CountyUtils.getCountyKeyForPayment(applicationContext)
         fireStore.collection("premium")
-            .document("currentPrices")
+            .document(docPath)
             .get()
             .addOnSuccessListener { documentSnapshot ->
                 try {

@@ -76,7 +76,11 @@ class PremiumDialog(
         watchAdsButton.setOnClickListener {
             val isAnAdult = sessionRepository.getIsAnAdult()
             if (isAnAdult == null) {
-                showAnAdultDialog()
+                if (CountyUtils.isAdvAllowedForAllAges(requireContext()).not()) {
+                    showAnAdultDialog()
+                } else {
+                    startAdv()
+                }
             } else if (isAnAdult) {
                 startAdv()
             } else {

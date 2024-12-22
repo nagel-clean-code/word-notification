@@ -34,7 +34,89 @@
                 style="@style/width_match_parent_max_600"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="20dp">
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/imageView6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_marginTop="15dp"
+                    android:elevation="10dp"
+                    app:cardCornerRadius="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@mipmap/ic_launcher_foreground" />
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/plaha"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="30dp"
+                    android:layout_marginTop="25dp"
+                    android:backgroundTint="@color/light_beige"
+                    android:visibility="gone"
+                    app:cardCornerRadius="30dp"
+                    app:layout_constraintEnd_toEndOf="@+id/imageView4"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/imageView6"
+                    tools:visibility="visible">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="19dp"
+                        android:layout_marginBottom="30dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:fontFamily="@font/montserrat_bold"
+                            android:text="@string/advantage"
+                            android:textColor="@color/gray_3"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:fontFamily="@font/montserrat_bold"
+                            android:text="@string/premium"
+                            android:textColor="@color/carrot" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/listView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="30dp"
+                            android:layout_marginTop="15dp"
+                            tools:listitem="@layout/premium_advantage_item" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginHorizontal="60dp"
+                            android:layout_marginTop="20dp"
+                            android:fontFamily="@font/montserrat_bold"
+                            android:gravity="center"
+                            android:text="@string/you_can_cancel_your_subscription"
+                            android:textColor="@color/carrot"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
 
                 <ImageView
                     android:id="@+id/imageView4"
@@ -45,18 +127,18 @@
                     android:src="@drawable/back_pro"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/view2" />
+                    app:layout_constraintTop_toBottomOf="@+id/plaha" />
 
                 <ImageView
                     android:id="@+id/saleTextImg"
                     android:layout_width="211dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp"
+                    android:layout_marginTop="25dp"
                     android:adjustViewBounds="true"
                     android:src="@drawable/sale_text_img"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/view2" />
+                    app:layout_constraintTop_toBottomOf="@+id/plaha" />
 
                 <LinearLayout
                     android:id="@+id/linearLayout3"
@@ -97,7 +179,7 @@
                     app:layout_constraintBottom_toTopOf="@+id/christmas_tree"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/view2" />
+                    app:layout_constraintTop_toBottomOf="@+id/plaha" />
 
                 <TextView
                     android:id="@+id/errorText"
@@ -138,7 +220,7 @@
                     android:id="@+id/getPremiumButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="34dp"
+                    android:layout_marginTop="30dp"
                     android:background="@drawable/background_premium_button"
                     android:gravity="center"
                     android:text="@string/get_premium"
@@ -148,65 +230,73 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
 
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="30dp"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/montserrat_bold"
+                    android:gravity="center"
+                    android:text="@string/subscription_is_automatically_renewed"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/getPremiumButton" />
+
+                <TextView
+                    android:id="@+id/recover"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/recover"
+                    android:textColor="@color/gray_3"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toStartOf="@+id/conditions"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/conditions" />
+
+                <TextView
+                    android:id="@+id/conditions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/conditions"
+                    android:textColor="@color/gray_3"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/telegramButton" />
+
+                <TextView
+                    android:id="@+id/privacy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/privacy"
+                    android:textColor="@color/gray_3"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/conditions"
+                    app:layout_constraintTop_toTopOf="@+id/conditions" />
+
                 <androidx.constraintlayout.widget.Barrier
                     android:id="@+id/barrier"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     app:barrierDirection="bottom"
-                    app:constraint_referenced_ids="getPremiumButton,errorText,saleTextImg" />
+                    app:constraint_referenced_ids="getPremiumButton,errorText,saleTextImg,textView3" />
 
                 <ImageView
                     android:id="@+id/christmas_tree"
                     android:layout_width="265dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="21dp"
+                    android:layout_marginTop="11dp"
                     android:adjustViewBounds="true"
                     android:src="@drawable/christmas_tree"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/barrier" />
-
-                <View
-                    android:id="@+id/view2"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginHorizontal="27dp"
-                    android:layout_marginTop="-15dp"
-                    android:background="@drawable/rounded_background_settings"
-                    app:layout_constraintBottom_toBottomOf="@+id/text2"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/nameDictionary" />
-
-                <TextView
-                    android:id="@+id/text2"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:paddingHorizontal="30dp"
-                    android:paddingVertical="20dp"
-                    android:text="@string/recommendation_list"
-                    android:textColor="@color/carrot"
-                    android:textSize="15sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/view2"
-                    app:layout_constraintEnd_toEndOf="@+id/view2"
-                    app:layout_constraintStart_toStartOf="@+id/view2"
-                    app:layout_constraintTop_toTopOf="@+id/view2" />
-
-                <TextView
-                    android:id="@+id/nameDictionary"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:background="@drawable/background_blue_rad_30"
-                    android:fontFamily="@font/montserrat_bold"
-                    android:gravity="center"
-                    android:text="@string/recommendations"
-                    android:textColor="@color/white"
-                    android:textSize="15sp"
-                    app:layout_constraintEnd_toEndOf="@+id/view2"
-                    app:layout_constraintStart_toStartOf="@+id/view2"
-                    app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
                     android:id="@+id/vkButton"

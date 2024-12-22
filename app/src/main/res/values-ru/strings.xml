@@ -86,7 +86,6 @@
     <string name="begin">Начать</string>
     <string name="selected_dictionary">Выбрать\nсловарь</string>
     <string name="mode_settings_1">Настройки\nрежима</string>
-    <string name="recommendation_list">1. Если хочешь поделиться словарём или сделать резервную копию -удерживай нажатием на словарь три секунды\n\n2. В настройках режима указывай удобное для тебя время работы уведомлений, чтобы приложение не отвлекало от важных дел\n\n3. Для эфективного запоминания рекомендую использовать алгоритм «Эффект плато»</string>
     <string name="memorization_step">Шаг запоминания:</string>
     <string name="current_language">Текущий язык: %s</string>
     <string name="automatic_translation">Автоперевод</string>
@@ -128,8 +127,8 @@
 
     <string name="show_intervals">Показать интервалы</string>
 
-    <string name="one_month">1 месяц</string>
-    <string name="one_year">1 год</string>
+    <string name="one_month">На месяц</string>
+    <string name="one_year">В год</string>
     <string name="forever">Навсегда</string>
     <string name="rub_x">%d₽</string>
     <string name="get_premium">Получить PREMIUM</string>
@@ -149,7 +148,7 @@
     <string name="automatic_backup_to_google_disk">Автоматическое резервное копирование на Google Disk</string>
     <string name="include">Включить</string>
     <string name="export">Экспорт словарей</string>
-    <string name="it_will_be_available_only_in_premium">Будет доступно только в PREMIUM подписке</string>
+    <string name="it_will_be_available_only_in_premium">Доступно только в PREMIUM подписке</string>
 
     <string name="recommendation_list_2">1. Сохранение состояния алгоритма позволяет создать полную резервную копию ваших словарей. Если не указать - все ваши алгоритмы при экспорте начнут работу с первого шага.\n\n2. Резервное копирование на Google Disk позволит сохранить ваши словари даже вслучае утери телефона.\n\n3. Вы можете создать файл импорта вручную на компьютере для этого создайте файл формата .txt и записывайте слова в него в формате [Слово;Перевод]</string>
     <string name="provide">Предоставить</string>
@@ -180,5 +179,13 @@
 
     <string name="specify_your_date_of_birth">Укажите вашу дату рождения</string>
     <string name="adv_is_only_available_for_adults">Реклама доступна только с %d лет</string>
+    <string name="premium">PREMIUM</string>
+    <string name="advantage">Преимущество</string>
+    <string name="you_can_cancel_your_subscription">Отменить подписку можно в любое время</string>
+    <string name="recover">Восстановить</string>
+    <string name="conditions">Условия</string>
+    <string name="privacy">Приватность</string>
+    <string name="subscription_is_automatically_renewed">Подписка продлевается автоматически, её можно будет отменить на этом экране.</string>
+    <string name="get_documents_error">Напишитие на почту nagel99work@gmail.com для предоставления</string>
 
 </resources>

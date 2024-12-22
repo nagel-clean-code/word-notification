@@ -58,7 +58,6 @@
     <string name="remember_2">Ich erinnere mich</string>
     <string name="your_result">Ihr Ergebnis</string>
     <string name="couldnt_delete_word">Das Wort konnte nicht gelöscht werden</string>
-    <string name="text_statistic"> %d gelernt/%d Die Wörter (%d%%) wurden von %d aus %d Wörterbüchern gelernt. Es dauert weitere xxx Tage, bis Sie sich die Wörterbücher vollständig merken können</string>
     <string name="update">Aktualisieren</string>
     <string name="new_version_app">Eine neue Version der Anwendung wurde veröffentlicht, aktualisieren Sie.</string>
     <string name="later">Später</string>
@@ -87,7 +86,6 @@
     <string name="begin">Starten</string>
     <string name="selected_dictionary">Wort\nauswählen</string>
     <string name="mode_settings_1">Modus\nEinstellungen</string>
-    <string name="recommendation_list">1. Wenn Sie ein Wörterbuch teilen oder eine Sicherungskopie erstellen möchten, halten Sie das Wörterbuch drei Sekunden lang gedrückt.\n\n2. Geben Sie in den Einstellungen des Modus die Uhrzeit an, zu der Sie die Benachrichtigungen verwenden möchten, damit die App nicht von wichtigen Dingen ablenkt. \ n \ n3. Ich empfehle, den Algorithmus «Plateau-Effekt» zu verwenden, um sich effektiv zu erinnern</string>
     <string name="memorization_step">Speicherschritt:</string>
     <string name="current_language">Aktuelle Sprache: %s</string>
     <string name="automatic_translation">Automatische Übersetzung</string>
@@ -150,7 +148,7 @@
     <string name="automatic_backup_to_google_disk">Automatische Sicherung auf Google Disk</string>
     <string name="include">Einschließen</string>
     <string name="export">Wörterbücher exportieren</string>
-    <string name="it_will_be_available_only_in_premium">Wird nur in einem PREMIUM-Abonnement verfügbar sein</string>
+    <string name="it_will_be_available_only_in_premium">Nur im PREMIUM-Abonnement verfügbar</string>
 
     <string name="recommendation_list_2">1. Wenn Sie den Status des Algorithmus beibehalten, können Sie eine vollständige Sicherung Ihrer Wörterbücher erstellen. Wenn Sie dies nicht angeben, werden alle Ihre Algorithmen beim Export vom ersten Schritt an ausgeführt.\n\n2.Wenn Sie auf Google Disk sichern, können Sie Ihre Wörterbücher auch dann speichern, wenn Sie Ihr Telefon verloren haben.\n\n3.Sie können eine Importdatei manuell auf Ihrem Computer erstellen, um dies zu tun, erstellen Sie eine Formatdatei .txt und schreiben Sie Wörter im Format [Wort;Übersetzung] hinein</string>
     <string name="provide">Bereitstellen</string>
@@ -181,4 +179,13 @@
 
     <string name="specify_your_date_of_birth">Geben Sie Ihr Geburtsdatum an</string>
     <string name="adv_is_only_available_for_adults">Werbung ist nur ab %d Jahren verfügbar</string>
+    <string name="premium">PREMIUM</string>
+    <string name="advantage">Vorteil</string>
+    <string name="you_can_cancel_your_subscription">Sie können Ihr Abonnement jederzeit kündigen</string>
+    <string name="recover">Wiederherstellen</string>
+    <string name="conditions">Bedingungen</string>
+    <string name="privacy">Datenschutz</string>
+    <string name="subscription_is_automatically_renewed">Das Abonnement wird automatisch verlängert und kann auf diesem Bildschirm storniert werden</string>
+    <string name="get_documents_error">Schreiben Sie an die Post nagel99work@gmail.com für die Bereitstellung</string>
+
 </resources>

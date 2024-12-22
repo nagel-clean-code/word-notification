@@ -2,10 +2,13 @@ package com.nagel.wordnotification.utils
 
 import android.content.Context
 import android.telephony.TelephonyManager
+import java.util.Locale
 
 interface CountyTools {
     fun checkPermissionAnalytics(context: Context): Boolean
     fun getAgeOfMajorityOfCountry(context: Context): Int
+    fun isAdvAllowedForAllAges(context: Context): Boolean
+    fun getCountyKeyForPayment(context: Context): String
 }
 
 object CountyUtils : CountyTools {
@@ -30,6 +33,22 @@ object CountyUtils : CountyTools {
         return null
     }
 
+    override fun isAdvAllowedForAllAges(context: Context): Boolean {
+        return getCountry(context)?.let {
+            return deepContains(advIsAllowedForAllAges, it)
+        } ?: false
+    }
+
+    override fun getCountyKeyForPayment(context: Context): String {
+        return getCountry(context)?.let { country ->
+            if (languagesForPayments.contains(country)) return country
+            val currentLanguage = Locale.getDefault().language
+            if (languagesForPayments.contains(currentLanguage)) return currentLanguage
+            return "en"
+        } ?: "en"
+    }
+
+
     override fun getAgeOfMajorityOfCountry(context: Context): Int {
         getCountry(context)?.let { country ->
             if (deepContains(countryComingOfAgeWith19, country)) return 19
@@ -48,18 +67,25 @@ object CountyUtils : CountyTools {
         return false
     }
 
-    private val countryComingOfAgeWith19 =
-        listOf("dz", "co", "ca-nb", "ca-bc", "ca-ns", "ca", "ca-yt")
+    private val advIsAllowedForAllAges = listOf("ru")
+    private val languagesForPayments = listOf("ru", "en", "de")
 
-    private val countryComingOfAgeWith20 =
-        listOf("bf", "kr", "nz", "py", "tw", "th", "tn", "jp")
+    /**
+     * Страны взяти из: https://www.consultant.ru/document/cons_doc_LAW_202780/7f5e036a06bd7110f40bfa15424275e50cf50e35/
+     */
+    private val countryComingOfAgeWith19 = listOf(
+        "dz", "co", "ca-nb", "ca-bc", "ca-ns", "ca", "ca-yt"
+    )
 
-    private val countryComingOfAgeWith21 =
-        listOf(
-            "ar", "bo", "bw", "ga", "gm", "gh", "hn", "eg",
-            "id", "cm", "ci", "kw", "lr", "ly", "mg", "ml",
-            "ne", "ni", "ae", "rw", "sn", "sg", "tg", "td"
-        )
+    private val countryComingOfAgeWith20 = listOf(
+        "bf", "kr", "nz", "py", "tw", "th", "tn", "jp"
+    )
+
+    private val countryComingOfAgeWith21 = listOf(
+        "ar", "bo", "bw", "ga", "gm", "gh", "hn", "eg",
+        "id", "cm", "ci", "kw", "lr", "ly", "mg", "ml",
+        "ne", "ni", "ae", "rw", "sn", "sg", "tg", "td"
+    )
 
     /**
      * Страны взяты с сайта https://translated.turbopages.org/proxy_u/en-ru.ru.87e4c81a-67544e8c-13f28abe-74722d776562/https/worldpopulationreview.com/country-rankings/gdpr-countries
