@@ -5,6 +5,7 @@
     <string name="repeat">Повторить</string>
     <string name="add">Добавить</string>
     <string name="cancel">Отмена</string>
+    <string name="cancel_2">Отменить подписку</string>
     <string name="input_name_dictionary">Введите название словаря</string>
     <string name="editing">Редактирование</string>
     <string name="default_name_dictionary">Первый словарь</string>
@@ -174,7 +175,7 @@
     <string name="file_has_been_uploaded_successfully">Файл успешно загружен</string>
     <string name="backup_has_been_performed">Выполненно резервное копироваине</string>
 
-    <string name="to_extend">Продлить</string>
+    <string name="to_extend">Сменить тариф</string>
     <string name="until_the">До %s</string>
 
     <string name="specify_your_date_of_birth">Укажите вашу дату рождения</string>
@@ -187,5 +188,7 @@
     <string name="privacy">Приватность</string>
     <string name="subscription_is_automatically_renewed">Подписка продлевается автоматически, её можно будет отменить на этом экране.</string>
     <string name="get_documents_error">Напишитие на почту nagel99work@gmail.com для предоставления</string>
+
+    <string name="subscription_renewed_have_premium">Подписка продлевается автоматически.</string>
 
 </resources>

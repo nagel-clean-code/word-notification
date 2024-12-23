@@ -1,5 +1,6 @@
 package com.nagel.wordnotification.presentation.profile
 
+import android.graphics.Paint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -148,6 +149,9 @@ class ProfileFragment : BaseFragment() {
             val data = viewModel.state.value.chowPremiumInformationEvent?.peekContent()
             openLinkDocument(data?.privacyLink)
         }
+        buttonCancel.setOnClickListener {
+//TODO отмена подписки
+        }
     }
 
     private fun openLinkDocument(link: String?) {
@@ -179,8 +183,12 @@ class ProfileFragment : BaseFragment() {
     private fun showYouHavePremium(date: String) = with(binding) {
         linearLayout3.isInvisible = true
         progressBar.isVisible = false
+        spacer.isVisible = true
+        buttonCancel.paintFlags = Paint.UNDERLINE_TEXT_FLAG
+        buttonCancel.isVisible = true
         saleTextImg.setImageResource(R.drawable.you_have_premium)
         getPremiumButton.text = resources.getString(R.string.to_extend)
+        textView3.text = resources.getString(R.string.subscription_renewed_have_premium)
         timeEndPremium.text = date
         timeEndPremium.isVisible = true
     }

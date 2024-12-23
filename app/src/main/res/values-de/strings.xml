@@ -5,6 +5,7 @@
     <string name="repeat">Wiederholen</string>
     <string name="add">Hinzufügen</string>
     <string name="cancel">Abbrechen</string>
+    <string name="cancel_2">Abschaffen</string>
     <string name="input_name_dictionary">Geben Sie den Namen des Wörterbuchs ein</string>
     <string name="editing">Bearbeiten</string>
     <string name="default_name_dictionary">Erstes Wort</string>
@@ -174,7 +175,7 @@
     <string name="file_has_been_uploaded_successfully">Die Datei wurde bereits heruntergeladen</string>
     <string name="backup_has_been_performed">Sicherung durchgeführt</string>
 
-    <string name="to_extend">Verlängern</string>
+    <string name="to_extend">Tarif ändern</string>
     <string name="until_the">Bis zum %s</string>
 
     <string name="specify_your_date_of_birth">Geben Sie Ihr Geburtsdatum an</string>
@@ -187,5 +188,7 @@
     <string name="privacy">Datenschutz</string>
     <string name="subscription_is_automatically_renewed">Das Abonnement wird automatisch verlängert und kann auf diesem Bildschirm storniert werden</string>
     <string name="get_documents_error">Schreiben Sie an die Post nagel99work@gmail.com für die Bereitstellung</string>
+
+    <string name="subscription_renewed_have_premium">Das Abonnement verlängert sich automatisch.</string>
 
 </resources>

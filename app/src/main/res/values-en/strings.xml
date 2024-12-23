@@ -5,6 +5,7 @@
     <string name="repeat">Repeat</string>
     <string name="add">Add</string>
     <string name="cancel">Cancel</string>
+    <string name="cancel_2">Cancel</string>
     <string name="input_name_dictionary">Enter the name of the dictionary</string>
     <string name="editing">Editing </string>
     <string name="default_name_dictionary">First syllable</string>
@@ -174,7 +175,7 @@
     <string name= "file_has_been_uploaded_successfully" >The file has already been uploaded</string>
     <string name="backup_has_been_performed">Backup has been performed</string>
 
-    <string name="to_extend">To extend</string>
+    <string name="to_extend">Change the tariff</string>
     <string name="until_the">Until the %s</string>
 
     <string name="specify_your_date_of_birth">Specify your date of birth</string>
@@ -187,5 +188,7 @@
     <string name="privacy">Privacy</string>
     <string name="subscription_is_automatically_renewed">The subscription is automatically renewed, and you can cancel it on this screen</string>
     <string name="get_documents_error">Write to the post office nagel99work@gmail.com to provide</string>
+
+    <string name="subscription_renewed_have_premium">The subscription is automatically renewed.</string>
 
 </resources>

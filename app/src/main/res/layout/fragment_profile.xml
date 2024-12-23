@@ -140,6 +140,19 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/plaha" />
 
+                <TextView
+                    android:id="@+id/buttonCancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:text="@string/cancel_2"
+                    android:textColor="@color/white"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/getPremiumButton"
+                    tools:visibility="visible" />
+
                 <LinearLayout
                     android:id="@+id/linearLayout3"
                     android:layout_width="wrap_content"
@@ -205,14 +218,13 @@
                     android:gravity="center"
                     android:maxEms="15"
                     android:textColor="@color/white"
-                    android:textSize="24sp"
+                    android:textSize="22sp"
                     android:textStyle="bold"
                     android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="@+id/errorText"
+                    app:layout_constraintBottom_toTopOf="@+id/getPremiumButton"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/saleTextImg"
-                    app:layout_constraintVertical_bias="0.8"
                     tools:text="До 20.10.2015"
                     tools:visibility="visible" />
 
@@ -230,6 +242,22 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
 
+                <Space
+                    android:id="@+id/spacer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="15dp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/buttonCancel" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/barrier2"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:barrierDirection="bottom"
+                    app:constraint_referenced_ids="spacer,buttonCancel,getPremiumButton" />
+
                 <TextView
                     android:id="@+id/textView3"
                     android:layout_width="match_parent"
@@ -244,7 +272,7 @@
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/getPremiumButton" />
+                    app:layout_constraintTop_toBottomOf="@+id/barrier2" />
 
                 <TextView
                     android:id="@+id/recover"
@@ -285,7 +313,7 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     app:barrierDirection="bottom"
-                    app:constraint_referenced_ids="getPremiumButton,errorText,saleTextImg,textView3" />
+                    app:constraint_referenced_ids="buttonCancel,getPremiumButton,errorText,saleTextImg,textView3" />
 
                 <ImageView
                     android:id="@+id/christmas_tree"
